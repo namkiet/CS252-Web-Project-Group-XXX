@@ -15,6 +15,7 @@ data = {
 def recommend():
     city = request.json.get("city")
     dish = data.get(city, "Món đặc sản địa phương")
+    print("Server running in local")
     return jsonify({"city": city, "dish": dish})
 
 @app.route('/')

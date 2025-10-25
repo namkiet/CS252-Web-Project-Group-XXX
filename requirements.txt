@@ -1,3 +1,10 @@
+# Library from Frontend
 flask
 flask_cors
 gunicorn
+
+# Library from AI Developer
+openai
+pandas
+
+load_dotenv
