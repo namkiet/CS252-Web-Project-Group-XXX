@@ -7,7 +7,7 @@ def generate_food_dataset(n=10):
     Each items contain following 
     - Name for food
     - Detail description (include ingredients, taste, what is the best time to eat and the story of the food if possible) - vietnamese and english version
-    - Location (city or where it famous for)
+    - Location (city or where it famous for, focus into a city if possible)
 
 """
     
