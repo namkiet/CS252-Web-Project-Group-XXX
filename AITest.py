@@ -6,4 +6,7 @@ load_dotenv()
 data = pd.read_csv("data/vietnam_local_foods.csv")
 
 embManager = EmbeddingManager(data=data)
-embManager.create_embedding()
+
+data = embManager.search(["món ăn có thịt và rau", "Đồ ăn lành mạnh", "ở Hà nội"], 20, "score_mean")
+
+print(data.head(20))

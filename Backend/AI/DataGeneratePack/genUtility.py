@@ -3,7 +3,7 @@ import pandas as pd
 
 def generate_food_dataset(n=10):
     system = f"""
-    Generate a JSON list of {n} Vietnamese specialty food
+    Generate a JSON list of {n} Vietnamese specialty food, focus on snack like ice cream
     Each items contain following 
     - Name for food
     - Detail description (include ingredients, taste, what is the best time to eat and the story of the food if possible) - vietnamese and english version

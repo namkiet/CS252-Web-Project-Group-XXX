@@ -23,8 +23,11 @@ class EmbeddingManager:
         else:
             raise ValueError("Ebedding manager need data or out_path that can be used, please provide at least one")
         if self.embed_path.exists():
-            with open(self.embed_path, "rb") as f:
-                self.data["embedding"] = pickle.load(f)
+            try:
+                with open(self.embed_path, "rb") as f:
+                    self.data["embedding"] = pickle.load(f)
+            except:
+                warnings.warn("WARNING: Mismatch type, could be data change? please use create_embedding() method BEFORE using the search method")
         else:
             self.data["embedding"] = None
 
@@ -68,11 +71,16 @@ class EmbeddingManager:
             scores.append(score)
         # Reason of score as prefix is I want to test embed as prefix (Apply combine first then score).
         # Hypothesis: The current method is slower but result in better answer
+    
         if combine_mode == "score_mean":
             self.data["similarity"] = np.mean(scores, axis=0)
         elif combine_mode == "score_sum":
             self.data["similarity"] = np.sum(scores, axis=0)
         elif combine_mode == "score_max":
             self.data["similarity"] = np.max(scores, axis=0)
+        elif combine_mode == "score_square_sum":
+            self.data["similarity"] = np.sum(score**2, axis=0)
+        else:
+            raise ValueError(f"combine mode NOT found given {combine_mode}. Available mode: score_mean, score_sum, score_max")
 
         return self.data.sort_values("similarity", ascending=False).head(top_k)
