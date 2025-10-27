@@ -7,7 +7,7 @@ out_path.parent.mkdir(parents=True, exist_ok=True)
 
 load_dotenv()
 
-df = generate_food_dataset(n=20)
+df = generate_food_dataset(n=80)
 
 if out_path.exists():
     df.to_csv(

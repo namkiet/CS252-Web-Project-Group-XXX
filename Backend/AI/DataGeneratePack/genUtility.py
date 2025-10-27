@@ -12,13 +12,13 @@ def generate_food_dataset(n=10):
 """
     
     ExampleFormat = """
-    Example format:
+    Example format (detail description is EXAMPLE not FORMAT):
     [
         {{
-            "Name": "Bún chả Hà Nội",
-            "Detail description en": "the combination of rice noodle and ...",
-            "Detail description vn": "là sự kết hợp giữa bún và...",
-            "Location": "Hà nội"
+            "Name": "Kem Tràng Tiền",
+            "Detail description en": "Detail description about this Kem Tràng Tiền",
+            "Detail description vn": "Mô tả chi tiết về Kem Tràng Tiền"
+            "Location": "Hà Nội"
         }},
         ...
     ]

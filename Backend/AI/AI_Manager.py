@@ -16,6 +16,7 @@ class AI_Manager:
         self.__embedManager.create_embedding(save_mode)
 
     def search(self, prompt, top_k_RAG, top_k_rerank, RAG_combine_mode = "score_sum", Rerank_mode = "similarity"):
+        # this will search and result top_k_rerank data relevant
         promptList = generate_rag_queries(prompt)
         data_RAG = self.__embedManager.search(promptList, top_k_RAG, RAG_combine_mode)
         data_rerank = self.__rerankManager.rerank(data_RAG, prompt, top_k_rerank, Rerank_mode)
