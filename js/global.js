@@ -3,7 +3,7 @@ document.getElementById('btn').addEventListener('click', async () => {
   if (!city) return alert("Vui lòng nhập thành phố!");
 
   try {
-    const res = await fetch('https://cs252-web-project-group-xxx.onrender.com/api/recommend', {
+    const res = await fetch('http://localhost:5000/api/recommend', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ city })
