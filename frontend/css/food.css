@@ -1,0 +1,105 @@
+.map-layout-wrapper {
+    height: 30rem;
+    margin-top: 4rem;
+}
+
+.sidebar-wrapper {
+    height: 26rem;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: #f8f9fa;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+
+    border-radius: 1.0rem;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    background-color: #ece6e3;
+
+    color: black;
+    text-align: center;
+
+    font-family: 'Ubuntu', cursive;
+}
+
+.sidebar-header h4 {
+    font-size: 1.1rem;
+}
+
+.sidebar-content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.add-meal-dropdown {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 0.7rem;
+}
+
+.add-meal-dropdown .dropdown-menu {
+    margin-left: 10px;
+}
+
+.add-meal-dropdown .dropdown-menu::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: -10px;
+
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+
+    border-right: 10px solid var(--bs-dropdown-border-color);
+}
+
+.add-meal-dropdown .dropdown-menu::after {
+    content: "";
+    position: absolute;
+    top: 11px;
+    left: -9px;
+
+    width: 0;
+    height: 0;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+
+    border-right: 9px solid var(--bs-dropdown-bg);
+}
+
+.btn-add-meal {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+
+    font-size: 1.3rem;
+    color: #40a4fb;
+    line-height: 1;
+}
+
+.btn-add-meal:hover {
+    color: #0a8bfc;
+}
+
+.selected-meal-text {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.btn-add-meal-done {
+    color: #28a745;
+}
+
+.btn-add-meal-done:hover {
+    color: #28a745;
+}
+
+.dropdown-item:active {
+    background-color: #4d91d1;
+}

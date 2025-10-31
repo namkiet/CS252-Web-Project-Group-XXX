@@ -1,22 +1,31 @@
-document.getElementById('btn').addEventListener('click', async () => {
-  const city = document.getElementById('city').value.trim();
-  if (!city) return alert("Vui lòng nhập thành phố!");
+document.addEventListener("DOMContentLoaded", function() {
+  fetch('_navbar.html')
+    .then(response => {
+      if(!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.text();
+    })
+    .then(data => {
+      document.getElementById('navbar-placeholder').innerHTML = data;
 
-  try {
-    const res = await fetch('http://localhost:5000/api/recommend', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ city })
-    });
+      const currentPage = window.location.pathname.split('/').pop() ||
+        'index.html';
 
-    if (!res.ok) {
-      throw new Error(`Server trả về lỗi: ${res.status}`);
-    }
+      const navLinks = document.querySelectorAll('#navbar-placeholder .nav-link');
 
-    const data = await res.json();
-    document.getElementById('result').innerHTML = `<h2>${data.city}</h2><p>${data.dish}</p>`;
-  } catch (err) {
-    console.error(err);
-    alert("Không thể kết nối tới server. Vui lòng thử lại sau!");
-  }
+      navLinks.forEach(link => {
+        const linkHref = link.getAttribute('href');
+        if(linkHref === currentPage) {
+          link.classList.add('active');
+        }
+      })
+    })
+    .catch(error => {
+      console.error('Error fetching navbar:', error);
+      document.getElementById('navbar-placeholder').innerHTML
+        = '<p style="color:red; text-align:center;">Failed to load navigation bar.</p>'
+    })
 });
+
+
