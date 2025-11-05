@@ -1,22 +1,22 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
+import json
 
 app = Flask(__name__)
 CORS(app)
 
-data = {
-    "Đà Nẵng": "Mì Quảng",
-    "Hà Nội": "Phở",
-    "Hồ Chí Minh": "Bánh mìiiiiii",
-    "Nha Trang": "Cơm gàaaaaaa"
-}
+with open("backend/data.json", encoding='utf-8') as f:
+    data = json.load(f) 
 
-@app.route('/api/recommend', methods=['POST'])
+@app.route('/recommend', methods=['GET'])
 def recommend():
-    city = request.json.get("city")
-    dish = data.get(city, "Món đặc sản địa phương")
-    print("Server running in local")
-    return jsonify({"city": city, "dish": dish})
+    meal_type = request.args.get("type").lower()
+    items = data.get(meal_type)[:10]
+    return Response(
+        response=json.dumps(items, ensure_ascii=False, indent=2),
+        status=200,
+        mimetype="application/json"
+    )
 
 @app.route('/')
 def home():

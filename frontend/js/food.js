@@ -1,3 +1,5 @@
+// import { getMeals } from './food-query.js'
+
 document.addEventListener('DOMContentLoaded', function() {
     const sidebarContent = document.querySelector('.sidebar-content');
     const actionContainer = document.getElementById('sidebar-action-bar');
@@ -102,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function openEditDropdown(index) {
         if (index === null || index === undefined) return;
         selectedMealIndex = index;
+
         openDropdownAt(index);
     }
 
@@ -121,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             elementWrapper.appendChild(textElement);
 
             if (index === selectedMealIndex) {
+
                 elementWrapper.style.backgroundColor = '#e9ecef';
                 sidebarContent.appendChild(elementWrapper);
 
@@ -205,14 +209,17 @@ document.addEventListener('DOMContentLoaded', function() {
             ensureDefaultForSelectedMeal();
             const completedItem = completed;
             const clickedIndex = parseInt(completedItem.dataset.index);
-                selectedMealIndex = (selectedMealIndex === clickedIndex) ? null : clickedIndex;
+            selectedMealIndex = (selectedMealIndex === clickedIndex) ? null : clickedIndex;
 
-                closeDropdown();
-                renderSchedule();
+            closeDropdown();
+            renderSchedule();
+
+            console.log(mealScheduleList[clickedIndex].name);
+            getMeals(mealScheduleList[clickedIndex].name);
+            
         }
     });
 
-    
     renderSchedule();
 
     document.addEventListener('click', function(e) {
