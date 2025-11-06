@@ -1,2 +1,6 @@
 env/
 .env
+venv/
+*.pyc
+data/LastestSearchResult.csv
+prompt.txt
