@@ -86,8 +86,10 @@ def generate_dual_rag_queries(query: str, model = "gpt-5-mini"):
     
     userPrompt = (
         f"User query: {query}\n\n"
-        f"Generate two queries that must be seperate and never has information of the other one. The first query contain only positve. The second query contain only negative but written in positive.search queries in JSON list format, for example:\n"
-        f'["Positive Query", "Negative Query"]\n\n'
+        f"Generate two queries that must be seperate and never has information of the other one. The first query contain only positve. The second query contain only negative but written in positive.search queries MUST be in JSON list format, Format as:\n"
+         '{"queries": ["Positive Query", "Negative Query"]}\n\n'
+        f'Example prompt: Tôi muốn món ăn có vị cay, nhưng không được đắng, phải có cơm nhưng không được có phở và bún\n'
+         'Example Output: {"queries": ["Món cơm có vị cay", "Món phở hoặc bún có vị đắng"]}\n'
     )
 
     client = OpenAI()
@@ -108,8 +110,10 @@ def generate_dual_rag_queries(query: str, model = "gpt-5-mini"):
             return data["queries"]
         elif isinstance(data, list):
             return data
+        elif isinstance(data, dict) and "result" in data:
+            return data["result"]
         else:
-            raise ValueError("Unexpected JSON format generate by LLM")
+            raise ValueError(f"Unexpected JSON format generate by LLM: \n{data}")
     except json.JSONDecodeError:
         print("Model return non-JSON, please try again")
         return []

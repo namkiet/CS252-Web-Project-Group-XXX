@@ -1,16 +1,11 @@
 ﻿Name,reason,match_score
-Phở Hà Nội,"Phở Hà Nội: uses bánh phở (not bún), Hanoi signature — perfect match for 'không có bún ở Hà Nội'.",100
-Bánh đúc nóng (Hà Nội style),"Bánh đúc nóng (Hà Nội): no bún, Hanoi local — highly relevant.",95
-Phở cuốn,"Phở cuốn (Hà Nội): uses bánh phở sheets not bún, Hanoi specialty — highly relevant.",94
-Bánh giò Hà Nội,"Bánh giò Hà Nội: no bún, Hanoi local — very relevant. (Chosen as top bánh giò variant.)",92
-Cháo lòng,"Cháo lòng: no bún, classic Hanoi comfort food — highly relevant.",90
-Xôi xéo Hà Nội,"Xôi xéo Hà Nội: sticky rice breakfast, no bún, Hanoi local — highly relevant.",89
-Bánh gối Hà Nội,"Bánh gối Hà Nội: no bún, Hanoi snack — very relevant (one of primary bánh gối entries).",88
-Ốc luộc Hà Nội,"Ốc luộc Hà Nội: explicitly Hanoi variant, no bún — very relevant (slightly higher than generic ốc).",87
-Ốc luộc,"Ốc luộc: no bún, commonly eaten in Hanoi — relevant (seafood street snack).",85
-Bánh giò,Bánh giò (duplicate): no bún but duplicate of item 19 — reduced score to differentiate.,70
-Bánh gối,Bánh gối (duplicate): no bún but duplicate of item 30 — lowered score for variety.,65
-Bánh giò,Bánh giò (another duplicate): no bún but further lower score to avoid equal duplicates.,60
-Phở Sài Gòn,Phở Sài Gòn: no bún but not in Hanoi — low relevance but acceptable (≥20).,30
-Hủ tiếu Nam Vang,"Hủ tiếu Nam Vang: no bún, but not a Hanoi dish → low relevance (≥20).",25
-Bánh tráng nướng (Đà Lạt),Bánh tráng nướng (Đà Lạt): no bún but not Hanoi — low relevance (still ≥20).,24
+Phở Hà Nội,"Top Hanoi phở chosen as best match: Hanoi location, classic phở, and user excluded 'bún' (does not contain bún). Boosted as primary phở among duplicates.",95
+Ốc luộc Hà Nội,"Ốc luộc is a Hanoi late-night favorite, matches location and does not contain bún — ranked high.",75
+Xôi xéo Hà Nội,Good Hanoi breakfast option (xôi xéo). Matches location and does not contain bún; boosted as primary xôi.,70
+Phở Hà Nội,Duplicate phở — valid (no bún) but lowered to avoid multiple identical top picks.,60
+Phở Hà Nội,Another duplicate phở — valid but lowered to diversify; still good and matches Hanoi/no bún.,55
+Phở Hà Nội,Duplicate phở entry kept viable but lower score to avoid multiple equal phở picks.,50
+Xôi xéo,"Duplicate xôi xéo — valid and Hanoi, but lowered so primary xôi ranks higher than the duplicate.",35
+Hải sản nướng (grilled seafood),"Grilled seafood is tasty but not located in Hanoi (coastal regions). Also does not contain bún, so low but nonzero score.",30
+Phở Sài Gòn,"Phở Sài Gòn does not contain bún but is Southern-style (Ho Chi Minh City), not Hanoi — therefore lower score.",25
+Hủ tiếu Nam Vang,Score 0 because it contains 'bún' (the user explicitly excluded bún) — therefore excluded entirely.,0

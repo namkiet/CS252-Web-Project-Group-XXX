@@ -25,7 +25,9 @@ class AI_Manager:
     def dual_search(self, prompt, top_k, Rerank_mode = "similarity"):
         # This function using cross encoder which is good for negative prompt
         queries = generate_dual_rag_queries(prompt)
-        return queries
+        data_RAG = self.__embedManager.dual_search(queries[0], queries[1], top_k)
+        data_rerank = self.__rerankManager.rerank(data_RAG, prompt, top_k, Rerank_mode)
+        return data_rerank
 
     def Generator(self, n):
         return generate_food_dataset(20)

@@ -13,7 +13,7 @@ class EmbeddingManager:
         self.__client = OpenAI()
         self.model = model
         self.__embed_path = Path(embed_path)
-        self.__data = None
+        self.__data = pd.DataFrame()
         self.Warning = Warning 
         if out_path:
             self.__data = pd.read_csv(out_path)
@@ -95,3 +95,14 @@ class EmbeddingManager:
                     embs += emb
             self.__data["similarity"] = self.__data["embedding"].apply(lambda e: cosine(e, emb))
             return self.__data.sort_values("similarity", ascending = False).head(top_k)
+    
+    def dual_search(self, positive_query, negative_query, top_k = 10):
+        if not isinstance(positive_query, (str)) or not isinstance(negative_query, (str)):
+            raise ValueError("positive_query and negative_query must be strings or lists of strings.")
+        pos_emb = embed_text(positive_query)
+        neg_emb = embed_text(negative_query)
+        self.__data["similarity"] = self.__data["embedding"].apply(lambda e: cosine(e, pos_emb))
+        self.__data["neg_similarity"] = self.__data["embedding"].apply(lambda e: cosine(e, neg_emb))
+        neg_idx = self.__data.nlargest(top_k*3, "neg_similarity").index
+        self.__data.loc[neg_idx, "similarity"] = 0.0
+        return self.__data.sort_values("similarity", ascending=False).head(top_k)

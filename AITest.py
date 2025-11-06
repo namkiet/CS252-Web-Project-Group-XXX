@@ -31,7 +31,18 @@ AI_manager = AI_Manager(data=data)
 # end_time = time.time()
 # print(f"Execution time: {end_time - start_time:.2f} seconds")
 
+data = AI_manager.dual_search(prompt, 10, Rerank_mode="reason")
 
-test_queries = AI_manager.dual_search(prompt, 15)
-print(test_queries[0])
-print(test_queries[1])
+print(data.head(10))
+out_path = Path("data/LastestSearchResult.csv")
+mainFeatures = data[["Name", "reason", "match_score"]]
+mainFeatures.to_csv(
+    out_path,
+    mode="w", 
+    header=True,
+    index=False,
+    encoding="utf-8-sig",
+    lineterminator="\n"
+)
+
+print(data)
