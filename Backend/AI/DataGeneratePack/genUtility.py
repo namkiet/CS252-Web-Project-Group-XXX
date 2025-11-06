@@ -78,3 +78,38 @@ def generate_rag_queries(query: str, model = "gpt-4o-mini"):
         print("Model return non-JSON, please try again")
         return []
 
+def generate_dual_rag_queries(query: str, model = "gpt-5-mini"):
+    systemPrompt = (
+        "You are a retrieval assistant that divided query into two part Positive and Negative prompt"
+        "Two queries combine together must cover all the meaning of original query"
+    )
+    
+    userPrompt = (
+        f"User query: {query}\n\n"
+        f"Generate two queries that must be seperate and never has information of the other one. The first query contain only positve. The second query contain only negative but written in positive.search queries in JSON list format, for example:\n"
+        f'["Positive Query", "Negative Query"]\n\n'
+    )
+
+    client = OpenAI()
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": systemPrompt},
+            {"role": "user", "content": userPrompt}
+        ],
+        response_format={"type": "json_object"}
+    )
+
+    import json
+    raw_content = response.choices[0].message.content
+    try:
+        data = json.loads(raw_content)
+        if isinstance(data, dict) and "queries" in data:
+            return data["queries"]
+        elif isinstance(data, list):
+            return data
+        else:
+            raise ValueError("Unexpected JSON format generate by LLM")
+    except json.JSONDecodeError:
+        print("Model return non-JSON, please try again")
+        return []

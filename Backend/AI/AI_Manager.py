@@ -1,5 +1,5 @@
 from Backend.AI.Embedder.embeddingManager import EmbeddingManager
-from Backend.AI.DataGeneratePack.genUtility import generate_food_dataset, generate_rag_queries
+from Backend.AI.DataGeneratePack.genUtility import generate_food_dataset, generate_rag_queries, generate_dual_rag_queries
 from Backend.AI.Reranker.rerankManager import RerankManager
 
 from dotenv import load_dotenv
@@ -22,5 +22,10 @@ class AI_Manager:
         data_rerank = self.__rerankManager.rerank(data_RAG, prompt, top_k_rerank, Rerank_mode)
         return data_rerank
     
+    def dual_search(self, prompt, top_k, Rerank_mode = "similarity"):
+        # This function using cross encoder which is good for negative prompt
+        queries = generate_dual_rag_queries(prompt)
+        return queries
+
     def Generator(self, n):
         return generate_food_dataset(20)
