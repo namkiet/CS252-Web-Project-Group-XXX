@@ -59,28 +59,39 @@ class EmbeddingManager:
     def search(self, query_list:list, top_k=5, combine_mode="score_sum"):
         if not isinstance(query_list, (list, tuple)):
             raise ValueError(f"Query list MUST be list of string. Given : {query_list}")
+        if combine_mode[:5] == "score":
+            query_embs_list = []
+            for q in query_list:
+                emb = embed_text(q, self.model)
+                query_embs_list.append(emb)
 
-        query_embs_list = []
-        for q in query_list:
-            emb = embed_text(q, self.model)
-            query_embs_list.append(emb)
+            scores = []
+            for q_emb in query_embs_list:
+                score = self.__data["embedding"].apply(lambda e: cosine(e, q_emb))
+                scores.append(score)
+            # Reason of score as prefix is I want to test embed as prefix (Apply combine first then score).
+            # Hypothesis: The current method is slower but result in better answer
+        
+            if combine_mode == "score_mean":
+                self.__data["similarity"] = np.mean(scores, axis=0)
+            elif combine_mode == "score_sum":
+                self.__data["similarity"] = np.sum(scores, axis=0)
+            elif combine_mode == "score_max":
+                self.__data["similarity"] = np.max(scores, axis=0)
+            elif combine_mode == "score_square_sum":
+                self.__data["similarity"] = np.sum(score**2, axis=0)
+            else:
+                raise ValueError(f"combine mode NOT found given {combine_mode}. Available mode: score_mean, score_sum, score_max")
 
-        scores = []
-        for q_emb in query_embs_list:
-            score = self.__data["embedding"].apply(lambda e: cosine(e, q_emb))
-            scores.append(score)
-        # Reason of score as prefix is I want to test embed as prefix (Apply combine first then score).
-        # Hypothesis: The current method is slower but result in better answer
-    
-        if combine_mode == "score_mean":
-            self.__data["similarity"] = np.mean(scores, axis=0)
-        elif combine_mode == "score_sum":
-            self.__data["similarity"] = np.sum(scores, axis=0)
-        elif combine_mode == "score_max":
-            self.__data["similarity"] = np.max(scores, axis=0)
-        elif combine_mode == "score_square_sum":
-            self.__data["similarity"] = np.sum(score**2, axis=0)
-        else:
-            raise ValueError(f"combine mode NOT found given {combine_mode}. Available mode: score_mean, score_sum, score_max")
-
-        return self.__data.sort_values("similarity", ascending=False).head(top_k)
+            return self.__data.sort_values("similarity", ascending=False).head(top_k)
+        elif combine_mode[:7] == "Meaning":
+            embs = embed_text(query_list[0], self.model)
+            skip = True
+            for q in query_list:
+                if skip:
+                    skip = False
+                else:
+                    emb = embed_text(q, self.model)
+                    embs += emb
+            self.__data["similarity"] = self.__data["embedding"].apply(lambda e: cosine(e, emb))
+            return self.__data.sort_values("similarity", ascending = False).head(top_k)

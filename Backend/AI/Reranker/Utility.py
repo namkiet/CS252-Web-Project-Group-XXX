@@ -29,7 +29,7 @@ def rerank_withReason(data: pd.DataFrame, prompt: str, column = "combined", top_
     ]
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5-mini",
         messages=messages,
         response_format={
             "type": "json_schema",
@@ -41,7 +41,7 @@ def rerank_withReason(data: pd.DataFrame, prompt: str, column = "combined", top_
                         "scores": {
                             "type": "array",
                             "items": {"type": "number"},
-                            "description": "relevance score in same as given context"
+                            "description": "relevance score in same as given context following the score's rule"
                         },
                         "Reason": {
                             "type": "array",
@@ -49,7 +49,7 @@ def rerank_withReason(data: pd.DataFrame, prompt: str, column = "combined", top_
                             "description": "Reason of ranking as score"
                         }
                     },
-                    "required": ["scores"]
+                    "required": ["scores", "Reason"]
                 }
             }
         }
