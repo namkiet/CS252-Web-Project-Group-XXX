@@ -1,7 +1,12 @@
 # Library from Frontend
 flask
 flask_cors
+flask_login
+flask_bcrypt
+flask_sqlalchemy
+flask_migrate
 gunicorn
+cssmin
 
 # Library from AI Developer
 openai
