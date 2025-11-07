@@ -26,14 +26,16 @@ def create_app():
     
     # app.config.from_object("config.Config")
     from .models import User, Food
-    from .Blueprints.food import food
+    from . import register_blueprints
+    # from .Blueprints.food import food
     from .extension import compile_static_assets
     from .routes import register_routes
             
     db.init_app(app)
     migrate = Migrate(app, db)
     
-    app.register_blueprint(food)
+    # app.register_blueprint(food)
+    register_blueprints(app)
     register_routes(app, db)
     
     assets = Environment()

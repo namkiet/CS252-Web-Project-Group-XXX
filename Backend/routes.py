@@ -4,7 +4,7 @@ from .models import User
 
 def register_routes(app, db):
     
-    @app.route('/', method = ['GET', 'POST'])
+    @app.route('/')
     def index():
         # if request.method == 'GET':
         users = User.query.all()
