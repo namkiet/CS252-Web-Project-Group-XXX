@@ -275,6 +275,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             closeDropdown();
             renderSchedule();
+            
+            console.log(mealScheduleList[clickedIndex].name);
+            getMeals(mealScheduleList[clickedIndex].name);
         }
     });
 

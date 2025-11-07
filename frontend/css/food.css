@@ -123,3 +123,8 @@
     width: 100%;
     margin-left: 0;
 }
+
+#meal-list-wrapper {
+    position: relative;
+    z-index: 2;
+}
