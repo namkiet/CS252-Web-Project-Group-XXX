@@ -12,7 +12,7 @@ def compile_static_assets(app : Flask, assets : Bundle):
     )
     js_bundle = Bundle(
         "js/*.js",
-        filters="jsmin",
+        filters="rjsmin",
         output="dist/js/script.min.js"
     )
 

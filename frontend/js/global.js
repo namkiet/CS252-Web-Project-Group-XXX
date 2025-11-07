@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-  fetch('_navbar.html')
+  fetch('/navbar')
     .then(response => {
       if(!response.ok) {
         throw new Error("Network response was not ok");
@@ -9,14 +9,17 @@ document.addEventListener("DOMContentLoaded", function() {
     .then(data => {
       document.getElementById('navbar-placeholder').innerHTML = data;
 
-      const currentPage = window.location.pathname.split('/').pop() ||
-        'index.html';
+      const currentPath = window.location.pathname;
 
       const navLinks = document.querySelectorAll('#navbar-placeholder .nav-link');
 
       navLinks.forEach(link => {
-        const linkHref = link.getAttribute('href');
-        if(linkHref === currentPage) {
+        // const linkHref = link.getAttribute('href');
+        // if(linkHref === currentPage) {
+        //   link.classList.add('active');
+        // }
+        const linkPath = new URL(link.href).pathname;
+        if(linkPath === currentPath) {
           link.classList.add('active');
         }
       })
@@ -27,5 +30,9 @@ document.addEventListener("DOMContentLoaded", function() {
         = '<p style="color:red; text-align:center;">Failed to load navigation bar.</p>'
     })
 });
+
+
+
+
 
 

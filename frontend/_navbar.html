@@ -1,8 +1,8 @@
 <!--Navigation; navbar-custom css in global.css-->
 <nav class="navbar navbar-expand-lg navbar-custom" data-bs-theme="dark">
 <div class="container">
-    <a class="navbar-brand" href='index.html'>
-    <img src="/assets/images/new-removebg.png" alt="LocalFood" width="143" height="55">
+    <a class="navbar-brand" href="{{ url_for('index') }}">
+    <img src="{{ url_for('static', filename='assets/images/new-removebg.png') }}" alt="LocalFood" width="143" height="55">
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -18,7 +18,7 @@
         <a class="nav-link active" href="index.html">HOME</a>
         </li>
         <li class="nav-item px-4">
-        <a class="nav-link" href="food.html">FOOD</a>
+        <a class="nav-link" href="{{ url_for('food') }}">FOOD</a>
         </li>
         <li class="nav-item px-4">
         <a class="nav-link" href="#">ATTRACTION</a>
