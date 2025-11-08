@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('home_bp.static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<main>
+  <!--Carousel Slide, id: homeCarousel-->
+  <div id="homeCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="0" class="active"
+        aria-current="true" area-label="Slide 1"></button>
+      <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="1" area-label="Slide 2"></button>
+      <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="2" area-label="Slide 3"></button>
+    </div>
+    
+    <div class="carousel-inner">
+      <div class="carousel-item active"> <!--Active for the first slide, we use d-block w-100 to scale 100% width-->
+        <img src="{{ url_for('home_bp.static', filename='assets/images/slide1.jpg') }}" class="d-block w-100" alt="Slide 1">
+      </div>
+
+      <div class="carousel-item">
+        <img src="{{ url_for('home_bp.static', filename='assets/images/slide2.jpg') }}" class="d-block w-100" alt="Slide 2">
+      </div>
+
+      <div class="carousel-item">
+        <img src="{{ url_for('home_bp.static', filename='assets/images/slide3.jpg') }}" class="d-block w-100" alt="Slide 3">
+      </div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+
+    <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+
+    <div class="static-caption">
+      <h1>LOCAL FOOD: YOUR PERSONAL FOOD JOURNEY</h1>
+      <p>Explore Vietnamese dishes just steps away. Just tell us what you're craving.</p>
+    
+      <a href="/food" class="btn btn-warning btn-lg mt-3">
+        Let's make your tour!! >
+      </a>
+    </div>
+
+  </div>
+  
+
+</main>
+{% endblock %}
