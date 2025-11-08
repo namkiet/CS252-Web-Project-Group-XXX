@@ -14,3 +14,4 @@ def embed_text(text, model ="text-embedding-3-small"):
 def cosine(a, b):
     a, b = np.array(a), np.array(b)
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+

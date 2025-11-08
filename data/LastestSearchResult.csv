@@ -1,11 +1,11 @@
 ﻿Name,reason,match_score
-Phở Hà Nội,"Top Hanoi phở chosen as best match: Hanoi location, classic phở, and user excluded 'bún' (does not contain bún). Boosted as primary phở among duplicates.",95
-Ốc luộc Hà Nội,"Ốc luộc is a Hanoi late-night favorite, matches location and does not contain bún — ranked high.",75
-Xôi xéo Hà Nội,Good Hanoi breakfast option (xôi xéo). Matches location and does not contain bún; boosted as primary xôi.,70
-Phở Hà Nội,Duplicate phở — valid (no bún) but lowered to avoid multiple identical top picks.,60
-Phở Hà Nội,Another duplicate phở — valid but lowered to diversify; still good and matches Hanoi/no bún.,55
-Phở Hà Nội,Duplicate phở entry kept viable but lower score to avoid multiple equal phở picks.,50
-Xôi xéo,"Duplicate xôi xéo — valid and Hanoi, but lowered so primary xôi ranks higher than the duplicate.",35
-Hải sản nướng (grilled seafood),"Grilled seafood is tasty but not located in Hanoi (coastal regions). Also does not contain bún, so low but nonzero score.",30
-Phở Sài Gòn,"Phở Sài Gòn does not contain bún but is Southern-style (Ho Chi Minh City), not Hanoi — therefore lower score.",25
-Hủ tiếu Nam Vang,Score 0 because it contains 'bún' (the user explicitly excluded bún) — therefore excluded entirely.,0
+Bún chả Hà Nội,"Có thịt lợn (thịt nướng, chả) — không hợp yêu cầu chay => 0.",0
+Bún chả Hà Nội,"Có thịt lợn (thịt nướng, chả) — không hợp yêu cầu chay => 0.",0
+Bún chả Hà Nội,"Có thịt lợn (thịt nướng, chả) — không hợp yêu cầu chay => 0.",0
+Bún chả Hà Nội,"Có thịt lợn (thịt nướng, chả) — không hợp yêu cầu chay => 0.",0
+Bún chả Hà Nội,"Có thịt lợn (thịt nướng, chả/dăm bông) — không hợp yêu cầu chay => 0.",0
+Bún chả cá (Quy Nhơn),Chả cá (cá) — không phải chay; thêm nữa không ở Hà Nội => 0.,0
+Bún chả Hà Nội,Có thịt lợn và thường có ớt trong nước chấm — vi phạm yêu cầu chay => 0.,0
+Bún chả Hà Nội (variation: bún chả nem),"Có thịt (thịt nướng, nem rán) — không hợp yêu cầu chay => 0.",0
+Bún bò Huế,"Chứa bò, heo và nước dùng cay — không chay và còn khá cay => 0.",0
+Bún thang,"Chứa gà, giò/tôm (không chay) dù vị nhẹ — vi phạm yêu cầu chay => 0.",0
