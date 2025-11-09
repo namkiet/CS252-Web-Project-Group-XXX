@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebarContent = document.querySelector('.sidebar-content');
     const actionContainer = document.getElementById('sidebar-action-bar');
     
+    let dateCnt = 1 ;
+    let selectedDate = 0 ;
+    let allDateMealScheduleList=[[]] ;
     let mealScheduleList = []; // to maintain what meals in current schedule
     let selectedMealIndex = null; // to maintain what meal is selected
     let pendingEditIndex = null; // to maintain the item that is adding
@@ -166,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Render
     function renderSchedule() {
+        mealScheduleList = allDateMealScheduleList[selectedDate];
         sidebarContent.innerHTML = ''; 
         actionContainer.innerHTML = '';
 
@@ -197,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 footerClone.removeAttribute('id');
                 sidebarContent.appendChild(footerClone);
 
-                const deleteBtn = footerClone.querySelector('[title="Xóa mục đã chọn"], .btn-outline-danger');
+                const deleteBtn = footerClone.querySelector('[title="Delete selected item"], .btn-outline-danger');
                 if (deleteBtn) {
                     deleteBtn.addEventListener('click', function(ev) {
                         ev.stopPropagation();
@@ -205,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                const editBtn = footerClone.querySelector('[title="Thay đổi mục đã chọn"], .btn-outline-info');
+                const editBtn = footerClone.querySelector('[title="Change selected item"], .btn-outline-info');
                 if (editBtn) {
                     editBtn.addEventListener('click', function(ev) {
                         ev.stopPropagation();
@@ -213,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                const addAboveBtn = footerClone.querySelector('[title="Thêm mục phía trên"]');
+                const addAboveBtn = footerClone.querySelector('[title="Add above"]');
                 if (addAboveBtn) {
                     addAboveBtn.addEventListener('click', function(ev) {
                         ev.stopPropagation();
@@ -221,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                const addBelowBtn = footerClone.querySelector('[title="Thêm mục phía dưới"]');
+                const addBelowBtn = footerClone.querySelector('[title="Add below"]');
                 if (addBelowBtn) {
                     addBelowBtn.addEventListener('click', function(ev) {
                         ev.stopPropagation();
@@ -244,6 +248,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
     }
+
+    const maxDays = 10 ;
+    const dock = document.getElementById("date-taskbar");
+    const addBtn = document.getElementById("addDay");
+    const removeBtn = document.getElementById("removeDay");
+
+    function renderDays() {
+        const oldDays = dock.querySelectorAll(".day-item");
+        oldDays.forEach(day => day.remove());
+
+        for (let i = 0; i < dateCnt; i++) {
+            const day = document.createElement("div");
+            day.className = "day-item";
+            day.textContent = `Day ${i+1}`;
+
+            if (i === selectedDate) day.classList.add("selected-day");
+
+            day.addEventListener("click", () => {
+                selectedDate = i;
+                renderDays();
+            });
+
+            dock.insertBefore(day, dock.querySelector(".controls-taskbar"));
+        }
+        renderSchedule();
+    }
+
+
+    function addDay() {
+        if (dateCnt < maxDays) {
+            dateCnt=dateCnt+1;
+            allDateMealScheduleList.push([]);
+
+            if (selectedDate === null) {
+                selectedDate = 0;
+            }
+
+            renderDays();
+        } else {
+            alert("Can only take up to 10 days!");
+        }
+    }
+
+    function removeDay() {
+        //min : 1 day
+        if (dateCnt <= 1) return;
+
+        dateCnt--;
+
+        allDateMealScheduleList.pop();
+
+        if (selectedDate >= dateCnt) {
+            selectedDate = dateCnt - 1;
+        }
+
+        renderDays();
+    }
+
+    
+    addBtn.addEventListener("click", addDay);
+    removeBtn.addEventListener("click", removeDay);
 
     sidebarContent.addEventListener('click', function(e) {
         const plusBtn = e.target.closest('.btn-add-meal');
@@ -282,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     
-    renderSchedule();
+    renderDays();
 
     document.addEventListener('click', function(e) {
         if (!dropdownOn) return;
