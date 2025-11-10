@@ -1,7 +1,12 @@
+import { initializeMap, updateMapLocation } from "./map.js";
+
 document.addEventListener('DOMContentLoaded', function() {
     const sidebarContent = document.querySelector('.sidebar-content');
     const actionContainer = document.getElementById('sidebar-action-bar');
     
+    let dateCnt = 1;
+    let selectedDate = 0; // to maintain current selected date
+    let allDateMealScheduleList=[[]]; // to maintain what day's schedule is it 
     let mealScheduleList = []; // to maintain what meals in current schedule
     let selectedMealIndex = null; // to maintain what meal is selected
     let pendingEditIndex = null; // to maintain the item that is adding
@@ -10,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const mealDropdownTemplate = document.getElementById('meal-dropdown-template');
     const footerTemplateElement = document.getElementById('sidebar-footer-template');
 
+    // -------------------------- DROP DOWN ----------------------------
     // let dropdownElement = null;
     let dropdownOn = false; 
 
@@ -93,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         dropdownOn = false;
     }
-
+    // -------------------------- FOOTER --------------------------
     function cleanupPendingEdit() {
         if (pendingEditIndex !== null && mealScheduleList[pendingEditIndex]) {
             if (mealScheduleList[pendingEditIndex].name === '') {
@@ -164,8 +170,71 @@ document.addEventListener('DOMContentLoaded', function() {
         openDropdownAt(index);
     }
 
-    // Render
+    // ------------------------ TASKBAR FOR DAY -------------------------
+    const maxDays = 10;
+    const dock = document.getElementById("date-taskbar");
+    const addBtn = document.getElementById("addDay");
+    const removeBtn = document.getElementById("removeDay");
+
+    function renderDays() {
+        const oldDays = dock.querySelectorAll(".day-item");
+        oldDays.forEach(day => day.remove());
+
+        for (let i = 0; i < dateCnt; i++) {
+            const day = document.createElement("div");
+            day.className = "day-item";
+            day.textContent = `Day ${i+1}`;
+
+            if (i === selectedDate) day.classList.add("selected-day");
+
+            day.addEventListener("click", () => {
+                selectedDate = i;
+                renderDays();
+            });
+
+            dock.insertBefore(day, dock.querySelector(".controls-taskbar"));
+        }
+        renderSchedule();
+    }
+
+
+    function addDay() {
+        if (dateCnt < maxDays) {
+            dateCnt=dateCnt+1;
+            allDateMealScheduleList.push([]);
+
+            if (selectedDate === null) {
+                selectedDate = 0;
+            }
+
+            renderDays();
+        } else {
+            alert("Can only take up to 10 days!");
+        }
+    }
+
+    function removeDay() {
+        //min : 1 day
+        if (dateCnt <= 1) return;
+
+        dateCnt--;
+
+        allDateMealScheduleList.pop();
+
+        if (selectedDate >= dateCnt) {
+            selectedDate = dateCnt - 1;
+        }
+
+        renderDays();
+    }
+
+    
+    addBtn.addEventListener("click", addDay);
+    removeBtn.addEventListener("click", removeDay);
+
+    // -------------------------- RENDER SCHEDULE ------------------------
     function renderSchedule() {
+        mealScheduleList = allDateMealScheduleList[selectedDate];
         sidebarContent.innerHTML = ''; 
         actionContainer.innerHTML = '';
 
@@ -197,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 footerClone.removeAttribute('id');
                 sidebarContent.appendChild(footerClone);
 
-                const deleteBtn = footerClone.querySelector('[title="Xóa mục đã chọn"], .btn-outline-danger');
+                const deleteBtn = footerClone.querySelector('[title="Delete selected item"], .btn-outline-danger');
                 if (deleteBtn) {
                     deleteBtn.addEventListener('click', function(ev) {
                         ev.stopPropagation();
@@ -205,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                const editBtn = footerClone.querySelector('[title="Thay đổi mục đã chọn"], .btn-outline-info');
+                const editBtn = footerClone.querySelector('[title="Change selected item"], .btn-outline-info');
                 if (editBtn) {
                     editBtn.addEventListener('click', function(ev) {
                         ev.stopPropagation();
@@ -213,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                const addAboveBtn = footerClone.querySelector('[title="Thêm mục phía trên"]');
+                const addAboveBtn = footerClone.querySelector('[title="Add above"]');
                 if (addAboveBtn) {
                     addAboveBtn.addEventListener('click', function(ev) {
                         ev.stopPropagation();
@@ -221,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                const addBelowBtn = footerClone.querySelector('[title="Thêm mục phía dưới"]');
+                const addBelowBtn = footerClone.querySelector('[title="Add below"]');
                 if (addBelowBtn) {
                     addBelowBtn.addEventListener('click', function(ev) {
                         ev.stopPropagation();
@@ -242,7 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             sidebarContent.appendChild(plusWrapper);
         }
-
     }
 
     sidebarContent.addEventListener('click', function(e) {
@@ -277,12 +345,10 @@ document.addEventListener('DOMContentLoaded', function() {
             renderSchedule();
             
             getMeals(mealScheduleList[clickedIndex].name);
-            console.log('1');
         }
     });
 
-    
-    renderSchedule();
+    renderDays();
 
     document.addEventListener('click', function(e) {
         if (!dropdownOn) return;
@@ -296,7 +362,195 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // const locationModalElement = document.getElementById('locationModal');
-    // const locationModal = new bootstrap.Modal(locationModalElement);
-    // locationModal.show();
+    // ----------------------------MAP AND INPUT LOCATION-------------------------
+    initializeMap();
+
+    const searchContainer = document.getElementById('location-search-container')
+    const backdrop = document.getElementById('location-backdrop')
+    const locationInput = document.getElementById('location-input')
+    const suggestionsBox = document.getElementById('location-suggestions')
+    const saveLocationBtn = document.getElementById('location-search-btn')
+    const useCurrentLocationBtn = document.getElementById('use-current-location-btn')
+    const currentLocationSpinner = useCurrentLocationBtn.querySelector('.spinner-border')
+    const modalError = document.getElementById('location-error')
+    const locationClearBtn = document.getElementById('location-clear-btn');
+
+    let searchTimeout;
+    let selectedLocation = null;
+
+    let highlightedSuggestionIndex = -1;
+
+    function setLocationAndAnimate(lat, lon, displayName) {
+        const shortDisplayName = displayName.split(',')[0].trim();
+        updateMapLocation(lat, lon, shortDisplayName);
+        locationInput.value = displayName;
+
+        suggestionsBox.innerHTML = '';
+        highlightedSuggestionIndex = -1;
+        locationInput.blur();
+
+        searchContainer.classList.remove('is-centered');
+        searchContainer.classList.add('is-pinned');
+
+        backdrop.style.opacity = '0';
+        backdrop.style.pointerEvents = 'none';
+
+    }
+
+    locationClearBtn.addEventListener('click', () => {
+        locationInput.value = '';
+        suggestionsBox.innerHTML = '';
+        saveLocationBtn.disabled = true;
+        selectedLocation = null;
+        modalError.textContent = '';
+        locationInput.focus();
+        highlightedSuggestionIndex = -1;
+    });
+
+    // When user input location
+    locationInput.addEventListener('input', () => {
+        const query = locationInput.value.trim();
+
+        suggestionsBox.innerHTML = '';
+        selectedLocation = null;
+
+        saveLocationBtn.disabled = true;
+        
+        if(query.length < 3) return;
+
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(async () => {
+            try{
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=vn`);
+                if(!response.ok) throw new Error('Network response error');
+                const data = await response.json();
+                displaySuggestions(data);
+            } catch(error) {
+                console.error('Error when save location:', error);
+                suggestionsBox.innerHTML = '<div class="list-group-item list-group-item-danger">Error: Cannot load</div>'
+            }
+        }, 200);
+    });
+
+    function updateHighlight(index) {
+        const items = suggestionsBox.querySelectorAll('.list-group-item');
+        items.forEach((item, i) => {
+            if (i === index) {
+                item.classList.add('active');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    // To display suggestions for location when user type in locationInput
+    function displaySuggestions(suggestions) {
+        suggestionsBox.innerHTML = '';
+        if(suggestions.length === 0) {
+            suggestionsBox.innerHTML = '<div class="list-group-item list-group-item-warning">Cannot load</div>';
+            return
+        }
+        
+        suggestions.forEach(place => {
+            const item = document.createElement('a');
+            item.href='#';
+            item.className = 'list-group-item list-group-item-action list-group-item-light';
+            item.textContent = place.display_name;
+            
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearTimeout(searchTimeout);
+
+                setLocationAndAnimate(
+                    parseFloat(place.lat),
+                    parseFloat(place.lon),
+                    place.display_name
+                );
+            });
+            suggestionsBox.appendChild(item);
+        });
+    }
+
+    // When user click saveLocationBtn or we already have selectedLocation yet
+    function submitLocation() {
+        if(selectedLocation) {
+            setLocationAndAnimate(selectedLocation.lat, selectedLocation.lon, selectedLocation.display_name);
+        } else {
+            modalError.textContent = 'Please choose one suggestion in the list below.';
+        }
+    }
+
+    saveLocationBtn.addEventListener('click', submitLocation);
+
+    // When user click enter, arrowup, arrowdown while typing in locationInput
+    locationInput.addEventListener('keydown', (e) => {
+        const items = suggestionsBox.querySelectorAll('.list-group-item');
+
+        if(items.length > 0) {
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    if(highlightedSuggestionIndex < items.length - 1) {
+                        highlightedSuggestionIndex++;
+                    } else {
+                        highlightedSuggestionIndex = 0;
+                    }
+                    updateHighlight(highlightedSuggestionIndex);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    if(highlightedSuggestionIndex > 0) {
+                        highlightedSuggestionIndex--;
+                    } else {
+                        highlightedSuggestionIndex = items.length - 1;
+                    }
+                    updateHighlight(highlightedSuggestionIndex);
+                    break;
+                case 'Enter':
+                    if(highlightedSuggestionIndex > -1) {
+                        e.preventDefault();
+                        const activeItem = items[highlightedSuggestionIndex];
+                        if(activeItem) {
+                            activeItem.click();
+                        }
+                    }
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    suggestionsBox.innerHTML = '';
+                    highlightedSuggestionIndex = -1;
+                    break;
+            }
+        } else if(e.key === 'Enter') {
+            e.preventDefault();
+        }
+    });
+
+    // When user click userCurrentLocationBtn, and we don't use Reverse Geocoding for this!
+    useCurrentLocationBtn.addEventListener('click', () => {
+        modalError.textContent = '';
+        useCurrentLocationBtn.disabled = true;
+        currentLocationSpinner.style.display = 'inline-block';
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                const displayName = 'Current location';
+
+                setLocationAndAnimate(latitude, longitude, displayName);
+                useCurrentLocationBtn.disabled = false;
+                currentLocationSpinner.style.display = 'none';
+            },
+            (err) => {
+                console.warn(`Error geolocation (ERROR ${err.code}): ${err.message}`);
+                modalError.textContent = 'Cannot find location.';
+                useCurrentLocationBtn.disabled = false;
+                currentLocationSpinner.style.display = 'none';
+            },
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        );
+    });
+
+    saveLocationBtn.disabled = true;
 });
