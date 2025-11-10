@@ -313,6 +313,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    const maxDays = 10 ;
+    const dock = document.getElementById("date-taskbar");
+    const addBtn = document.getElementById("addDay");
+    const removeBtn = document.getElementById("removeDay");
+
+    function renderDays() {
+        const oldDays = dock.querySelectorAll(".day-item");
+        oldDays.forEach(day => day.remove());
+
+        for (let i = 0; i < dateCnt; i++) {
+            const day = document.createElement("div");
+            day.className = "day-item";
+            day.textContent = `Day ${i+1}`;
+
+            if (i === selectedDate) day.classList.add("selected-day");
+
+            day.addEventListener("click", () => {
+                selectedDate = i;
+                renderDays();
+            });
+
+            dock.insertBefore(day, dock.querySelector(".controls-taskbar"));
+        }
+        renderSchedule();
+    }
+
+
+    function addDay() {
+        if (dateCnt < maxDays) {
+            dateCnt=dateCnt+1;
+            allDateMealScheduleList.push([]);
+
+            if (selectedDate === null) {
+                selectedDate = 0;
+            }
+
+            renderDays();
+        } else {
+            alert("Can only take up to 10 days!");
+        }
+    }
+
+    function removeDay() {
+        //min : 1 day
+        if (dateCnt <= 1) return;
+
+        dateCnt--;
+
+        allDateMealScheduleList.pop();
+
+        if (selectedDate >= dateCnt) {
+            selectedDate = dateCnt - 1;
+        }
+
+        renderDays();
+    }
+
+    
+    addBtn.addEventListener("click", addDay);
+    removeBtn.addEventListener("click", removeDay);
+
     sidebarContent.addEventListener('click', function(e) {
         const plusBtn = e.target.closest('.btn-add-meal');
         if (!plusBtn) return;
@@ -347,7 +408,6 @@ document.addEventListener('DOMContentLoaded', function() {
             getMeals(mealScheduleList[clickedIndex].name);
         }
     });
-
     renderDays();
 
     document.addEventListener('click', function(e) {
