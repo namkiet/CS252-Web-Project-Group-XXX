@@ -1,6 +1,6 @@
 import pandas as pd 
 from dotenv import load_dotenv
-from Backend.AI.AI_Manager import AI_Manager
+from backend.AI.AI_Manager import AI_Manager
 load_dotenv()
 data = pd.read_csv("data/vietnam_local_foods.csv")
 
