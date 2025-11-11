@@ -8,6 +8,9 @@ flask_migrate
 gunicorn
 cssmin
 rjsmin
+flask_dance
+google
+google.genai
 
 # Library from AI Developer
 openai
