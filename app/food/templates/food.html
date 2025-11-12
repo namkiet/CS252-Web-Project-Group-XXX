@@ -12,7 +12,7 @@
 <main class="container-fluid">
     <div class="row g-0 map-layout-wrapper">
         <!------------------TASKBAR FOR DAY--------------------->
-        <aside class="col-lg-0">
+        <aside >
             <div class="left-taskbar" id="date-taskbar">
                 
                 <div class="controls-taskbar">
@@ -25,7 +25,7 @@
         <!---------------------SIDEBAR--------------------------->
         <aside class="col-lg-2">
 
-            <div class="sidebar-wrapper">
+            <div id="sidebar-wrapper" class="sidebar-wrapper">
 
                 <div class="sidebar-header p-3">
                     <h4 class="m-0">YOUR SCHEDULE</h4>
@@ -43,22 +43,30 @@
                 </div>
 
             </div>
-
         </aside>
         <!-------------------------LIST MEAL-------------------------->
-        <aside class="col-lg-6">
+        <aside class="col-lg-3">
             <div id="meal-list-wrapper">
                 
                 <div class="p-2 border-bottom">
                     <div class="input-group">
                         <input type="text" id="meal-search-input" class="form-control form-control-sm" placeholder="Specify your requirements...">
                         <button id="meal-search-button" class="btn btn-primary btn-sm" type="button">OK</button>
+                        <button id="meal-close-button" class="btn btn-danger btn-sm" type="button">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
                     </div>
                 </div>
 
                 <div id="meal-list-items" class="list-group" style="overflow-y: auto; flex-grow: 1;">
                     </div>
             </div>
+        </aside>
+
+        <aside class = "col-lg-1">
+                <button id="toggle-open-panel-btn" class="btn btn-primary btn-sm toggle-open-panel-btn-1panel" title="Schedule list">
+                    <i class="bi bi-chevron-double-left"></i>
+                </button>
         </aside>
 
     </div>

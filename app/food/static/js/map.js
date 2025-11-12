@@ -11,11 +11,20 @@ const redIcon = L.icon({
 });
 
 export function initializeMap() {
-    map = L.map('map').setView([16.047079, 108.206482], 6);
+    map = L.map('map', {
+        center: [16.047079, 108.206482], 
+        zoom: 6,
+        zoomControl: false 
+    });
+
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.control.zoom({
+        position: 'bottomright' 
     }).addTo(map);
 }
 

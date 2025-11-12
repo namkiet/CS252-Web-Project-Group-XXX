@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const mealButtonTemplate = document.getElementById('meal-button-template');
     const mealDropdownTemplate = document.getElementById('meal-dropdown-template');
     const footerTemplateElement = document.getElementById('sidebar-footer-template');
+    const sidebarWrapper =document.getElementById('sidebar-wrapper');
+    const mealListWrapper = document.getElementById('meal-list-wrapper');
+    const toggleOpenPanelBtn = document.getElementById('toggle-open-panel-btn');
 
     // -------------------------- DROP DOWN ----------------------------
     // let dropdownElement = null;
@@ -125,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function addMealAbove(index) {
-        if (isAddingNewMeal()) return;
+        // if (isAddingNewMeal()) return;
         
         if (index === null || index === undefined) return;
         const insertIndex = index;
@@ -138,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function addMealBelow(index) {
-        if (isAddingNewMeal()) return;
+        // if (isAddingNewMeal()) return;
 
         if (index === null || index === undefined) return;
         const insertIndex = index + 1;
@@ -337,14 +340,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const completedItem = completed;
             selectedMealIndex = (selectedMealIndex === clickedIndex) ? null : clickedIndex;
 
+            if ((selectedMealIndex !== null && mealListWrapper.style.display !== 'flex') || (selectedMealIndex === null && mealListWrapper.style.display !== 'none') ){
+                ChangePosOfToggleOpenPanelBtn();
+            }
+
             if (selectedMealIndex === pendingEditIndex) {
                 pendingEditIndex = null;
+                mealListWrapper.style.display = 'none';
             }
 
             closeDropdown();
             renderSchedule();
-            
-            getMeals(mealScheduleList[clickedIndex].name);
+            if (selectedMealIndex !== null){
+                getMeals(mealScheduleList[clickedIndex].name);
+            }
         }
     });
 
@@ -361,10 +370,46 @@ document.addEventListener('DOMContentLoaded', function() {
             renderSchedule();
         }
     });
+    
+    //---------------------------BUTTON TOGGLE MEAL AND SCHEDULE PANEL---------------
+    function ChangePosOfToggleOpenPanelBtn(){
+        if (toggleOpenPanelBtn.classList.contains('toggle-open-panel-btn-1panel')) {
+            toggleOpenPanelBtn.classList.remove('toggle-open-panel-btn-1panel');
+        } else {
+            toggleOpenPanelBtn.classList.add('toggle-open-panel-btn-1panel');
+        }
+    }
+    toggleOpenPanelBtn.addEventListener('click', function(e){
+        const icon = toggleOpenPanelBtn.querySelector("i");
+        if (icon.classList.contains("bi-chevron-double-right")) {
+            icon.className = "bi bi-chevron-double-left";
+        } else {
+            icon.className = "bi bi-chevron-double-right";
+        }
+
+        if (toggleOpenPanelBtn.classList.contains('toggle-open-panel-btn-close')) {
+            toggleOpenPanelBtn.classList.remove('toggle-open-panel-btn-close');
+            sidebarWrapper.style.removeProperty('display');
+            if (!toggleOpenPanelBtn.classList.contains('toggle-open-panel-btn-1panel')){
+                mealListWrapper.style.display = 'flex';
+            }
+        } else {
+            toggleOpenPanelBtn.classList.add('toggle-open-panel-btn-close');
+            mealListWrapper.style.display = 'none';
+            sidebarWrapper.style.display = 'none';
+        }
+    });
+    // --------------------------MEAL LIST----------------------------------
+    const mealCloseButton = document.getElementById('meal-close-button') ;
+
+    mealCloseButton.addEventListener('click',function(e) {
+        mealListWrapper.style.display = 'none';
+        ChangePosOfToggleOpenPanelBtn();
+        if(selectedMealIndex) selectedMealIndex = null ;
+    })
 
     // ----------------------------MAP AND INPUT LOCATION-------------------------
     initializeMap();
-
     const searchContainer = document.getElementById('location-search-container')
     const backdrop = document.getElementById('location-backdrop')
     const locationInput = document.getElementById('location-input')
