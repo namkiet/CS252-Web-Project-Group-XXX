@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('auth_bp.static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<main>
+  <div>
+        <h1> Login</h1>
+    </div>
+    <br>
+    <div class="container">
+        <form method="POST" class="form-register">
+            {{ form.hidden_tag() }}
+            <div>{{ form.username.label }} {{form.username(class="form-control", placeholder="Username")}}</div>
+            <div>{{ form.password.label }} {{ form.password(class="form-control", placeholder="Password") }}</div>
+            <div class="text-center"> {{ form.submit(class="btn btn-primary") }}</div>
+        </form>
+
+        <div>
+          <h6>Do not have an account?</h6>
+          <a href="{{url_for('auth_bp.register')}}">Register</a>
+        </div>
+    </div>
+</main>
+{% endblock %}

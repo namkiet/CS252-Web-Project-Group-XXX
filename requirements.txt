@@ -6,11 +6,11 @@ flask_bcrypt
 flask_sqlalchemy
 flask_migrate
 gunicorn
-cssmin
-rjsmin
 flask_dance
+flask_wtf
 google
 google.genai
+werkzeug.securit
 
 # Library from AI Developer
 openai
