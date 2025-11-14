@@ -5,9 +5,10 @@ flask_login
 flask_bcrypt
 flask_sqlalchemy
 flask_migrate
+flask_jwt_extended
+authlib
 gunicorn
 flask_dance
-flask_wtf
 google
 google.genai
 werkzeug.securit

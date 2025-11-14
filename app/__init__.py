@@ -1,24 +1,29 @@
-import os
-from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask import Flask
 from flask_cors import CORS
-from dotenv import load_dotenv
 
-db = SQLAlchemy()
+from .extensions import db, migrate, jwt, oauth
+from .config import Config
 
-load_dotenv()
-SECRET_KEY = os.environ.get("SECRET_KEY")
-
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
     CORS(app)
-    # app.secret_key = 'keyff'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./DB.db'
-    app.config['SECRET_KEY'] = SECRET_KEY
-    app.config.setdefault("ENV", "development") 
-    app.config.setdefault("DEBUG", True)
+
+    app.config.from_object(config_class)
     
+    # db.init_app(app)
+    migrate.init_app(app, db)
+    jwt.init_app(app)
+    oauth.init_app(app)
+    
+    from . import extensions
+    extensions.google = oauth.register(
+        name="google",
+        client_id=app.config["GOOGLE_CLIENT_ID"],
+        client_secret=app.config["GOOGLE_CLIENT_SECRET"],
+        access_token_url="https://oauth2.googleapis.com/token",
+        authorize_url="https://accounts.google.com/o/oauth2/auth",
+        client_kwargs={"scope": "openid email profile"},
+    )
     
     from .home import bp as home_bp
     app.register_blueprint(home_bp)
@@ -29,14 +34,4 @@ def create_app():
     from .auth import bp as auth_bp
     app.register_blueprint(auth_bp)
 
-
-    db.init_app(app)
-    migrate = Migrate(app, db)
-
-    @app.route('/base')
-    def base():
-        return render_template('base.html')
-
     return app
-
-# e3c54974636c6da3457d5d4c
