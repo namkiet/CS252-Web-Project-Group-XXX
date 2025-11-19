@@ -1,15 +1,12 @@
 from openai import OpenAI
 import pandas as pd 
 import numpy as np
-from dotenv import load_dotenv
-load_dotenv()
-client = OpenAI()
+from Backend.AI.Embedder.localEmbedManager import local_embeded_Manager
+from Backend.AI.Embedder.GPTEmbeder import GPTEmberder
+embeder = local_embeded_Manager()
 
 def embed_text(text, model ="text-embedding-3-small"):
-    return client.embeddings.create(
-        model=model,
-        input=text
-    ).data[0].embedding
+    return embeder.embed_text(text)
 
 def cosine(a, b):
     a, b = np.array(a), np.array(b)

@@ -1,6 +1,6 @@
 from openai import OpenAI
 import pandas as pd
-
+import ollama
 def generate_food_dataset(n=10):
     system = f"""
     Generate a JSON list of {n} Vietnamese specialty food, focus on snack like ice cream
@@ -117,3 +117,43 @@ def generate_dual_rag_queries(query: str, model = "gpt-5-mini"):
     except json.JSONDecodeError:
         print("Model return non-JSON, please try again")
         return []
+def generate_dual_rag_queries_O(query):
+    systemPrompt = (
+        "You are a retrieval assistant that divided query into two part Positive and Negative prompt"
+        "Two queries combine together must cover all the meaning of original query"
+    )
+    
+    userPrompt = (
+        f"Given user prompt in either english or vietnamese, your job is to identify the Positive and Negative prompt\n"
+        f"Focus on type of food, location, time, taste, additional description\n"
+        f"response ONLY in format json as below with no aditional text\n\n"
+        '{"queries": [Positive Query, Negative Query]}\n'
+        'Example User Query: món gì ở Hà Nội cũng được ngoại trừ bún'
+        'Example output: {"queries": [Ở Hà Nội, Không bún]}\n'
+        f"User prompt: {query}"
+    )
+    client = OpenAI()
+    response = ollama.chat(
+        model="qwen2.5:3b",
+        messages=[
+            {"role": "user", "content": userPrompt}
+        ],
+    )
+
+
+    import json
+    raw_content = response.message.content
+    print("raw content:", raw_content)
+    try:
+        data = json.loads(raw_content)
+        if isinstance(data, dict) and "queries" in data:
+            return data["queries"]
+        elif isinstance(data, list):
+            return data
+        elif isinstance(data, dict) and "result" in data:
+            return data["result"]
+        else:
+            raise ValueError(f"Unexpected JSON format generate by LLM: \n{data}")
+    except json.JSONDecodeError:
+        print("Model return non-JSON, please try again")
+        return generate_dual_rag_queries_O(query)

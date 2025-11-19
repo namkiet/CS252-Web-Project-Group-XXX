@@ -12,6 +12,9 @@ data = pd.read_csv("data/vietnam_local_foods.csv")
 with open("prompt.txt", "r") as f:
     prompt = f.read()
 
+prompt = "Món ở Đà Năng có gà nhưng không có bún"
+
+
 AI_manager = AI_Manager(data=data)
 # data = AI_manager.search(prompt, 50, 50, RAG_combine_mode="Meaning", Rerank_mode="reason")
 
@@ -30,12 +33,13 @@ AI_manager = AI_Manager(data=data)
 
 # end_time = time.time()
 # print(f"Execution time: {end_time - start_time:.2f} seconds")
-
+#AI_manager.create_embedding()
+print("Successfully load model")
 data = AI_manager.dual_search(prompt, 10, Rerank_mode="reason")
 
 print(data.head(10))
 out_path = Path("data/LastestSearchResult.csv")
-mainFeatures = data[["Name", "reason", "match_score"]]
+mainFeatures = data[["Name"]]
 mainFeatures.to_csv(
     out_path,
     mode="w", 
