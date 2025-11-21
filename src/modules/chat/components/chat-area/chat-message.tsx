@@ -1,5 +1,5 @@
 import { Bot, User } from 'lucide-react'
-import type { Message, FoodItem } from '../types'
+import type { Message, FoodItem } from '../../types'
 import { FoodRecommendationCard } from './food-rec-card'
 
 interface ChatMessageProps {

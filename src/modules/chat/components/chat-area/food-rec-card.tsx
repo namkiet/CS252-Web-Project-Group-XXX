@@ -1,6 +1,6 @@
 import { MapPin, Star, Plus, Check } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
-import type { FoodItem } from '../types'
+import type { FoodItem } from '../../types'
 
 interface FoodCardProps {
   item: FoodItem,
