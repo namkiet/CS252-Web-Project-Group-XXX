@@ -1,17 +1,20 @@
 # Library from Frontend
 flask
 flask_cors
-flask_login
-flask_bcrypt
+
 flask_sqlalchemy
 flask_migrate
 flask_jwt_extended
-authlib
+
 gunicorn
-flask_dance
 google
 google.genai
-werkzeug.securit
+
+
+supabase
+vecs
+postgrest
+gotrue
 
 # Library from AI Developer
 openai
