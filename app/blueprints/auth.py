@@ -7,10 +7,13 @@ supabase = get_db()
 
 @auth_bp.route('/login', methods = ['POST'])
 def login():
-    data = request.json()
+    data = request.get_json()
     
     email = data.get('email')
     password = data.get('password')
+    
+    if not email or not password:
+        return jsonify({"error" : "Invalid Input"}), 400
     
     try:
         response = supabase.auth.sign_in_with_password({
@@ -28,16 +31,19 @@ def login():
             }
         }), 200
     except AuthApiError:
-        return jsonify({"error" : "Wrong password or email" })
+        return jsonify({"error" : "Wrong password or email" }), 401
     except Exception as e:
         return jsonify({"error" : str(e)}), 500
 
 @auth_bp.route('/signup', methods = ['POST'])
 def signup():
-    data = request.json()
+    data = request.get_json()
     email = data.get('email')
     password = data.get('password')
     full_name = data.get('full_name', '')
+    
+    if not email or not password or not full_name:
+        return jsonify({"error" : "Invalid Input"}), 400
     
     try:
         response = supabase.auth.sign_up({
@@ -54,19 +60,24 @@ def signup():
         return jsonify({
             "message" : "Signup Successful",
             "user": {"id": response.user.id, "email": response.user.email},
-            "token": response.session.access_token
+            "token": response.session.access_token,
+            "require_email_confirm": False
         }), 201
         
     except AuthApiError:
-        return jsonify({"error" : "Wrong password or email" })
+        return jsonify({"error" : "Wrong password or email" }), 400
     except Exception as e:
         return jsonify({"error" : str(e)}), 500
 
 @auth_bp.route('/logout', methods = ['POST'])
 def logout():
-    token = request.headers.get('Authorization', '').replace('Bearer', '')
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    
+    if not token:
+        return jsonify({"error" : "Token missing"}), 400
+    
     try:
-        supabase.auth.sign_out(token)
+        supabase.auth.sign_out()
         return jsonify({"message" : "Logout successful"}), 200
     except Exception as e:
         return jsonify({"error" : str(e)}), 500

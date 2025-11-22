@@ -1,6 +1,6 @@
 import os
 from supabase import create_client, Client
-from config import Config
+from app.config import Config
 
 url: str = Config.SUPABASE_URL
 key: str = Config.SUPABASE_KEY
