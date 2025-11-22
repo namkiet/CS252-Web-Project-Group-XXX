@@ -1,6 +1,6 @@
 import { Bot, User } from 'lucide-react'
 import type { Message, FoodItem } from '../../types'
-import { FoodRecommendationCard } from './food-rec-card'
+import { FoodRecommendationCard } from './food-card/food-rec-card'
 
 interface ChatMessageProps {
   message: Message;
@@ -27,8 +27,8 @@ export function ChatMessage({ message, currentSchedule, onAddToSchedule }: ChatM
       </div>
 
       {isAi && message.type === 'recommendation' && message.data && (
-        <div className="pl-11 w-full overflow-x-auto pb-4 pt-2">
-          <div className="flex gap-4 w-max px-1">
+        <div className="pl-11 w-full max-w-2xl pt-2">
+          <div className="flex flex-col gap-3">
             {message.data.map((place) => {
               const isAdded = currentSchedule.some(i => i.id === place.id);
               

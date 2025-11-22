@@ -2,6 +2,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { Button } from '@/shared/components/ui/button'
 import { ChevronDown } from 'lucide-react'
 
+import logoImage from '@/assets/images/logo.png'
+
 import {
   HoverCard,
   HoverCardContent,
@@ -24,8 +26,12 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 flex h-18 items-center justify-between bg-white px-8 shadow-md font-navbar">
-      <Link to="/" className="text-3xl font-bold text-orange-500">
-        Local Food
+      <Link to="/" className="flex items-center">
+        <img 
+          src={logoImage} 
+          alt="Local Food Logo" 
+          className="h-22 w-auto object-contain"
+        />
       </Link>
 
       {/* Link and Login Button */}

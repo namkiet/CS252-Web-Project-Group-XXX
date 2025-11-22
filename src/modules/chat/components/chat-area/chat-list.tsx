@@ -14,7 +14,6 @@ interface ChatListProps {
 export function ChatList({ messages, schedule, isLoading, onAddToSchedule }: ChatListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Tự động cuộn xuống khi có tin nhắn mới
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isLoading]);

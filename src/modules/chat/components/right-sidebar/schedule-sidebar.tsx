@@ -10,7 +10,7 @@ import {
 } from "@/shared/components/ui/sidebar"
 
 import { Button } from "@/shared/components/ui/button"
-import type { FoodItem } from '../../types'
+import type { FoodItem } from "../../types"
 
 interface ScheduleSidebarProps extends React.ComponentProps<typeof Sidebar> {
   scheduleItems: FoodItem[];

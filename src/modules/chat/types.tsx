@@ -5,6 +5,9 @@ export type FoodItem = {
   description: string;
   address: string;
   rating: number;
+  cuisine?: string;
+  priceRange?: string;
+  openTime?: string;
 };
 
 export type Message = {
