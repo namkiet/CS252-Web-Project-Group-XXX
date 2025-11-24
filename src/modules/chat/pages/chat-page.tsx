@@ -10,14 +10,17 @@ import { useChat } from '../hooks/use-chat' // hooks
 
 export default function ChatPage() {
   const {
-    messages,
     inputValue,
     setInputValue,
     schedule,
     isLoading,
+    currentIdChat,
+    chatStore,
     handleAddToSchedule,
     handleRemoveFromSchedule,
-    handleSendMessage
+    handleSendMessage,
+    addConversation,
+    setCurrentIdChat
   } = useChat();
 
   // --- RENDER ---
@@ -27,16 +30,19 @@ export default function ChatPage() {
       className="w-full overflow-hidden flex bg-white"
     >
       {/* Left Sidebar */}
-      <SidebarLeft />
+      <SidebarLeft 
+        chatStore={chatStore}
+        setCurrentIdChat={setCurrentIdChat}
+        addConversation={addConversation}/>
       
       {/* Main Chat Area */}
       <SidebarInset className="h-full flex flex-col flex-1 overflow-hidden">
-        <ChatHeader />
+        <ChatHeader title = {chatStore[currentIdChat].title}/>
 
         <div className="flex flex-1 flex-col min-h-0 relative bg-white">
           {/* List Message */}
           <ChatList 
-            messages={messages}
+            conversation={chatStore[currentIdChat]}
             schedule={schedule}
             isLoading={isLoading}
             onAddToSchedule={handleAddToSchedule}

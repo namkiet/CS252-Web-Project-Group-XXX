@@ -16,3 +16,8 @@ export type Message = {
   content: string;
   data?: FoodItem[];
 };
+
+export type Conversation = {
+  messages: Message[];
+  title: string ;
+};

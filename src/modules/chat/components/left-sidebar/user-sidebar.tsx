@@ -16,6 +16,8 @@ import {
   SidebarRail,
 } from "@/shared/components/ui/sidebar"
 
+import type { Conversation } from '../../types'
+
 // This is sample data.
 const data = {
   navMain: [
@@ -43,30 +45,28 @@ const data = {
       icon: MessageCircleQuestion,
     },
   ],
-  history: [
-    {
-      name: "Project Management & Task Tracking",
-      url: "#",
-      emoji: "📊",
-    },
-    {
-      name: "Family Recipe Collection & Meal Planning",
-      url: "#",
-      emoji: "🍳",
-    },
-  ],
 }
+type SidebarLeftProps = {
+  chatStore: Conversation[];
+  setCurrentIdChat: (id: number) => void;
+  addConversation: () => void;
+} & React.ComponentProps<typeof Sidebar>;
 
-export function SidebarLeft({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
+export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation }: SidebarLeftProps) {
+
+  const historyItems = chatStore.map((c, index) => ({
+    name: c.title || `Conversation ${index + 1}`,
+    id : index,
+    url: "#",
+    emoji: "💬",
+  }));
   return (
-    <Sidebar className="border-r-0" {...props}>
+    <Sidebar className="border-r-0" >
       <SidebarHeader>
         <NavMain items={data.navMain} />
       </SidebarHeader>
       <SidebarContent>
-        <NavHistory history={data.history}>Chat history</NavHistory>
+        <NavHistory history={historyItems} setCurrentIdChat={setCurrentIdChat} addConversation={addConversation}></NavHistory>
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarRail />

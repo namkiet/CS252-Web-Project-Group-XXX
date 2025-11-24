@@ -2,29 +2,29 @@ import { useEffect, useRef } from 'react'
 import { Bot } from 'lucide-react'
 import { ChatMessage } from './chat-message'
 import { ChatEmptyState } from './chat-empty-state'
-import type { Message, FoodItem } from '../../types'
+import type { FoodItem, Conversation } from '../../types'
 
 interface ChatListProps {
-  messages: Message[];
+  conversation: Conversation;
   schedule: FoodItem[];
   isLoading: boolean;
   onAddToSchedule: (item: FoodItem) => void;
 }
 
-export function ChatList({ messages, schedule, isLoading, onAddToSchedule }: ChatListProps) {
+export function ChatList({ conversation, schedule, isLoading, onAddToSchedule }: ChatListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages, isLoading]);
+  }, [conversation, isLoading]);
 
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
-      {messages.length === 0 ? (
+      {conversation.messages.length === 0 ? (
         <ChatEmptyState />
       ) : (
         <div className="p-4 space-y-6 pb-32">
-          {messages.map((msg, index) => (
+          {conversation.messages.map((msg, index) => (
             <ChatMessage
               key={index}
               message={msg}

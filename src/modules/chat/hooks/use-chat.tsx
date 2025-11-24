@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { sendMessageToAI } from '../data/chat-service' // Check lại đường dẫn service của bạn
-import type { FoodItem, Message } from '../types'
+import type { FoodItem, Message, Conversation } from '../types'
 
 export function useChat() {
   // --- STATE ---
-  const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
   const [schedule, setSchedule] = useState<FoodItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [chatStore, setChatStore] = useState<Conversation[]>([
+    { messages: [] , title: "start" }
+  ]);
+  const [currentIdChat, setCurrentIdChat] = useState<number>(0);
 
   // --- LOGIC SCHEDULE ---
   const handleAddToSchedule = (item: FoodItem) => {
@@ -21,18 +24,39 @@ export function useChat() {
   }
 
   // --- LOGIC SEND MESSAGE ---
+  const addMessageToCurrentChat = (msg: Message) => {
+    setChatStore(prev => 
+      prev.map((chat, index) =>
+        index === currentIdChat
+          ? { ...chat, messages: [...chat.messages, msg] }
+          : chat
+      )
+    );
+  };
+
+  const addConversation = () => {
+    setChatStore(prev => [
+      ...prev,
+      {
+        id: prev.length-1,       
+        title: `Conversation ${prev.length}`, 
+        messages: []           
+      }
+    ]);
+  };
+
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
     
     const userMsg: Message = { role: 'user', type: 'chat', content: inputValue };
-    setMessages(prev => [...prev, userMsg]);
+    addMessageToCurrentChat(userMsg);
     setInputValue('');
     setIsLoading(true);
 
     try {
       // Call Service
       const aiResponse = await sendMessageToAI(userMsg.content);
-      setMessages(prev => [...prev, aiResponse]);
+      addMessageToCurrentChat(aiResponse);
     } catch (error) {
       console.error("Lỗi:", error);
     } finally {
@@ -42,13 +66,16 @@ export function useChat() {
 
   // Return all for UI in chat-page
   return {
-    messages,
     inputValue,
     setInputValue,
     schedule,
     isLoading,
+    currentIdChat,
+    chatStore,
     handleAddToSchedule,
     handleRemoveFromSchedule,
-    handleSendMessage
+    handleSendMessage,
+    addConversation,
+    setCurrentIdChat
   }
 }
