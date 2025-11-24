@@ -1,4 +1,4 @@
-from Backend.AI.Loader.ModelLoader import loadEmbedding, embedText
+from Backend.AI.RankerSystem.Loader.ModelLoader import loadEmbedding, embedText
 
 class local_embeded_Manager:
     def __init__(self, model_name = "all-MiniLM-L6-v2"):

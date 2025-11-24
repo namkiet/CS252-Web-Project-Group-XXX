@@ -1,5 +1,5 @@
-from Backend.AI.Reranker.Utility import rerank_withReason, rerank, rerank_withSimilarity
-from Backend.AI.Reranker.Component.GPT import GPTRerank
+from Backend.AI.RankerSystem.Reranker.Utility import rerank_withReason, rerank, rerank_withSimilarity
+from Backend.AI.RankerSystem.Reranker.Component.GPT import GPTRerank
 
 class RerankManager:
     def __init__(self):

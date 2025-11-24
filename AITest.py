@@ -1,52 +1,14 @@
-import time
-import pandas as pd 
-from dotenv import load_dotenv
-from Backend.AI.AI_Manager import AI_Manager
-from pathlib import Path
+from Backend.AI.CoreRoot.RootController import RootControllerAgent
+from Backend.AI.AgentList.Ollama import OllamaLocalModel
+from Backend.AI.AgentList.Test import DeepseekFinder
+payload = {
+    "message": "Dựa trên prompt: Tôi muốn ăn bún nhưng không muốn ăn phở. Món nào sau đây là tốt nhất : Phở Bò, Bún Bò Huế, Cơm Sườn"
+}
 
-start_time = time.time()
+router = OllamaLocalModel("qwen2.5:1.5b")
+root = RootControllerAgent(router)
 
-load_dotenv()
-data = pd.read_csv("data/vietnam_local_foods.csv")
+DeepseekF = DeepseekFinder()
+root.register_agent(DeepseekF)
 
-with open("prompt.txt", "r") as f:
-    prompt = f.read()
-
-prompt = "Món ở Đà Năng có gà nhưng không có bún"
-
-
-AI_manager = AI_Manager(data=data)
-# data = AI_manager.search(prompt, 50, 50, RAG_combine_mode="Meaning", Rerank_mode="reason")
-
-# print(data.head(15))
-
-# out_path = Path("data/LastestSearchResult.csv")
-# mainFeatures = data[["Name", "reason", "match_score"]]
-# mainFeatures.to_csv(
-#     out_path,
-#     mode="w", 
-#     header=True,
-#     index=False,
-#     encoding="utf-8-sig",
-#     lineterminator="\n"
-# )
-
-# end_time = time.time()
-# print(f"Execution time: {end_time - start_time:.2f} seconds")
-#AI_manager.create_embedding()
-print("Successfully load model")
-data = AI_manager.dual_search(prompt, 10, Rerank_mode="reason")
-
-print(data.head(10))
-out_path = Path("data/LastestSearchResult.csv")
-mainFeatures = data[["Name"]]
-mainFeatures.to_csv(
-    out_path,
-    mode="w", 
-    header=True,
-    index=False,
-    encoding="utf-8-sig",
-    lineterminator="\n"
-)
-
-print(data)
+print(root.handle(payload)["output"])

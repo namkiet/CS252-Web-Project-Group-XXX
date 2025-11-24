@@ -1,7 +1,7 @@
-from Backend.AI.Embedder.embeddingManager import EmbeddingManager
-from Backend.AI.DataGeneratePack.genUtility import generate_food_dataset, generate_rag_queries, generate_dual_rag_queries
-from Backend.AI.Reranker.rerankManager import RerankManager
-from Backend.AI.AIType.GPTModel import GPTModel
+from Backend.AI.RankerSystem.Embedder.embeddingManager import EmbeddingManager
+from Backend.AI.RankerSystem.DataGeneratePack.genUtility import generate_food_dataset, generate_rag_queries, generate_dual_rag_queries
+from Backend.AI.RankerSystem.Reranker.rerankManager import RerankManager
+from Backend.AI.RankerSystem.AIType.GPTModel import GPTModel
 from dotenv import load_dotenv
 load_dotenv()
 

@@ -1,4 +1,4 @@
-from Backend.AI.Reranker.Utility import rerank_withReason, rerank, rerank_withSimilarity
+from Backend.AI.RankerSystem.Reranker.Utility import rerank_withReason, rerank, rerank_withSimilarity
 
 
 class GPTRerank:
