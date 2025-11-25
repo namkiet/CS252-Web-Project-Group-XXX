@@ -43,11 +43,11 @@ export function Navbar() {
           <Link to="/chat" className={getLinkClass('/chat')}>
             Food Tour
           </Link>
-          <Link to="/" className={getLinkClass('/staff')}>
-            Staff
+          <Link to="/food-guide" className={getLinkClass('/food-guide')}>
+            Food Guide
           </Link>
-          <Link to="/" className={getLinkClass('/about')}>
-            About Us
+          <Link to="/staff" className={getLinkClass('/staff')}>
+            Staff
           </Link>
           <HoverCard>
             <HoverCardTrigger asChild>
