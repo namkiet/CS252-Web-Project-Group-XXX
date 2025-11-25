@@ -78,7 +78,7 @@ export function Navbar() {
             text-[var(--color-brand)]
             hover:bg-[var(--color-brand)]/10
             ">
-            <Link to="#">Log in</Link>
+            <Link to="/login">Log in</Link>
           </Button>
         </div>
       </div>

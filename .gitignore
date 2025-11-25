@@ -1,3 +1,9 @@
+localfood/
+env/
+.env
+venv/
+.vscode/
+*.pyc
 # Logs
 logs
 *.log
