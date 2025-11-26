@@ -22,7 +22,7 @@ interface ErrorResponse {
   error: string;
 }
 
-const API_URL = '/auth';
+const API_URL = '/api/auth';
 
 export const authService = {
   

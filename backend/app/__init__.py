@@ -12,7 +12,7 @@ def create_app(config_class=Config):
     from app.blueprints.chat import chat_bp
     from app.blueprints.history import history_bp
     
-    app.register_blueprint(auth_bp, url_prefix = '/auth')
-    app.register_blueprint(chat_bp, url_prefix = '/chat')
-    app.register_blueprint(history_bp, url_prefix = '/history')
+    app.register_blueprint(auth_bp, url_prefix = '/api/auth')
+    app.register_blueprint(chat_bp, url_prefix = '/api/chat')
+    app.register_blueprint(history_bp, url_prefix = '/api/history')
     return app
