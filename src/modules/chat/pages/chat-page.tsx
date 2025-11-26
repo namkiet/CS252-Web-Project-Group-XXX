@@ -20,7 +20,13 @@ export default function ChatPage() {
     handleRemoveFromSchedule,
     handleSendMessage,
     addConversation,
-    setCurrentIdChat
+    setCurrentIdChat,
+    onAddDay,
+    onAddInDay,
+    scheduleItemSelected,
+    setScheduleItemSelected,
+    foodCardSelected,
+    setFoodCardSelected
   } = useChat();
 
   // --- RENDER ---
@@ -46,6 +52,8 @@ export default function ChatPage() {
             schedule={schedule}
             isLoading={isLoading}
             onAddToSchedule={handleAddToSchedule}
+            foodCardSelected={foodCardSelected}
+            setFoodCardSelected={setFoodCardSelected}  
           />
 
           {/* Input */}
@@ -61,8 +69,14 @@ export default function ChatPage() {
       {/* Right Sidebar */}
       <ScheduleSidebar
         className="hidden lg:flex h-full border-l w-80 bg-white shrink-0"
-        scheduleItems={schedule} 
+        schedule={schedule} 
         onRemoveItem={handleRemoveFromSchedule}
+        onAddDay={onAddDay}
+        onAddInDay={onAddInDay}
+        scheduleItemSelected={scheduleItemSelected}
+        setScheduleItemSelected={setScheduleItemSelected}
+        foodCardSelected={foodCardSelected}
+        setFoodCardSelected={setFoodCardSelected}  
       />
     </SidebarProvider>
   )

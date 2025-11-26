@@ -21,3 +21,14 @@ export type Conversation = {
   messages: Message[];
   title: string ;
 };
+
+export type ScheduleItem = {
+  activity: string;
+  day: number;
+  food?: FoodItem | null;
+}
+
+export type ScheduleDay = {
+  day: number ;
+  scheduleInDay: ScheduleItem[];
+}

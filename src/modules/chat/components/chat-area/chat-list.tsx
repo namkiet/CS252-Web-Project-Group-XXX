@@ -2,16 +2,18 @@ import { useEffect, useRef } from 'react'
 import { Bot } from 'lucide-react'
 import { ChatMessage } from './chat-message'
 import { ChatEmptyState } from './chat-empty-state'
-import type { FoodItem, Conversation } from '../../types'
+import type { FoodItem, Conversation, ScheduleDay } from '../../types'
 
 interface ChatListProps {
   conversation: Conversation;
-  schedule: FoodItem[];
+  schedule: ScheduleDay[];
   isLoading: boolean;
-  onAddToSchedule: (item: FoodItem) => void;
+  onAddToSchedule: (item: FoodItem ,  ) => void;
+  foodCardSelected: FoodItem | null ;
+  setFoodCardSelected: (item: FoodItem | null) => void ;
 }
 
-export function ChatList({ conversation, schedule, isLoading, onAddToSchedule }: ChatListProps) {
+export function ChatList({ conversation, schedule, isLoading, onAddToSchedule, foodCardSelected,setFoodCardSelected  }: ChatListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -30,6 +32,8 @@ export function ChatList({ conversation, schedule, isLoading, onAddToSchedule }:
               message={msg}
               currentSchedule={schedule}
               onAddToSchedule={onAddToSchedule}
+              foodCardSelected={foodCardSelected}
+              setFoodCardSelected={setFoodCardSelected}
             />
           ))}
 
