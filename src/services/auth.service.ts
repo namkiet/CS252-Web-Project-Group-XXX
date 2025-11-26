@@ -1,10 +1,10 @@
-// Định nghĩa các kiểu dữ liệu (Interfaces) để code an toàn hơn
 export interface User {
   id: string;
   email: string;
   full_name?: string;
 }
 
+// The form backend response for login and signup
 interface LoginResponse {
   message: string;
   access_token: string;
@@ -25,8 +25,7 @@ interface ErrorResponse {
 const API_URL = '/api/auth';
 
 export const authService = {
-  
-  // LOGIN
+  // LogIn
   login: async (email: string, password: string): Promise<LoginResponse> => {
     try {
       const response = await fetch(`${API_URL}/login`, {
@@ -40,7 +39,7 @@ export const authService = {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error((data as ErrorResponse).error || 'Đăng nhập thất bại');
+        throw new Error((data as ErrorResponse).error || 'Sign-in failed');
       }
 
       // Store Token and User into LocalStorage
@@ -55,7 +54,7 @@ export const authService = {
     }
   },
 
-  // SIGN UP
+  // SignUp
   signup: async (email: string, password: string, fullName: string): Promise<SignupResponse> => {
     try {
       const response = await fetch(`${API_URL}/signup`, {
@@ -73,7 +72,7 @@ export const authService = {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error((data as ErrorResponse).error || 'Đăng ký thất bại');
+        throw new Error((data as ErrorResponse).error || 'Sign-up failed');
       }
 
       if (data.token) {
@@ -89,21 +88,21 @@ export const authService = {
     }
   },
 
-  // LOG OUT
+  // LogOut
   logout: async () => {
     const token = localStorage.getItem('token');
     
     if (token) {
-        try {
-            await fetch(`${API_URL}/logout`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-        } catch (err) {
-            console.error("Lỗi khi gọi API logout:", err);
-        }
+      try {
+        await fetch(`${API_URL}/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      } catch (err) {
+        console.error("Error when call API logout:", err);
+      }
     }
 
     localStorage.removeItem('token');
