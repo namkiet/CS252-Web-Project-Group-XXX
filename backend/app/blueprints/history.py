@@ -13,7 +13,7 @@ def get_sessions_sidebar():
     user = request.current_user
 
     try:
-        sessions = history_service.get_user_sessions(user['id'])
+        sessions = history_service.get_user_sessions(user.id)
         response = {
             "status" : "success",
             "data" : sessions

@@ -18,6 +18,7 @@ export type Message = {
 };
 
 export type Conversation = {
+  id: string ;
   messages: Message[];
   title: string ;
 };

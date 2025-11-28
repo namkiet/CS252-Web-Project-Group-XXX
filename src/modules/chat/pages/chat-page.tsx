@@ -7,6 +7,7 @@ import { ChatList } from '../components/chat-area/chat-list'
 import { ChatInput } from '../components/chat-area/chat-input'
 
 import { useChat } from '../hooks/use-chat' // hooks
+import { useEffect } from 'react';
 
 export default function ChatPage() {
   const {
@@ -26,9 +27,14 @@ export default function ChatPage() {
     scheduleItemSelected,
     setScheduleItemSelected,
     foodCardSelected,
-    setFoodCardSelected
+    setFoodCardSelected,
+    FirstLoadInfo
   } = useChat();
 
+  useEffect(() => {
+    FirstLoadInfo();  
+    console.log("fstloadinfo")
+  }, [])
   // --- RENDER ---
   return (
     <SidebarProvider
@@ -43,7 +49,11 @@ export default function ChatPage() {
       
       {/* Main Chat Area */}
       <SidebarInset className="h-full flex flex-col flex-1 overflow-hidden">
-        <ChatHeader title = {chatStore[currentIdChat].title}/>
+        <ChatHeader title={
+          chatStore.length === 0 
+            ? "" 
+            : chatStore[currentIdChat].title 
+        }/>
 
         <div className="flex flex-1 flex-col min-h-0 relative bg-white">
           {/* List Message */}

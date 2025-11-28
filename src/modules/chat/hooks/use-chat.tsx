@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { sendMessageToAI } from '../data/chat-service' // Check lại đường dẫn service của bạn
 import type { FoodItem, Message, Conversation, ScheduleDay, ScheduleItem } from '../types'
 
+import { hisService } from '@/services/history.service';
+
 export function useChat() {
   // --- STATE ---
   const [inputValue, setInputValue] = useState('')
@@ -12,14 +14,70 @@ export function useChat() {
     }
   ]);
   const [isLoading, setIsLoading] = useState(false)
-  const [chatStore, setChatStore] = useState<Conversation[]>([
-    { messages: [] , title: "start" }
-  ]);
+  const [chatStore, setChatStore] = useState<Conversation[]>([  ]);
   const [currentIdChat, setCurrentIdChat] = useState<number>(0);
   const [scheduleItemSelected, setScheduleItemSelected] = useState<ScheduleItem|null>(null)
   const [foodCardSelected, setFoodCardSelected] = useState<FoodItem | null>(null);
+  const [fstLoadInfo, setFstLoadInfo] = useState< Boolean>(false)
 
   // --- LOGIC SCHEDULE ---
+
+ const FirstLoadInfo = async () => {
+    if (fstLoadInfo) return;
+    setFstLoadInfo(true);
+
+    const data = await hisService.sidebarHistory();
+    if (!data || data.status !== "success") return;
+
+    const conversations: Conversation[] = data.data.map((item: any) => ({
+      id: item.id,
+      title: item.title || "New Conversation",
+      messages: [],
+    }));
+
+    for (const conv of conversations) {
+      const sessionId = conv.id;
+
+      const data2 = await hisService.chatHistory(sessionId);
+      if (!data2 || data2.status !== "success") continue;
+
+      const msgs = data2.messages || [];
+
+      const parsedMessages: Message[] = msgs.map((m: any) => {
+        const baseMessage: Message = {
+          role: m.message.role === "assistant" ? "ai" : "user",
+          type: "chat",
+          content: m.message.content,
+        };
+
+        if (m.widget && m.widget.type === "recommendation") {
+          return {
+            role: "ai",
+            type: "recommendation",
+            content: m.message.content,
+            data: m.widget.payload.map((item: any) => ({
+              id: crypto.randomUUID(),
+              name: item.restaurant_name,
+              image: "", 
+              description: item.desc,
+              address: "",
+              rating: Number(item.star),
+              cuisine: item.dish_name,
+              priceRange: "",
+              openTime: "",
+            })),
+          };
+        }
+
+        return baseMessage;
+      });
+
+      conv.messages = parsedMessages;
+    }
+
+    setChatStore(conversations);
+  };
+
 
  const onAddDay = (insertAtIndex: number = -1) => {
   setSchedule(prev => {
@@ -182,7 +240,7 @@ export function useChat() {
     setChatStore(prev => [
       ...prev,
       {
-        id: prev.length-1,       
+        id: "",       
         title: `Conversation ${prev.length}`, 
         messages: []           
       }
@@ -226,7 +284,8 @@ export function useChat() {
     scheduleItemSelected,
     setScheduleItemSelected,
     foodCardSelected,
-    setFoodCardSelected
+    setFoodCardSelected,
+    FirstLoadInfo
 
   }
 }
