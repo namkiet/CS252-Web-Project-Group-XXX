@@ -13,7 +13,7 @@ def get_sessions_sidebar():
     user = request.current_user
 
     try:
-        sessions = history_service.get_user_sessions(user['id'])
+        sessions = history_service.get_user_sessions(user.id)
         response = {
             "status" : "success",
             "data" : sessions
@@ -64,7 +64,6 @@ def get_history_messages(session_id):
             "session_id" : session_id,
             "messages" : messages
         }
-        
         return jsonify(response), 200
     except Exception as e:
         print(f"Error: {e}")
