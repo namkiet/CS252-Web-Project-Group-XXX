@@ -1,5 +1,5 @@
 from openai import OpenAI
-from Backend.Ultility.json import extract_json
+from Ultility.json import extract_json
 import pandas as pd 
 
 client = OpenAI()

@@ -1,4 +1,4 @@
-from Backend.app.agents.BaseAgent import BaseAgent
+from app.agents.BaseAgent import BaseAgent
 class DefaultAgent(BaseAgent):
     def __init__(self, CoreModel) -> None:
         super().__init__(
@@ -18,4 +18,4 @@ class DefaultAgent(BaseAgent):
             Keep the answer short and general, DO NOT go specific.
             user prompt : {message}
         """
-        return {"output" : self.model(message)}
+        return {"output" :{ "message": self.model(message)}}

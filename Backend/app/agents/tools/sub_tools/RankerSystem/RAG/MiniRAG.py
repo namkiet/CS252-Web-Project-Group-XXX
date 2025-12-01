@@ -5,7 +5,7 @@ import pickle
 import warnings
 from openai import OpenAI
 from pathlib import Path
-from Backend.app.agents.tools.sub_tools.RankerSystem.Embedder.embedUtility import cosine, embed_text
+from app.agents.tools.sub_tools.RankerSystem.Embedder.embedUtility import cosine, embed_text
 class EmbeddingManager:
     def __init__(self, data=None, out_path=None, Warning = True,embed_path="data/embedding.pkl", model="text-embedding-3-small"):
         # Provide at least data or out_path in order to run, else Value Error raised

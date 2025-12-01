@@ -1,7 +1,7 @@
-from Backend.app.agents.tools.sub_tools.RankerSystem.Embedder.embeddingManager import EmbeddingManager
-from Backend.app.agents.tools.sub_tools.RankerSystem.DataGeneratePack.genUtility import generate_food_dataset, generate_rag_queries, generate_dual_rag_queries, generate_dual_rag_queries_O
-from Backend.app.agents.tools.sub_tools.RankerSystem.Reranker.rerankManager import RerankManager
-from Backend.app.agents.tools.sub_tools.RankerSystem.AIType.Base import AIModel
+from app.agents.tools.sub_tools.RankerSystem.Embedder.embeddingManager import EmbeddingManager
+from app.agents.tools.sub_tools.RankerSystem.DataGeneratePack.genUtility import generate_food_dataset, generate_rag_queries, generate_dual_rag_queries, generate_dual_rag_queries_O
+from app.agents.tools.sub_tools.RankerSystem.Reranker.rerankManager import RerankManager
+from app.agents.tools.sub_tools.RankerSystem.AIType.Base import AIModel
 from dotenv import load_dotenv
 load_dotenv()
 

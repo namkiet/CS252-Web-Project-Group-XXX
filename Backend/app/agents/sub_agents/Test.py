@@ -1,4 +1,4 @@
-from Backend.app.agents.BaseAgent import BaseAgent
+from app.agents.BaseAgent import BaseAgent
 class DeepseekFinder(BaseAgent):
     def __init__(self) -> None:
         super().__init__(
@@ -8,4 +8,5 @@ class DeepseekFinder(BaseAgent):
 
     def run(self, payload: dict) -> dict:
         # Model need query
-        return {"output": "1 + 1 = 2"}
+        return {"output":
+                 {"message":"Deepseek has different kind of meaning, but consider in your case, deepseek is something that can be found deep into the research."}}
