@@ -1,4 +1,4 @@
-from Backend.AI.RankerSystem.DataGeneratePack.genUtility import generate_food_dataset
+from Backend.app.agents.tools.sub_tools.RankerSystem.DataGeneratePack.genUtility import generate_food_dataset
 from dotenv import load_dotenv
 import pandas as pd 
 from pathlib import Path

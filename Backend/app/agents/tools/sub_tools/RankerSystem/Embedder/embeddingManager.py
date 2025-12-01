@@ -5,7 +5,7 @@ import pickle
 import warnings
 from openai import OpenAI
 from pathlib import Path
-from Backend.AI.RankerSystem.Embedder.embedUtility import cosine, embed_text
+from Backend.app.agents.tools.sub_tools.RankerSystem.Embedder.embedUtility import cosine, embed_text
 class EmbeddingManager:
     def __init__(self, data=None, out_path=None, Warning = True,embed_path="data/embedding.pkl", model="text-embedding-3-small"):
         # Provide at least data or out_path in order to run, else Value Error raised
@@ -15,20 +15,19 @@ class EmbeddingManager:
         self.__embed_path = Path(embed_path)
         self.__data = pd.DataFrame()
         self.Warning = Warning 
-
         if out_path:
             self.__data = pd.read_csv(out_path)
             
         elif isinstance(data, pd.DataFrame):
             self.__data = data.copy()
         else:
-            raise ValueError("Ebedding manager need data or out_path that can be used, please provide at least one")
+            raise ValueError("Ebedding manager need __data or out_path that can be used, please provide at least one")
         if self.__embed_path.exists():
             try:
                 with open(self.__embed_path, "rb") as f:
                     self.__data["embedding"] = pickle.load(f)
             except:
-                warnings.warn("WARNING: Mismatch type, could be data change? please use create_embedding() method BEFORE using the search method")
+                warnings.warn("WARNING: Mismatch type, could be __data change? please use create_embedding() method BEFORE using the search method")
         else:
             self.__data["embedding"] = None
 

@@ -1,5 +1,5 @@
-from Backend.AI.CoreRoot.BaseAgent import BaseAgent
-from Backend.AI.AgentList.Default import DefaultAgent
+from Backend.app.agents.BaseAgent import BaseAgent
+from Backend.app.agents.sub_agents.Default import DefaultAgent
 
 class RootControllerAgent:
     def __init__(self, router_model = None):

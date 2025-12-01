@@ -1,4 +1,4 @@
-from Backend.AI.CoreRoot.BaseAgent import BaseAgent
+from Backend.app.agents.BaseAgent import BaseAgent
 class DefaultAgent(BaseAgent):
     def __init__(self, CoreModel) -> None:
         super().__init__(

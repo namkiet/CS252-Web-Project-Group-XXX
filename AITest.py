@@ -1,6 +1,6 @@
-from Backend.AI.CoreRoot.RootController import RootControllerAgent
-from Backend.AI.AgentList.Ollama import OllamaLocalModel
-from Backend.AI.AgentList.Test import DeepseekFinder
+from Backend.app.agents.supervisor import RootControllerAgent
+from Backend.app.agents.tools.Ollama import OllamaLocalModel
+from Backend.app.agents.sub_agents.Test import DeepseekFinder
 payload = {
     "message": "Dựa trên prompt: Tôi muốn ăn bún nhưng không muốn ăn phở. Món nào sau đây là tốt nhất : Phở Bò, Bún Bò Huế, Cơm Sườn"
 }
