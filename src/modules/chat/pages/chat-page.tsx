@@ -28,7 +28,9 @@ export default function ChatPage() {
     setScheduleItemSelected,
     foodCardSelected,
     setFoodCardSelected,
-    FirstLoadInfo
+    FirstLoadInfo,
+    isScheduleSidebarOpen,
+    toggleScheduleSidebar
   } = useChat();
 
   useEffect(() => {
@@ -49,11 +51,15 @@ export default function ChatPage() {
       
       {/* Main Chat Area */}
       <SidebarInset className="h-full flex flex-col flex-1 overflow-hidden">
-        <ChatHeader title={
-          chatStore.length === 0 
-            ? "" 
-            : chatStore[currentIdChat].title 
-        }/>
+        <ChatHeader 
+          title={
+            chatStore.length === 0 
+              ? "" 
+              : chatStore[currentIdChat].title 
+          }
+          isScheduleSidebarOpen={isScheduleSidebarOpen}
+          onToggleScheduleSidebar={toggleScheduleSidebar}
+        />
 
         <div className="flex flex-1 flex-col min-h-0 relative bg-white">
           {/* List Message */}
@@ -77,17 +83,23 @@ export default function ChatPage() {
       </SidebarInset>
 
       {/* Right Sidebar */}
-      <ScheduleSidebar
-        className="hidden lg:flex h-full border-l w-80 bg-white shrink-0"
-        schedule={schedule} 
-        onRemoveItem={handleRemoveFromSchedule}
-        onAddDay={onAddDay}
-        onAddInDay={onAddInDay}
-        scheduleItemSelected={scheduleItemSelected}
-        setScheduleItemSelected={setScheduleItemSelected}
-        foodCardSelected={foodCardSelected}
-        setFoodCardSelected={setFoodCardSelected}  
-      />
+      <div className={`hidden lg:block transition-all duration-300 ease-in-out transform ${
+        isScheduleSidebarOpen 
+          ? 'translate-x-0 w-80' 
+          : 'translate-x-full w-0'
+      }`}>
+        <ScheduleSidebar
+          className="h-full border-l w-80 bg-white shrink-0"
+          schedule={schedule} 
+          onRemoveItem={handleRemoveFromSchedule}
+          onAddDay={onAddDay}
+          onAddInDay={onAddInDay}
+          scheduleItemSelected={scheduleItemSelected}
+          setScheduleItemSelected={setScheduleItemSelected}
+          foodCardSelected={foodCardSelected}
+          setFoodCardSelected={setFoodCardSelected}  
+        />
+      </div>
     </SidebarProvider>
   )
 }

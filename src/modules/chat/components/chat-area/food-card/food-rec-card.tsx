@@ -2,6 +2,8 @@ import { MapPin, DollarSign, Clock,Plus, Check } from 'lucide-react'
 import { ImageWithFallback } from "../../../../../shared/components/ui/image-with-fallback";
 import { StarRating } from "./star-rating";
 import type { FoodItem } from '../../../types'
+import phoImage from '@/assets/images/street-food.jpg'
+
 
 interface FoodCardProps {
   item: FoodItem,
@@ -21,7 +23,7 @@ export function FoodRecommendationCard({ item, isAdded, onToggle }: FoodCardProp
     ">
       <div className="relative w-44 h-full flex-shrink-0 overflow-hidden">
         <ImageWithFallback
-          src={item.image}
+          src={item.image?.trim() ? item.image : phoImage}
           alt={item.name}
           className="
             w-full h-full object-cover

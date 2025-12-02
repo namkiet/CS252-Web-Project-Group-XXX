@@ -1,12 +1,10 @@
 "use client"
 
 import {
-  ArrowUpRight,
   Link,
   MoreHorizontal,
-  StarOff,
+  Star,
   Trash2,
-  PlusCircle,
   MessageSquare
 } from "lucide-react"
 
@@ -21,7 +19,6 @@ type NavHistoryProps = {
   history: HistoryItem[];
   children?: React.ReactNode;
   setCurrentIdChat: (id: number) => void;
-  addConversation: () => void;
 };
 
 import {
@@ -33,7 +30,6 @@ import {
 } from "@/shared/components/ui/dropdown-menu"
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
@@ -41,20 +37,13 @@ import {
   useSidebar,
 } from "@/shared/components/ui/sidebar"
 
-function NavHistory({ history,setCurrentIdChat,addConversation, children } : NavHistoryProps) {  const { isMobile } = useSidebar()
+function NavHistory({ history,setCurrentIdChat } : NavHistoryProps) {  const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>{children}</SidebarGroupLabel>
-      {/* New Chat */}
-      <SidebarMenuItem>
-        <SidebarMenuButton onClick={addConversation}>
-          <span><PlusCircle className="w-5 h-5" /></span>
-          <span>Add New Chat</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
+      
 
-      <div className="px-2 py-2 text-xs font-medium text-muted-foreground">
+      <div className="px-2 pt-0 py-2 text-xs font-medium text-muted-foreground">
        Chat history
       </div>
 
@@ -81,17 +70,13 @@ function NavHistory({ history,setCurrentIdChat,addConversation, children } : Nav
                 align={isMobile ? "end" : "start"}
               >
                 <DropdownMenuItem>
-                  <StarOff className="text-muted-foreground" />
-                  <span>Remove from Favorites</span>
+                  <Star className="text-muted-foreground" />
+                  <span>Favorites</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Link className="text-muted-foreground" />
-                  <span>Copy Link</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <ArrowUpRight className="text-muted-foreground" />
-                  <span>Open in New Tab</span>
+                  <span>Rename</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -102,12 +87,6 @@ function NavHistory({ history,setCurrentIdChat,addConversation, children } : Nav
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
-        <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   );

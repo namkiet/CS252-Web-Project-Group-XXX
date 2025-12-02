@@ -3,7 +3,6 @@ import {
   Home,
   MessageCircleQuestion,
   Settings,
-  Sparkles,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main.tsx"
@@ -13,7 +12,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  SidebarRail,
 } from "@/shared/components/ui/sidebar"
 
 import type { Conversation } from '../../types'
@@ -21,11 +19,6 @@ import type { Conversation } from '../../types'
 // This is sample data.
 const data = {
   navMain: [
-    {
-      title: "Ask AI",
-      url: "#",
-      icon: Sparkles,
-    },
     {
       title: "Home",
       url: "#",
@@ -63,13 +56,12 @@ export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation }: Si
   return (
     <Sidebar className="border-r-0" >
       <SidebarHeader>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} addConversation={addConversation} />
       </SidebarHeader>
       <SidebarContent>
-        <NavHistory history={historyItems} setCurrentIdChat={setCurrentIdChat} addConversation={addConversation}></NavHistory>
+        <NavHistory history={historyItems} setCurrentIdChat={setCurrentIdChat} ></NavHistory>
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   )
 }

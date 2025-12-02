@@ -34,7 +34,18 @@ class ChatHistoryService:
     
     # for sidebar history
     def get_user_sessions(self, user_id):
+        print(f"[DEBUG] Current user_id = {user_id}")
         try: 
+            all_sessions = (
+                self.supabase.table('chat_sessions')
+                .select('id, user_id')
+                .order('created_at', desc=True)
+                .execute()
+            )
+
+            print("[DEBUG] All sessions in DB:")
+            for s in all_sessions.data:
+                print(f" - session_id: {s.get('id')}, user_id: {s.get('user_id')}")
             response = (
                 self.supabase.table('chat_sessions')
                 .select('*')

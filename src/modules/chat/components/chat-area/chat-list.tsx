@@ -22,7 +22,7 @@ export function ChatList({ conversation, schedule, isLoading, onAddToSchedule, f
 
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
-      {!conversation || !conversation.id ? (
+      {!conversation ? (
         <ChatEmptyState />
       ) : conversation.messages.length === 0 ? (
         <ChatEmptyState />

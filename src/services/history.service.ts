@@ -31,7 +31,7 @@ export const hisService = {
         });
 
         const data = await response.json();
-      
+        // console.log("SidebarHistory API Response:", data);
         if (!response.ok) {
         throw new Error(data.error || 'Sessions failed');
         }
@@ -64,6 +64,7 @@ export const hisService = {
       });
 
       const data = await response.json();
+      // console.log(`ChatHistory API Response (session ${session_id}):`, data); // 
 
       if (!response.ok) {
         throw new Error(data.error || 'Chat history of Sessions failed');

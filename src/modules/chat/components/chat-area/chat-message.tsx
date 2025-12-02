@@ -32,12 +32,12 @@ export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCar
         <div className="pl-11 w-full max-w-2xl pt-2">
           <div className="flex flex-col gap-4">
             {message.data.map((place) => {
-              // Kiểm tra món đã được thêm chưa
+              // Check whether this item added
               const isAdded = currentSchedule.some(day =>
                 day.scheduleInDay.some(i => i.food?.id === place.id)
               );
 
-              // Kiểm tra card này có đang được kéo không
+              // Check whether this card ploging and pluging
               const isDragging = foodCardSelected?.id === place.id;
 
               return (

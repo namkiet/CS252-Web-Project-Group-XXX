@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { sendMessageToAI } from '../data/chat-service' // Check lại đường dẫn service của bạn
+// import { sendMessageToAI } from '../data/chat-service' // Check lại đường dẫn service của bạn
+import { chatService } from "../../../services/chat.service";
 import type { FoodItem, Message, Conversation, ScheduleDay, ScheduleItem } from '../types'
+import { flushSync } from 'react-dom';
 
 import { hisService } from '@/services/history.service';
 
@@ -19,6 +21,7 @@ export function useChat() {
   const [scheduleItemSelected, setScheduleItemSelected] = useState<ScheduleItem|null>(null)
   const [foodCardSelected, setFoodCardSelected] = useState<FoodItem | null>(null);
   const [fstLoadInfo, setFstLoadInfo] = useState< Boolean>(false)
+  const [isScheduleSidebarOpen, setIsScheduleSidebarOpen] = useState<boolean>(true)
 
   // --- LOGIC SCHEDULE ---
 
@@ -221,50 +224,121 @@ export function useChat() {
     setScheduleItemSelected(null);
   };
 
+  const toggleScheduleSidebar = () => {
+    setIsScheduleSidebarOpen(prev => !prev);
+  };
+
   const handleRemoveFromSchedule = (id: string) => {
     // setSchedule(schedule.filter(item => item.id !== id))
   }
 
   // --- LOGIC SEND MESSAGE ---
   const addMessageToCurrentChat = (msg: Message) => {
-    setChatStore(prev => 
-      prev.map((chat, index) =>
+    console.log("before send message id",chatStore[currentIdChat].id)
+    console.log("Messages before update:", chatStore[currentIdChat].messages);
+    setChatStore(prev => {
+      const newState = prev.map((chat, index) =>
         index === currentIdChat
           ? { ...chat, messages: [...chat.messages, msg] }
           : chat
-      )
-    );
+      );
+      console.log("after send message newState id",newState[currentIdChat].id)
+      console.log("Messages after newState update:", newState[currentIdChat].messages);
+      return newState;
+    });
+    console.log("after send message id",chatStore[currentIdChat].id)
+    console.log("Messages after update:", chatStore[currentIdChat].messages);
   };
 
+
   const addConversation = () => {
-    setChatStore(prev => [
-      ...prev,
-      {
-        id: "",       
-        title: `Conversation ${prev.length}`, 
-        messages: []           
-      }
-    ]);
+    setChatStore(prev => {
+      const newState = [
+        ...prev,
+        {
+          id: "",
+          title: `Conversation ${prev.length}`,
+          messages: []
+        }
+      ];
+
+      // console.log("All messages after adding:");
+      newState.forEach((conv, i) => {
+        console.log(`Conversation ${i} messages:`, conv.messages);
+      });
+
+      return newState;
+    });
   };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
-    
-    const userMsg: Message = { role: 'user', type: 'chat', content: inputValue };
+
+    const userMessageContent = inputValue.trim();
+
+    // 1. Show user message instantly
+    const userMsg: Message = {
+      role: 'user',
+      type: 'chat',
+      content: userMessageContent,
+      data: undefined,
+    };
     addMessageToCurrentChat(userMsg);
+
     setInputValue('');
     setIsLoading(true);
-
     try {
-      // Call Service
-      const aiResponse = await sendMessageToAI(userMsg.content);
-      addMessageToCurrentChat(aiResponse);
-    } catch (error) {
-      console.error("Lỗi:", error);
+      // console.log("Before setter the new id" , chatStore[currentIdChat].id)
+      // 2. Determine if we are inside an existing valid chat session
+      let sessionIdToSend: string | undefined = undefined;
+
+      sessionIdToSend = chatStore[currentIdChat].id;
+
+      // 3. Send message to backend
+      const aiResponse = await chatService.sendText(
+        userMessageContent,
+        sessionIdToSend               // undefined if new chat, string if continuing
+        // location not available yet → omitted
+      );
+
+      // 4. Build AI message according to your exact Message type
+      const aiMsg: Message = {
+        role: 'ai',
+        type: aiResponse.widget.type,           // "chat" or "recommendation"
+        content: aiResponse.message.content,
+        data: aiResponse.widget.payload,        // null or FoodItem[] (already enriched)
+      };
+
+      // 5. Add AI response to UI
+      addMessageToCurrentChat(aiMsg);
+      // 6. If this was a brand-new conversation → save the session_id returned by backend
+      if (!sessionIdToSend && aiResponse.session_id) {
+        flushSync(() => {
+          setChatStore(prevChatStore =>
+            prevChatStore.map((item, index) =>
+              index === currentIdChat
+                ? { ...item, id: aiResponse.session_id }  
+                : item
+            )
+          );
+        });
+      }
+
+    } catch (error: any) {
+      console.error('Failed to send message:', error);
+
+      const errorMsg: Message = {
+        role: 'ai',
+        type: 'chat',
+        content: 'Xin lỗi, mình đang gặp lỗi. Vui lòng thử lại sau ít phút nhé',
+        data: undefined,
+      };
+      addMessageToCurrentChat(errorMsg);
     } finally {
       setIsLoading(false);
     }
-  }
+    // console.log("After setter the new id" , chatStore[currentIdChat].id)
+  };
 
   // Return all for UI in chat-page
   return {
@@ -285,7 +359,9 @@ export function useChat() {
     setScheduleItemSelected,
     foodCardSelected,
     setFoodCardSelected,
-    FirstLoadInfo
+    FirstLoadInfo,
+    isScheduleSidebarOpen,
+    toggleScheduleSidebar
 
   }
 }
