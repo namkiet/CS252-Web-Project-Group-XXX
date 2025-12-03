@@ -6,11 +6,12 @@ interface ChatMessageProps {
   message: Message;
   currentSchedule: ScheduleDay[];
   onAddToSchedule: (item: FoodItem) => void;
-  foodCardSelected: FoodItem | null ;
-  setFoodCardSelected: (item: FoodItem | null) => void ;
+  foodCardSelected: FoodItem | null;
+  setFoodCardSelected: (item: FoodItem | null) => void;
+  onShowMap: (item: FoodItem) => void;
 }
 
-export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCardSelected,setFoodCardSelected }: ChatMessageProps) {
+export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCardSelected, setFoodCardSelected, onShowMap }: ChatMessageProps) {
   const isAi = message.role === 'ai';
 
   return (
@@ -32,12 +33,12 @@ export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCar
         <div className="pl-11 w-full max-w-2xl pt-2">
           <div className="flex flex-col gap-4">
             {message.data.map((place) => {
-              // Kiểm tra món đã được thêm chưa
+              // Check if this card is added
               const isAdded = currentSchedule.some(day =>
                 day.scheduleInDay.some(i => i.food?.id === place.id)
               );
 
-              // Kiểm tra card này có đang được kéo không
+              // Check if this card is Dragging
               const isDragging = foodCardSelected?.id === place.id;
 
               return (
@@ -65,6 +66,7 @@ export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCar
                     item={place}
                     isAdded={isAdded}
                     onToggle={() => onAddToSchedule(place)}
+                    onShowMap={onShowMap}
                   />
                 </div>
               )

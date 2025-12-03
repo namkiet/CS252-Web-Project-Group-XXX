@@ -8,6 +8,10 @@ export type FoodItem = {
   cuisine?: string;
   priceRange?: string;
   openTime?: string;
+  coordinates?: { 
+    lat: number; 
+    lng: number; 
+  };
 };
 
 export type Message = {
@@ -23,6 +27,7 @@ export type Conversation = {
 };
 
 export type ScheduleItem = {
+  id?: string;
   activity: string;
   day: number;
   food?: FoodItem | null;

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { sendMessageToAI } from '../data/chat-service' // Check lại đường dẫn service của bạn
 import type { FoodItem, Message, Conversation, ScheduleDay, ScheduleItem } from '../types'
+import { getLocationsFromDay } from '../utils/map-helpers'
 
 export function useChat() {
   // --- STATE ---
@@ -95,6 +96,7 @@ export function useChat() {
       if (!prev.some(d => d.day === targetDay)) return prev;
 
       const newItem: ScheduleItem = {
+        id: crypto.randomUUID(),
         activity,
         day: targetDay,
         food: food ?? undefined
@@ -144,6 +146,7 @@ export function useChat() {
       }
 
       const newItem: ScheduleItem = {
+        id: crypto.randomUUID(),
         activity: "",
         day: dayToAdd,
         food: foodItem
@@ -163,9 +166,44 @@ export function useChat() {
     setScheduleItemSelected(null);
   };
 
-  const handleRemoveFromSchedule = (id: string) => {
-    // setSchedule(schedule.filter(item => item.id !== id))
+  const handleRemoveFromSchedule = (idToRemove: string) => {
+    if (!idToRemove) return;
+    
+    setSchedule((prevSchedule) => {
+      return prevSchedule.map((day) => ({
+        ...day,
+        scheduleInDay: day.scheduleInDay.filter((item) => {
+          const currentId = item.id || item.food?.id;
+          return currentId !== idToRemove;
+        }),
+      }));
+    });
   }
+
+  const handleRemoveDay = (dayToRemove: number) => {
+    setSchedule((prev) => {
+      const filteredSchedule = prev.filter((d) => d.day !== dayToRemove);
+
+      const reindexedSchedule = filteredSchedule.map((day, index) => ({
+        ...day,
+        day: index + 1,
+        scheduleInDay: day.scheduleInDay.map((item) => ({
+          ...item,
+          day: index + 1,
+        })),
+      }));
+
+      return reindexedSchedule;
+    });
+  };
+
+  const handleOpenDayMap = (daySchedule: ScheduleDay) => {
+    const locations = getLocationsFromDay(daySchedule);
+
+    if(locations.length > 0) {
+      
+    }
+  };
 
   // --- LOGIC SEND MESSAGE ---
   const addMessageToCurrentChat = (msg: Message) => {
@@ -226,7 +264,8 @@ export function useChat() {
     scheduleItemSelected,
     setScheduleItemSelected,
     foodCardSelected,
-    setFoodCardSelected
-
+    setFoodCardSelected,
+    handleRemoveDay,
+    handleOpenDayMap
   }
 }

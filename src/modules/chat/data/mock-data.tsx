@@ -10,7 +10,11 @@ export const MOCK_FOOD_ITEMS: FoodItem[] = [
     rating: 4.8,
     image: phoImage,
     cuisine: 'Viet Nam',
-    openTime: "Open until 11 PM"
+    openTime: "Open until 11 PM",
+    coordinates: {
+      lat: 21.018487,
+      lng: 105.855278
+    }
   },
   {
     id: '2',
@@ -20,7 +24,11 @@ export const MOCK_FOOD_ITEMS: FoodItem[] = [
     rating: 4.7,
     image: phoImage,
     cuisine: 'Ha Noi',
-    openTime: "Open until 9 PM"
+    openTime: "Open until 9 PM",
+    coordinates: {
+      lat: 10.799356,
+      lng: 106.674987
+    }
   }
 ];
 

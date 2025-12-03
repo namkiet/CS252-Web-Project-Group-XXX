@@ -1,4 +1,4 @@
-import { Button } from "@/shared/components/ui/button"; // Assuming Shadcn UI or similar for Button
+import { Button } from "@/shared/components/ui/button";
 
 interface ScheduleFooterProps {
   AddDay: () => void;

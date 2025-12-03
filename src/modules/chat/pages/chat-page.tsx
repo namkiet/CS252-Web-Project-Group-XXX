@@ -2,11 +2,15 @@ import { SidebarLeft } from '../components/left-sidebar/user-sidebar'
 import { ScheduleSidebar } from '../components/right-sidebar/schedule-sidebar'
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
 
+// Chat and Map
 import { ChatHeader } from '../components/chat-area/chat-header'
 import { ChatList } from '../components/chat-area/chat-list'
 import { ChatInput } from '../components/chat-area/chat-input'
+import { GlobalMapModal } from '../components/map-area/global-map-modal'
 
-import { useChat } from '../hooks/use-chat' // hooks
+// Hooks
+import { useChat } from '../hooks/use-chat'
+import { useMapModal } from '../hooks/use-map-modal'
 
 export default function ChatPage() {
   const {
@@ -26,8 +30,11 @@ export default function ChatPage() {
     scheduleItemSelected,
     setScheduleItemSelected,
     foodCardSelected,
-    setFoodCardSelected
+    setFoodCardSelected,
+    handleRemoveDay,
   } = useChat();
+  
+  const mapModal = useMapModal();
 
   // --- RENDER ---
   return (
@@ -54,6 +61,7 @@ export default function ChatPage() {
             onAddToSchedule={handleAddToSchedule}
             foodCardSelected={foodCardSelected}
             setFoodCardSelected={setFoodCardSelected}  
+            onShowMap={mapModal.openMap}
           />
 
           {/* Input */}
@@ -76,7 +84,17 @@ export default function ChatPage() {
         scheduleItemSelected={scheduleItemSelected}
         setScheduleItemSelected={setScheduleItemSelected}
         foodCardSelected={foodCardSelected}
-        setFoodCardSelected={setFoodCardSelected}  
+        setFoodCardSelected={setFoodCardSelected}
+        onShowMap={mapModal.openMap}
+        onRemoveDay={handleRemoveDay}
+        onShowDayMap={mapModal.openDayMap}
+      />
+
+      <GlobalMapModal 
+        isOpen={mapModal.isOpen}
+        onClose={mapModal.closeMap}
+        locations={mapModal.locations}
+        title={mapModal.title}
       />
     </SidebarProvider>
   )

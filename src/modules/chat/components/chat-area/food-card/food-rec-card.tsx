@@ -1,4 +1,4 @@
-import { MapPin, DollarSign, Clock,Plus, Check } from 'lucide-react'
+import { MapPin, DollarSign, Clock, Plus, Check, Map as MapIcon } from 'lucide-react'
 import { ImageWithFallback } from "../../../../../shared/components/ui/image-with-fallback";
 import { StarRating } from "./star-rating";
 import type { FoodItem } from '../../../types'
@@ -7,10 +7,10 @@ interface FoodCardProps {
   item: FoodItem,
   isAdded: boolean,
   onToggle: (item: FoodItem) => void;
+  onShowMap?: (item: FoodItem) => void;
 }
 
-// No code for added button yet! Fix after!
-export function FoodRecommendationCard({ item, isAdded, onToggle }: FoodCardProps) {
+export function FoodRecommendationCard({ item, isAdded, onToggle, onShowMap }: FoodCardProps) {
   return (
     <div className="group
       bg-white rounded-xl border border-gray-200
@@ -29,30 +29,11 @@ export function FoodRecommendationCard({ item, isAdded, onToggle }: FoodCardProp
             group-hover:scale-110
           "
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="
+          absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0
+          group-hover:opacity-100 transition-opacity duration-300"
+        />
         
-        <button
-          onClick={(e) => {
-            if(!isAdded){
-              e.stopPropagation();
-              onToggle(item);
-            }
-          }}
-          className={`
-            absolute top-3 right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center
-            shadow-lg transition-all duration-300 transform
-            ${isAdded
-              ? "bg-green-500 text-white hover:bg-green-600 scale-110"
-              : "bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:scale-110"
-            }
-          `}
-        >
-          {isAdded ? (
-            <Check className="w-5 h-5" />
-          ) : (
-            <Plus className="w-5 h-5" />
-          )}
-        </button>
         {item.cuisine && (
           <div className="absolute top-4 left-4">
             <span className="bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs">
@@ -62,7 +43,51 @@ export function FoodRecommendationCard({ item, isAdded, onToggle }: FoodCardProp
         )}
       </div>
       
-      <div className="flex-1 p-3 flex flex-col min-w-0">
+      <div className="flex-1 p-3 flex flex-col min-w-0 relative">
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+          
+          {/* Map Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onShowMap?.(item); 
+            }}
+            className="
+              w-8 h-8 rounded-full flex items-center justify-center
+              bg-gray-50 border border-gray-200 text-gray-500 
+              hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 hover:scale-110 hover:shadow-sm
+              transition-all duration-300
+            "
+            title="See map"
+          >
+            <MapIcon className="w-4 h-4" />
+          </button>
+
+          {/* Add/Check Button */}
+          <button
+            onClick={(e) => {
+              if(!isAdded){
+                e.stopPropagation();
+                onToggle(item);
+              }
+            }}
+            className={`
+              w-8 h-8 rounded-full flex items-center justify-center
+              border transition-all duration-300 transform
+              ${isAdded
+                ? "bg-green-500 border-green-500 text-white hover:bg-green-600 scale-110 shadow-md"
+                : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-white hover:border-blue-400 hover:text-blue-500 hover:scale-110 hover:shadow-sm"
+              }
+            `}
+          >
+            {isAdded ? (
+              <Check className="w-4 h-4" />
+            ) : (
+              <Plus className="w-4 h-4" />
+            )}
+          </button>
+        </div>
+
         <div>
           <div className="flex items-start justify-between mb-3">
             <div>

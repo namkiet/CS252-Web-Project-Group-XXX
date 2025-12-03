@@ -9,11 +9,12 @@ interface ChatListProps {
   schedule: ScheduleDay[];
   isLoading: boolean;
   onAddToSchedule: (item: FoodItem ,  ) => void;
-  foodCardSelected: FoodItem | null ;
-  setFoodCardSelected: (item: FoodItem | null) => void ;
+  foodCardSelected: FoodItem | null;
+  setFoodCardSelected: (item: FoodItem | null) => void;
+  onShowMap: (item: FoodItem) => void;
 }
 
-export function ChatList({ conversation, schedule, isLoading, onAddToSchedule, foodCardSelected,setFoodCardSelected  }: ChatListProps) {
+export function ChatList({ conversation, schedule, isLoading, onAddToSchedule, foodCardSelected, setFoodCardSelected, onShowMap }: ChatListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export function ChatList({ conversation, schedule, isLoading, onAddToSchedule, f
               onAddToSchedule={onAddToSchedule}
               foodCardSelected={foodCardSelected}
               setFoodCardSelected={setFoodCardSelected}
+              onShowMap={onShowMap}
             />
           ))}
 

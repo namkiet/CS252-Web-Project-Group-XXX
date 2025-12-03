@@ -138,3 +138,8 @@
 .animate-gentle-bounce {
   animation: gentle-bounce 2.5s infinite ease-in-out;
 }
+
+.custom-marker-icon {
+  background: transparent !important;
+  border: none !important;
+}
