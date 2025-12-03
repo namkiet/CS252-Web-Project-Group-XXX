@@ -1,9 +1,8 @@
 from flask import Blueprint, request, jsonify
-from app.services.supa_client import get_db
+from app.services.supa_client import get_auth_db, get_db
 from gotrue.errors import AuthApiError
 
 auth_bp = Blueprint('auth', __name__)
-supabase = get_db()
 
 @auth_bp.route('/login', methods = ['POST'])
 def login():
@@ -16,6 +15,8 @@ def login():
         return jsonify({"error" : "Invalid Input"}), 400
     
     try:
+        supabase = get_db()
+
         response = supabase.auth.sign_in_with_password({
             "email" : email,
             "password" : password
@@ -46,6 +47,7 @@ def signup():
         return jsonify({"error" : "Invalid Input"}), 400
     
     try:
+        supabase = get_db()
         response = supabase.auth.sign_up({
             "email" : email,
             "password" : password,
@@ -54,8 +56,11 @@ def signup():
             }
         })
         
-        # if response.user and not response.session:
-        #     return jsonify({})
+        if response.user and not response.session:
+            return jsonify({
+                "message": "Signup successful. Please verify your email.",
+                "require_email_confirm": True
+            }), 201
         
         return jsonify({
             "message" : "Signup Successful",
@@ -77,6 +82,7 @@ def logout():
         return jsonify({"error" : "Token missing"}), 400
     
     try:
+        supabase = get_auth_db()
         supabase.auth.sign_out()
         return jsonify({"message" : "Logout successful"}), 200
     except Exception as e:

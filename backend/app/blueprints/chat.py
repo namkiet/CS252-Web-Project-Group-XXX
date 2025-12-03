@@ -1,27 +1,33 @@
+import html
 from flask import Blueprint, request, jsonify
-from app.services.supa_client import get_db
 
 from app.utils.decorators import token_required
 from app.services.history_service import ChatHistoryService
+from app.services.chat_service import ChatService
 
 chat_bp = Blueprint('chat', __name__)
 
 history_service = ChatHistoryService()
+chat_service = ChatService()
 
 @chat_bp.route('/message', methods = ['POST'])
 @token_required
 def handle_message():
     data = request.get_json()
-    user = request.user
+    user = request.current_user
     
     user_id = user.id
     
     user_message = data.get('message', '')
+    user_message = html.escape(user_message)
+
     session_id = data.get('session_id')
     
-    return 
     if not user_message:
         return jsonify({"error" : "Empty message"}), 400
+    
+    if len(user_message) > 1500:
+        return jsonify({"error" : "Message too long"}), 400
     
     # create new conversation
     if not session_id:
@@ -32,7 +38,7 @@ def handle_message():
         history_service.add_message(session_id, "user", user_message)
         chat_history = history_service.get_history(session_id)
         
-        response = AI(user_message, chat_history)
+        response = chat_service.generate_response(user_message, chat_history)
         
         if not response:
             return jsonify({"error" : "No response"}), 500
@@ -40,15 +46,21 @@ def handle_message():
         history_service.add_message(
             session_id,
             "assistant",
-            response['response'],
+            response['content'],
             metadata = response.get('metadata', {})
         ) 
         
         return jsonify({
+            "status" : "success",
             "session_id": session_id,
-            "message": response['response'],
-            "data": response.get('data'),
-            "metadata": response.get('metadata')
+            "message": {
+                "role" : "assistant",
+                "content" : response['content']            
+            },
+            "widget" : {
+                "type" : response['type'],
+                "payload" : response['payload']
+            }
         }), 200
         
     except Exception as e:
