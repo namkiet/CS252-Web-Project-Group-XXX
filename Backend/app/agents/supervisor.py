@@ -57,7 +57,7 @@ class RootControllerAgent:
             print("Falling back to default agent...")
             agent_name = "default_agent"
             agent = self.agents[agent_name]
-
+        print("I'm calling:", agent_name)
         return agent.run(payload)
     
     def should_continue(self, user_input, agent_output):
