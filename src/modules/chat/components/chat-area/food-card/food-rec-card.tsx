@@ -1,7 +1,9 @@
-import { MapPin, DollarSign, Clock } from 'lucide-react'
+import { MapPin, DollarSign, Clock,Plus, Check } from 'lucide-react'
 import { ImageWithFallback } from "../../../../../shared/components/ui/image-with-fallback";
 import { StarRating } from "./star-rating";
 import type { FoodItem } from '../../../types'
+import phoImage from '@/assets/images/street-food.jpg'
+
 
 interface FoodCardProps {
   item: FoodItem,
@@ -21,7 +23,7 @@ export function FoodRecommendationCard({ item, isAdded, onToggle }: FoodCardProp
     ">
       <div className="relative w-44 h-full flex-shrink-0 overflow-hidden">
         <ImageWithFallback
-          src={item.image}
+          src={item.image?.trim() ? item.image : phoImage}
           alt={item.name}
           className="
             w-full h-full object-cover
@@ -30,6 +32,29 @@ export function FoodRecommendationCard({ item, isAdded, onToggle }: FoodCardProp
           "
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        
+        <button
+          onClick={(e) => {
+            if(!isAdded){
+              e.stopPropagation();
+              onToggle(item);
+            }
+          }}
+          className={`
+            absolute top-3 right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center
+            shadow-lg transition-all duration-300 transform
+            ${isAdded
+              ? "bg-green-500 text-white hover:bg-green-600 scale-110"
+              : "bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:scale-110"
+            }
+          `}
+        >
+          {isAdded ? (
+            <Check className="w-5 h-5" />
+          ) : (
+            <Plus className="w-5 h-5" />
+          )}
+        </button>
         {item.cuisine && (
           <div className="absolute top-4 left-4">
             <span className="bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs">

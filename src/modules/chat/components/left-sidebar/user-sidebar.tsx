@@ -3,7 +3,6 @@ import {
   Home,
   MessageCircleQuestion,
   Settings,
-  Sparkles,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main.tsx"
@@ -13,17 +12,13 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  SidebarRail,
 } from "@/shared/components/ui/sidebar"
+
+import type { Conversation } from '../../types'
 
 // This is sample data.
 const data = {
   navMain: [
-    {
-      title: "Ask AI",
-      url: "#",
-      icon: Sparkles,
-    },
     {
       title: "Home",
       url: "#",
@@ -43,33 +38,30 @@ const data = {
       icon: MessageCircleQuestion,
     },
   ],
-  history: [
-    {
-      name: "Project Management & Task Tracking",
-      url: "#",
-      emoji: "📊",
-    },
-    {
-      name: "Family Recipe Collection & Meal Planning",
-      url: "#",
-      emoji: "🍳",
-    },
-  ],
 }
+type SidebarLeftProps = {
+  chatStore: Conversation[];
+  setCurrentIdChat: (id: number) => void;
+  addConversation: () => void;
+} & React.ComponentProps<typeof Sidebar>;
 
-export function SidebarLeft({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
+export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation }: SidebarLeftProps) {
+
+  const historyItems = chatStore.map((c, index) => ({
+    name: c.title || `Conversation ${index + 1}`,
+    id : index,
+    url: "#",
+    emoji: "💬",
+  }));
   return (
-    <Sidebar className="border-r-0" {...props}>
+    <Sidebar className="border-r-0" >
       <SidebarHeader>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} addConversation={addConversation} />
       </SidebarHeader>
       <SidebarContent>
-        <NavHistory history={data.history}>Chat history</NavHistory>
+        <NavHistory history={historyItems} setCurrentIdChat={setCurrentIdChat} ></NavHistory>
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   )
 }

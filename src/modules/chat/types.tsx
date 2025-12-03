@@ -16,3 +16,20 @@ export type Message = {
   content: string;
   data?: FoodItem[];
 };
+
+export type Conversation = {
+  id: string ;
+  messages: Message[];
+  title: string ;
+};
+
+export type ScheduleItem = {
+  activity: string;
+  day: number;
+  food?: FoodItem | null;
+}
+
+export type ScheduleDay = {
+  day: number ;
+  scheduleInDay: ScheduleItem[];
+}

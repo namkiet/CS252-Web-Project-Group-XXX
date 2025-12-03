@@ -7,19 +7,36 @@ import { ChatList } from '../components/chat-area/chat-list'
 import { ChatInput } from '../components/chat-area/chat-input'
 
 import { useChat } from '../hooks/use-chat' // hooks
+import { useEffect } from 'react';
 
 export default function ChatPage() {
   const {
-    messages,
     inputValue,
     setInputValue,
     schedule,
     isLoading,
+    currentIdChat,
+    chatStore,
     handleAddToSchedule,
     handleRemoveFromSchedule,
-    handleSendMessage
+    handleSendMessage,
+    addConversation,
+    setCurrentIdChat,
+    onAddDay,
+    onAddInDay,
+    scheduleItemSelected,
+    setScheduleItemSelected,
+    foodCardSelected,
+    setFoodCardSelected,
+    FirstLoadInfo,
+    isScheduleSidebarOpen,
+    toggleScheduleSidebar
   } = useChat();
 
+  useEffect(() => {
+    FirstLoadInfo();  
+    console.log("fstloadinfo")
+  }, [])
   // --- RENDER ---
   return (
     <SidebarProvider
@@ -27,19 +44,32 @@ export default function ChatPage() {
       className="w-full overflow-hidden flex bg-white"
     >
       {/* Left Sidebar */}
-      <SidebarLeft />
+      <SidebarLeft 
+        chatStore={chatStore}
+        setCurrentIdChat={setCurrentIdChat}
+        addConversation={addConversation}/>
       
       {/* Main Chat Area */}
       <SidebarInset className="h-full flex flex-col flex-1 overflow-hidden">
-        <ChatHeader />
+        <ChatHeader 
+          title={
+            chatStore.length === 0 
+              ? "" 
+              : chatStore[currentIdChat].title 
+          }
+          isScheduleSidebarOpen={isScheduleSidebarOpen}
+          onToggleScheduleSidebar={toggleScheduleSidebar}
+        />
 
         <div className="flex flex-1 flex-col min-h-0 relative bg-white">
           {/* List Message */}
           <ChatList 
-            messages={messages}
+            conversation={chatStore[currentIdChat]}
             schedule={schedule}
             isLoading={isLoading}
             onAddToSchedule={handleAddToSchedule}
+            foodCardSelected={foodCardSelected}
+            setFoodCardSelected={setFoodCardSelected}  
           />
 
           {/* Input */}
@@ -53,11 +83,23 @@ export default function ChatPage() {
       </SidebarInset>
 
       {/* Right Sidebar */}
-      <ScheduleSidebar
-        className="hidden lg:flex h-full border-l w-80 bg-white shrink-0"
-        scheduleItems={schedule} 
-        onRemoveItem={handleRemoveFromSchedule}
-      />
+      <div className={`hidden lg:block transition-all duration-300 ease-in-out transform ${
+        isScheduleSidebarOpen 
+          ? 'translate-x-0 w-80' 
+          : 'translate-x-full w-0'
+      }`}>
+        <ScheduleSidebar
+          className="h-full border-l w-80 bg-white shrink-0"
+          schedule={schedule} 
+          onRemoveItem={handleRemoveFromSchedule}
+          onAddDay={onAddDay}
+          onAddInDay={onAddInDay}
+          scheduleItemSelected={scheduleItemSelected}
+          setScheduleItemSelected={setScheduleItemSelected}
+          foodCardSelected={foodCardSelected}
+          setFoodCardSelected={setFoodCardSelected}  
+        />
+      </div>
     </SidebarProvider>
   )
 }

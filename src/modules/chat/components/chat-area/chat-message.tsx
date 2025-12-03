@@ -1,14 +1,16 @@
 import { Bot, User } from 'lucide-react'
-import type { Message, FoodItem } from '../../types'
+import type { Message, FoodItem, ScheduleDay } from '../../types'
 import { FoodRecommendationCard } from './food-card/food-rec-card'
 
 interface ChatMessageProps {
   message: Message;
-  currentSchedule: FoodItem[];
+  currentSchedule: ScheduleDay[];
   onAddToSchedule: (item: FoodItem) => void;
+  foodCardSelected: FoodItem | null ;
+  setFoodCardSelected: (item: FoodItem | null) => void ;
 }
 
-export function ChatMessage({ message, currentSchedule, onAddToSchedule }: ChatMessageProps) {
+export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCardSelected,setFoodCardSelected }: ChatMessageProps) {
   const isAi = message.role === 'ai';
 
   return (
@@ -28,17 +30,43 @@ export function ChatMessage({ message, currentSchedule, onAddToSchedule }: ChatM
 
       {isAi && message.type === 'recommendation' && message.data && (
         <div className="pl-11 w-full max-w-2xl pt-2">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {message.data.map((place) => {
-              const isAdded = currentSchedule.some(i => i.id === place.id);
-              
+              // Check whether this item added
+              const isAdded = currentSchedule.some(day =>
+                day.scheduleInDay.some(i => i.food?.id === place.id)
+              );
+
+              // Check whether this card ploging and pluging
+              const isDragging = foodCardSelected?.id === place.id;
+
               return (
-                <FoodRecommendationCard 
+                <div
                   key={place.id}
-                  item={place}
-                  isAdded={isAdded}
-                  onToggle={onAddToSchedule}
-                />
+                  draggable
+                  onDragStart={(e) => {
+                    setFoodCardSelected(place);
+                    e.dataTransfer.setData("foodId", place.id);
+                    e.dataTransfer.effectAllowed = "copy";
+                  }}
+                  onDragEnd={() => {
+                    setTimeout(() => setFoodCardSelected(null), 100);
+                  }}
+                  className={`
+                    cursor-grab active:cursor-grabbing
+                    transition-all duration-300 origin-center
+                    ${isDragging 
+                      ? 'scale-105 rotate-2 shadow-2xl ring-4 ring-blue-400 ring-opacity-60 z-50' 
+                      : 'hover:scale-[1.02] hover:shadow-xl'
+                    }
+                  `}
+                >
+                  <FoodRecommendationCard 
+                    item={place}
+                    isAdded={isAdded}
+                    onToggle={() => onAddToSchedule(place)}
+                  />
+                </div>
               )
             })}
           </div>
