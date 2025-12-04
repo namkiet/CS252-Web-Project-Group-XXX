@@ -73,6 +73,8 @@ class RootControllerAgent:
 
             Decide whether the agent's answer is FINAL or needs ADDITIONAL questions.
             If the agent output ask the user for futher clarification, then consider it is FINAL.
+            Some model may ask for other agentic to run first with keyword "agent". If that happen then continue.
+            If the answer still not answer the user query, continue.
 
             Reply with ONLY one word
             - "continue"
@@ -199,6 +201,7 @@ class RootControllerAgent:
                 f"Agent: {loop_count}"
                 f"Response: {message}"
             )
+            print("full detail:", conversation_history_str)
             extra_payload = output.get("payload", None)
 
             conversation_history.append({
@@ -208,7 +211,7 @@ class RootControllerAgent:
 
             if self.router_model is None:
                 break
-            print("full detail:", conversation_history_str)
+            
             if not self.should_continue(user_input, conversation_history_str):
                 break
 

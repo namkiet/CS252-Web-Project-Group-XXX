@@ -8,8 +8,9 @@ class novaLite:
     def __call__(self, prompt:str, reasoning = True):
         import os
         from dotenv import load_dotenv
-        
+        print(prompt)
         load_dotenv()
+
         api_key = os.environ.get("OPENROUTER_API_KEY")
     
         response = requests.post(
@@ -30,6 +31,7 @@ class novaLite:
         })
         )
         response = response.json()
+        print(response)
         response = response['choices'][0]['message']
         print(response)
         return response['content']
