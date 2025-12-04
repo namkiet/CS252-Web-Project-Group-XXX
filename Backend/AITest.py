@@ -1,13 +1,16 @@
 from app.agents.supervisor import RootControllerAgent
-from app.agents.tools.Ollama import OllamaLocalModel
+from app.agents.tools.sub_tools.Router.Ollama import OllamaLocalModel
 from app.agents.sub_agents.Test import DeepseekFinder
 from app.agents.sub_agents.GeminiFoodFinder import GeminiFoodFinder
+from app.agents.tools.sub_tools.Router.openRouter import novaLite
+from app.agents.tools.PromptCreater import json_to_prompt
 payload = {
     "message": "Xung quanh tôi tại Thành phố Hồ Chí Minh có những quán ăn nào?"
 }
 
 router = OllamaLocalModel("qwen2.5:14b")
-root = RootControllerAgent(router)
+router2 = novaLite()
+root = RootControllerAgent(router2)
 
 DeepseekF = DeepseekFinder()
 FoodFounder = GeminiFoodFinder()

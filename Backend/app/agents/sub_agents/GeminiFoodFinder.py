@@ -3,25 +3,28 @@ class GeminiFoodFinder(BaseAgent):
     def __init__(self) -> None:
         super().__init__(
             "FoodFinder",
-            "This is food finder agent, there are some agent that need to call this first before the it include, the agent may not appear in list: FoodRanker"
+            "This is food finder agent, If there is no food list yet, please call this first!"
         )
 
     def run(self, payload: dict) -> dict:
-        GOOGLE_API_KEY = ""
         from google import genai
         from google.genai import types
         import os
         from dotenv import load_dotenv
 
         load_dotenv()
-        api_key = os.environ.get("API_KEY")
+        api_key = os.environ.get("GOOGLE_API_KEY")
 
 
-        client = genai.Client(api_key=GOOGLE_API_KEY)
-        # I ASSUME THAT YOU ALREADY HAVE THIS IN THE INPUT
+        client = genai.Client(api_key=api_key)
+        # I ASSUME THAT YOU ALREADY HAVE MESSAGE IN THE INPUT
         prompt = payload["message"]
-        lat = payload.get("latitude", None)
-        lng = payload.get("longitude", None)
+        pos = payload.get("position")
+        lat = None
+        lng = None
+        if pos is not None:
+            lat = pos.get("latitude", None)
+            lng = pos.get("longitude", None)
 
         if lat is None:
             location_query = (
@@ -106,6 +109,8 @@ class GeminiFoodFinder(BaseAgent):
                         "url": chunk.maps.uri
                     }
         return {
-            "latitude": lat,
-            "longitude": lng,
+            "position": {
+                "latitude": lat,
+                "longitude": lng,
+            },
             "output" :final_result}

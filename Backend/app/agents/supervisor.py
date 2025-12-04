@@ -1,6 +1,8 @@
 from app.agents.BaseAgent import BaseAgent
 from app.agents.sub_agents.Default import DefaultAgent
+from app.agents.tools.PromptCreater import json_to_prompt
 import json
+
 
 class RootControllerAgent:
     def __init__(self, router_model = None):
@@ -36,7 +38,7 @@ class RootControllerAgent:
         {agents_info}
 
         Replay ONLY in simple name:
-        "chosen_agent_name"
+        chosen_agent_name
         """
 
         
@@ -177,13 +179,13 @@ class RootControllerAgent:
     def handle(self, payload) -> dict:
         if self.router_model is None:
             return self.LLM_Handle(payload)
-        user_input = payload["message"]
+        user_input = json_to_prompt(payload)
         MAX_LOOPs = 5
         loop_count = 0
 
         conversation_history = []
         last_result = None
-
+        conversation_history_str = ""
         while loop_count < MAX_LOOPs:
             loop_count += 1
 
@@ -191,7 +193,12 @@ class RootControllerAgent:
             last_result = agent_result
 
             output = agent_result.get("output", {})
-            message = output.get("message", "")
+            message = json_to_prompt(output)
+            conversation_history_str = (
+                "-------------------"
+                f"Agent: {loop_count}"
+                f"Response: {message}"
+            )
             extra_payload = output.get("payload", None)
 
             conversation_history.append({
@@ -201,8 +208,8 @@ class RootControllerAgent:
 
             if self.router_model is None:
                 break
-
-            if not self.should_continue(user_input, output):
+            print("full detail:", conversation_history_str)
+            if not self.should_continue(user_input, conversation_history_str):
                 break
 
 
