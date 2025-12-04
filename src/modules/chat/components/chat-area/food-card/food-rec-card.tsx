@@ -22,7 +22,7 @@ export function FoodRecommendationCard({ item, isAdded, onToggle, onShowMap }: F
       <div className="relative w-44 h-full flex-shrink-0 overflow-hidden">
         <ImageWithFallback
           src={item.image}
-          alt={item.name}
+          alt={item.restaurant_name}
           className="
             w-full h-full object-cover
             transition-transform duration-700 ease-out
@@ -34,10 +34,10 @@ export function FoodRecommendationCard({ item, isAdded, onToggle, onShowMap }: F
           group-hover:opacity-100 transition-opacity duration-300"
         />
         
-        {item.cuisine && (
+        {item.dish_name && (
           <div className="absolute top-4 left-4">
-            <span className="bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs">
-              {item.cuisine}
+            <span className="bg-orange-100 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-xs font-medium shadow-sm">
+              {item.dish_name}
             </span>
           </div>
         )}
@@ -54,8 +54,9 @@ export function FoodRecommendationCard({ item, isAdded, onToggle, onShowMap }: F
             }}
             className="
               w-8 h-8 rounded-full flex items-center justify-center
-              bg-gray-50 border border-gray-200 text-gray-500 
-              hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 hover:scale-110 hover:shadow-sm
+              bg-orange-50 border border-orange-200 text-orange-500 
+              hover:bg-orange-500 hover:border-orange-500 hover:text-white
+              hover:scale-110 hover:shadow-md
               transition-all duration-300
             "
             title="See map"
@@ -91,32 +92,34 @@ export function FoodRecommendationCard({ item, isAdded, onToggle, onShowMap }: F
         <div>
           <div className="flex items-start justify-between mb-3">
             <div>
-              <h3 className="mb-1 group-hover:text-blue-600 transition-colors">{item.name}</h3>
+              <h3 className="mb-1 font-semibold text-gray-800 group-hover:text-orange-600 transition-colors line-clamp-1">{item.restaurant_name}</h3>
               <div className="flex items-center gap-2">
-                <StarRating rating={item.rating} />
-                <span className="text-sm text-gray-500">({item.rating}/5.0)</span>
+                <StarRating rating={item.star} />
+                <span className="text-sm text-gray-500">({item.star}/5.0)</span>
               </div>
             </div>
-            {item.priceRange && (
-              <div className="flex items-center gap-1 text-gray-700">
-                <DollarSign className="w-4 h-4" />
-                <span className="text-sm">{item.priceRange}</span>
-              </div>
-            )}
           </div>
           
-          <p className="text-gray-600 leading-relaxed mb-3 line-clamp-2">{item.description}</p>
+          <p className="text-gray-600 leading-relaxed mb-3 line-clamp-2">{item.desc}</p>
         </div>
         
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2 text-gray-500">
-            <MapPin className="w-4 h-4 text-blue-500" />
+            <MapPin className="w-4 h-4 text-orange-500 shrink-0" />
             <span>{item.address}</span>
           </div>
+         
           {item.openTime && (
             <div className="flex items-center gap-2 text-gray-500">
               <Clock className="w-4 h-4 text-green-500" />
               <span>{item.openTime}</span>
+            </div>
+          )}
+
+          {item.priceRange && (
+            <div className="ml-auto flex items-center gap-1 text-orange-700 bg-orange-50 px-2 py-1 rounded font-medium border border-orange-200">
+              <DollarSign className="w-3 h-3 text-orange-500" />
+              <span className="text-sm">{item.priceRange}</span>
             </div>
           )}
         </div>

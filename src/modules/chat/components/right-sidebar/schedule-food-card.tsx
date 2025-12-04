@@ -12,8 +12,8 @@ export const ScheduleFoodCard = ({ food, onRemove, onShowMap }: ScheduleFoodCard
     <div className="bg-white p-3 rounded-lg border border-orange-200 shadow-sm hover:border-orange-400 hover:shadow-md transition-all group flex flex-col gap-1.5">
       <div className="flex items-start justify-between gap-2">
         {/* Header (name of food) */}
-        <h4 className="text-sm font-bold text-gray-900 line-clamp-1 flex-1 leading-tight" title={food.name}>
-          {food.name}
+        <h4 className="text-sm font-bold text-gray-900 line-clamp-1 flex-1 leading-tight" title={food.restaurant_name}>
+          {food.restaurant_name}
         </h4>
 
         <div className="flex items-center gap-1 shrink-0">
@@ -61,10 +61,10 @@ export const ScheduleFoodCard = ({ food, onRemove, onShowMap }: ScheduleFoodCard
           </div>
         )}
 
-        {food.rating && (
+        {food.star && (
           <div className="flex items-center gap-1 text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded shrink-0">
             <Star className="w-3 h-3 fill-current" />
-            {food.rating}
+            {food.star}
           </div>
         )}
       </div>

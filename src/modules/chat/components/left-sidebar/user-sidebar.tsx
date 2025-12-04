@@ -48,7 +48,7 @@ const data = {
 }
 type SidebarLeftProps = {
   chatStore: Conversation[];
-  setCurrentIdChat: (id: number) => void;
+  setCurrentIdChat: (id: string) => void;
   addConversation: () => void;
 } & React.ComponentProps<typeof Sidebar>;
 
@@ -56,7 +56,7 @@ export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation }: Si
 
   const historyItems = chatStore.map((c, index) => ({
     name: c.title || `Conversation ${index + 1}`,
-    id : index,
+    id : String(c.id),
     url: "#",
     emoji: "💬",
   }));

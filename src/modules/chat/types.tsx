@@ -1,11 +1,11 @@
 export type FoodItem = {
   id: string;
-  name: string;
+  restaurant_name: string;
   image: string;
-  description: string;
+  desc: string;
   address: string;
-  rating: number;
-  cuisine?: string;
+  star: number;
+  dish_name?: string;
   priceRange?: string;
   openTime?: string;
   coordinates?: { 
@@ -22,6 +22,7 @@ export type Message = {
 };
 
 export type Conversation = {
+  id: string;
   messages: Message[];
   title: string ;
 };

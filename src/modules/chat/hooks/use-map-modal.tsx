@@ -13,10 +13,10 @@ export function useMapModal() {
     const location = convertFoodToLocation(item);
     if (location) {
       setLocations([location]);
-      setTitle(item.name);
+      setTitle(item.restaurant_name);
       setIsOpen(true);
     } else {
-      console.warn("No coordinates for this location: ", item.name);
+      console.warn("No coordinates for this location: ", item.restaurant_name);
     }
   };
 

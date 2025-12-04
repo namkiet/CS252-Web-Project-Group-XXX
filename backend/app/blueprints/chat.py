@@ -3,36 +3,37 @@ from app.services.supa_client import get_db
 
 from app.utils.decorators import token_required
 from app.services.history_service import ChatHistoryService
+from app.services.ai_service import AIService # Test
 
 chat_bp = Blueprint('chat', __name__)
 
 history_service = ChatHistoryService()
+ai_service = AIService()
 
 @chat_bp.route('/message', methods = ['POST'])
 @token_required
 def handle_message():
     data = request.get_json()
-    user = request.user
+    user = request.current_user
     
     user_id = user.id
     
     user_message = data.get('message', '')
     session_id = data.get('session_id')
     
-    return 
     if not user_message:
         return jsonify({"error" : "Empty message"}), 400
     
     # create new conversation
     if not session_id:
-        new_session = history_service.create_session(user.id, title=user_message[:30])
+        new_session = history_service.create_session(user.id, first_message=user_message)
         session_id = new_session['id']
     
     try:
         history_service.add_message(session_id, "user", user_message)
         chat_history = history_service.get_history(session_id)
         
-        response = AI(user_message, chat_history)
+        response = ai_service.process_message(user_message, chat_history) #AI_TEST
         
         if not response:
             return jsonify({"error" : "No response"}), 500

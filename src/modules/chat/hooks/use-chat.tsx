@@ -1,7 +1,11 @@
-import { useState } from 'react'
-import { sendMessageToAI } from '../data/chat-service' // Check lại đường dẫn service của bạn
+import { useEffect, useState } from 'react'
 import type { FoodItem, Message, Conversation, ScheduleDay, ScheduleItem } from '../types'
 import { getLocationsFromDay } from '../utils/map-helpers'
+
+import { historyService } from '@/services/history.service'
+import { sendMessageToAI } from '@/services/chat.service'
+
+const NEW_CHAT_ID = 'new';
 
 export function useChat() {
   // --- STATE ---
@@ -13,58 +17,196 @@ export function useChat() {
     }
   ]);
   const [isLoading, setIsLoading] = useState(false)
-  const [chatStore, setChatStore] = useState<Conversation[]>([
-    { messages: [] , title: "start" }
-  ]);
-  const [currentIdChat, setCurrentIdChat] = useState<number>(0);
+  const [chatStore, setChatStore] = useState<Conversation[]>([]);
+  const [currentIdChat, setCurrentIdChat] = useState<string>(NEW_CHAT_ID);
+
   const [scheduleItemSelected, setScheduleItemSelected] = useState<ScheduleItem|null>(null)
   const [foodCardSelected, setFoodCardSelected] = useState<FoodItem | null>(null);
 
-  // --- LOGIC SCHEDULE ---
+  useEffect(() => {
+    let isMounted = true;
+    let retryCount = 0;
+    const MAX_RETRIES = 5;
+    
+    const fetchSessions = async () => {
+      const token = localStorage.getItem('token');
 
- const onAddDay = (insertAtIndex: number = -1) => {
-  setSchedule(prev => {
-    const insertPos =
-      insertAtIndex === -1 || insertAtIndex >= prev.length
-        ? prev.length
-        : insertAtIndex < 0
-        ? 0
-        : insertAtIndex;
+      if(!token) {
+        if(retryCount < MAX_RETRIES) {
+          console.log(`Token not ready, retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+          retryCount++;
+          setTimeout(fetchSessions, 300);
+        }
 
-    const newDayNumber =
-      insertPos === 0
-        ? 1
-        : prev[insertPos - 1].day + 1;
-
-    const result: ScheduleDay[] = [];
-
-    prev.forEach((dayObj, idx) => {
-      if (idx < insertPos) {
-        result.push(dayObj);
-      } else {
-        const shiftedDay = dayObj.day + 1;
-        const updatedItems = dayObj.scheduleInDay.map(item => ({
-          ...item,
-          day: shiftedDay
-        }));
-
-        result.push({
-          ...dayObj,
-          day: shiftedDay,
-          scheduleInDay: updatedItems
-        });
+        return;
       }
+      try {
+        const sessions = await historyService.getSessions();
+
+        if(isMounted) {
+          const mappedSessions: Conversation[] = sessions.map((s: any) => ({
+            id: s.id,
+            title: s.title || "Conversation",
+            messages: []
+          }));
+
+          const newChat: Conversation = { id: NEW_CHAT_ID, title: "New Chat", messages: [] };
+          setChatStore([newChat, ...mappedSessions]);
+
+          setCurrentIdChat(NEW_CHAT_ID);
+        }
+      } catch(error) {
+        console.error("Failed to load sessions:", error);
+      }
+      
+    };
+
+    fetchSessions();
+    return () => { isMounted = false; }
+  }, []);
+
+  useEffect(() => {
+    if(currentIdChat === NEW_CHAT_ID) return;
+
+    const cachedChat = chatStore.find(c => c.id === currentIdChat);
+    if(cachedChat && cachedChat.messages.length > 0) return;
+
+    let isMounted = true;
+    setIsLoading(true);
+
+    const fetchHistory = async () => {
+      try {
+        const rawMessages = await historyService.getSessionMessages(currentIdChat);
+
+        if(isMounted && rawMessages) {
+          const mappedMessage: Message[] = rawMessages.map((msg: any) => {
+            let dataPayload = msg.widget?.payload;
+
+            return {
+              role: msg.message.role === 'assistant' ? 'ai' : 'user',
+              content: msg.message.content,
+              type: msg.widget?.type || 'chat',
+              data: dataPayload
+            };
+          });
+
+          setChatStore(prev => prev.map(c => 
+            c.id === currentIdChat ? {...c, messages: mappedMessage } : c
+          ));
+        }
+      } catch (error) {
+        console.error("Load history failed", error);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    fetchHistory();
+    return () => { isMounted = false; }; 
+  }, [currentIdChat]);
+
+
+
+  // --- LOGIC SCHEDULE ---
+  const onAddDay = (insertAtIndex: number = -1) => {
+    setSchedule(prev => {
+      const insertPos =
+        insertAtIndex === -1 || insertAtIndex >= prev.length
+          ? prev.length
+          : insertAtIndex < 0
+          ? 0
+          : insertAtIndex;
+
+      const newDayNumber =
+        insertPos === 0
+          ? 1
+          : prev[insertPos - 1].day + 1;
+
+      const result: ScheduleDay[] = [];
+
+      prev.forEach((dayObj, idx) => {
+        if (idx < insertPos) {
+          result.push(dayObj);
+        } else {
+          const shiftedDay = dayObj.day + 1;
+          const updatedItems = dayObj.scheduleInDay.map(item => ({
+            ...item,
+            day: shiftedDay
+          }));
+
+          result.push({
+            ...dayObj,
+            day: shiftedDay,
+            scheduleInDay: updatedItems
+          });
+        }
+      });
+
+      result.splice(insertPos, 0, {
+        day: newDayNumber,
+        scheduleInDay: []
+      });
+
+
+      return result;
     });
+  };
 
-    result.splice(insertPos, 0, {
-      day: newDayNumber,
-      scheduleInDay: []
-    });
+  const handleSendMessage = async () => {
+    if(!inputValue.trim()) return;
 
+    const content = inputValue.trim();
+    setInputValue('');
+    setIsLoading(true);
 
-    return result;
-  });
-};
+    const userMsg: Message = { role: 'user', type: 'chat', content };
+
+    const addMsgToStore = (targetId: string, msg: Message) => {
+      setChatStore(prev => prev.map(c => c.id === targetId ? { ...c, messages: [...c.messages, msg] } : c))
+    };
+
+    addMsgToStore(currentIdChat, userMsg);
+
+    try {
+      const sessionIdToSend = currentIdChat === NEW_CHAT_ID ? undefined : currentIdChat;
+      const { aiMessage, sessionId } = await sendMessageToAI(content, sessionIdToSend);
+      
+      if(currentIdChat === NEW_CHAT_ID && sessionId) {
+        const newRealId = sessionId;
+
+        setChatStore(prev => {
+          const updatedChats = prev.map(c => 
+            c.id === NEW_CHAT_ID
+              ? {
+                ...c,
+                id: newRealId,
+                title: content.slice(0, 30) + "...",
+                messages: [...c.messages, aiMessage]
+              }
+              : c
+          );
+          return [{ id: NEW_CHAT_ID, title: "New Chat", messages: [] }, ...updatedChats];
+        });
+
+        setCurrentIdChat(newRealId);
+      } else {
+        addMsgToStore(currentIdChat, aiMessage);
+      }
+    } catch(error) {
+      console.error("Lỗi:", error);
+      const errorMsg: Message = { role: 'ai', type: 'chat', content: "Error!" };
+      addMsgToStore(currentIdChat, errorMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const addConversation = () => {
+    setCurrentIdChat(NEW_CHAT_ID);
+  };
+
+  const currentConversation = chatStore.find(c => c.id === currentIdChat) 
+    || { id: NEW_CHAT_ID, title: "New Chat", messages: [] };
 
   const onAddInDay = (
     dayNumber: number = -1,
@@ -205,47 +347,6 @@ export function useChat() {
     }
   };
 
-  // --- LOGIC SEND MESSAGE ---
-  const addMessageToCurrentChat = (msg: Message) => {
-    setChatStore(prev => 
-      prev.map((chat, index) =>
-        index === currentIdChat
-          ? { ...chat, messages: [...chat.messages, msg] }
-          : chat
-      )
-    );
-  };
-
-  const addConversation = () => {
-    setChatStore(prev => [
-      ...prev,
-      {
-        id: prev.length-1,       
-        title: `Conversation ${prev.length}`, 
-        messages: []           
-      }
-    ]);
-  };
-
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
-    
-    const userMsg: Message = { role: 'user', type: 'chat', content: inputValue };
-    addMessageToCurrentChat(userMsg);
-    setInputValue('');
-    setIsLoading(true);
-
-    try {
-      // Call Service
-      const aiResponse = await sendMessageToAI(userMsg.content);
-      addMessageToCurrentChat(aiResponse);
-    } catch (error) {
-      console.error("Lỗi:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   // Return all for UI in chat-page
   return {
     inputValue,
@@ -259,6 +360,7 @@ export function useChat() {
     handleSendMessage,
     addConversation,
     setCurrentIdChat,
+    currentConversation,
     onAddDay,
     onAddInDay,
     scheduleItemSelected,

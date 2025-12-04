@@ -16,13 +16,13 @@ export const convertFoodToLocation = (food: FoodItem, color?: string): MapLocati
   if (!food.coordinates) return null;
   return {
     id: food.id,
-    name: food.name,
+    name: food.restaurant_name,
     address: food.address,
     lat: food.coordinates.lat,
     lng: food.coordinates.lng,
     image: food.image,
-    rating: food.rating,
-    description: food.description,
+    rating: food.star,
+    description: food.desc,
     priceRange: food.priceRange,
     color: color || MAP_COLORS[0]
   };

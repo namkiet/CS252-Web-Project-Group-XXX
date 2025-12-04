@@ -1,9 +1,9 @@
 from flask import jsonify, request
 from functools import wraps
 
-from app.services.supa_client import get_db
+from app.services.supa_client import get_auth_client
 
-supabase = get_db()
+supabase_security = get_auth_client()
 
 def token_required(f):
     @wraps(f)
@@ -16,7 +16,7 @@ def token_required(f):
             return jsonify({'message': 'Token is missing!'}), 401
 
         try:
-            user_response = supabase.auth.get_user(token)
+            user_response = supabase_security.auth.get_user(token)
             current_user = user_response.user
             request.current_user = current_user
         except Exception as e:

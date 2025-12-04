@@ -13,21 +13,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api/auth': {
+      '/api': {
         target: 'http://127.0.0.1:5000',
         changeOrigin: true,
         secure: false,
-      },
-      '/api/chat': {
-        target: 'http://127.0.0.1:5000',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/api/history': {
-        target: 'http://127.0.0.1:5000',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
+      }
+    }
   },
 })

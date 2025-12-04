@@ -18,13 +18,13 @@ export default function ChatPage() {
     setInputValue,
     schedule,
     isLoading,
-    currentIdChat,
     chatStore,
     handleAddToSchedule,
     handleRemoveFromSchedule,
     handleSendMessage,
     addConversation,
     setCurrentIdChat,
+    currentConversation,
     onAddDay,
     onAddInDay,
     scheduleItemSelected,
@@ -50,12 +50,12 @@ export default function ChatPage() {
       
       {/* Main Chat Area */}
       <SidebarInset className="h-full flex flex-col flex-1 overflow-hidden">
-        <ChatHeader title = {chatStore[currentIdChat].title}/>
+        <ChatHeader title = {currentConversation.title}/>
 
         <div className="flex flex-1 flex-col min-h-0 relative bg-white">
           {/* List Message */}
           <ChatList 
-            conversation={chatStore[currentIdChat]}
+            conversation={currentConversation}
             schedule={schedule}
             isLoading={isLoading}
             onAddToSchedule={handleAddToSchedule}
