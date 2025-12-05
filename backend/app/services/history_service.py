@@ -2,13 +2,19 @@ from app.services.supa_client import get_auth_db
 
 class ChatHistoryService:
     
-    def create_session(self, user_id, first_message):
+    def create_session(self, user_id, title=None, first_message=None):
         # title = AI.sumarize(first_message)
         supabase = get_auth_db()
-        title = first_message[:20] + "..." if len(first_message) > 20 else first_message 
+        if title:
+            final_title = title
+        elif first_message:
+            final_title = first_message[:30] + "..." if len(first_message) > 30 else first_message
+        else:
+            final_title = "New Conversation"
+
         data = {
             "user_id" : user_id,
-            "title" : title
+            "title" : final_title
         }
         response = supabase.table('chat_sessions').insert(data).execute()
         
@@ -52,15 +58,15 @@ class ChatHistoryService:
             raise e
     
     # get messages
-    def get_history(self, session_id, limit = 10):
+    def get_history(self, session_id, limit=10, offset=0):
         try:
             supabase = get_auth_db()
             response = (
                 supabase.table('chat_messages')
                 .select('*')
                 .eq('session_id', session_id)
-                .order('created_at', desc = False)
-                .limit(limit)
+                .order('created_at', desc = True)
+                .range(offset, offset + limit - 1)
                 .execute()
             )
             

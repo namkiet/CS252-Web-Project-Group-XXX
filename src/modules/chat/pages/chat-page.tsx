@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { SidebarLeft } from '../components/left-sidebar/user-sidebar'
 import { ScheduleSidebar } from '../components/right-sidebar/schedule-sidebar'
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
@@ -5,9 +6,11 @@ import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
 import { ChatHeader } from '../components/chat-area/chat-header'
 import { ChatList } from '../components/chat-area/chat-list'
 import { ChatInput } from '../components/chat-area/chat-input'
+import { GlobalMapModal } from '../components/map-area/global-map-modal'
 
 import { useChat } from '../hooks/use-chat' // hooks
-import { useEffect } from 'react';
+import { useMapModal } from '../hooks/use-map-modal'
+import { type Conversation } from '../types';
 
 export default function ChatPage() {
   const {
@@ -28,16 +31,17 @@ export default function ChatPage() {
     setScheduleItemSelected,
     foodCardSelected,
     setFoodCardSelected,
-    FirstLoadInfo,
     isScheduleSidebarOpen,
-    toggleScheduleSidebar
+    toggleScheduleSidebar,
+    handleRemoveDay
   } = useChat();
 
-  useEffect(() => {
-    FirstLoadInfo();  
-    console.log("fstloadinfo")
-  }, [])
-  // --- RENDER ---
+  const mapModal = useMapModal();
+
+  const activeConversation: Conversation = chatStore && chatStore[currentIdChat] 
+    ? chatStore[currentIdChat] 
+    : { id: "loading", title: "Loading...", messages: [] };
+
   return (
     <SidebarProvider
       style={{ height: 'calc(100vh - 4.5rem)', minHeight: '0' }}
@@ -52,11 +56,7 @@ export default function ChatPage() {
       {/* Main Chat Area */}
       <SidebarInset className="h-full flex flex-col flex-1 overflow-hidden">
         <ChatHeader 
-          title={
-            chatStore.length === 0 
-              ? "" 
-              : chatStore[currentIdChat].title 
-          }
+          title={activeConversation.title}
           isScheduleSidebarOpen={isScheduleSidebarOpen}
           onToggleScheduleSidebar={toggleScheduleSidebar}
         />
@@ -64,12 +64,13 @@ export default function ChatPage() {
         <div className="flex flex-1 flex-col min-h-0 relative bg-white">
           {/* List Message */}
           <ChatList 
-            conversation={chatStore[currentIdChat]}
+            conversation={activeConversation}
             schedule={schedule}
             isLoading={isLoading}
             onAddToSchedule={handleAddToSchedule}
             foodCardSelected={foodCardSelected}
             setFoodCardSelected={setFoodCardSelected}  
+            onShowMap={mapModal.openMap}
           />
 
           {/* Input */}
@@ -98,8 +99,18 @@ export default function ChatPage() {
           setScheduleItemSelected={setScheduleItemSelected}
           foodCardSelected={foodCardSelected}
           setFoodCardSelected={setFoodCardSelected}  
+          onShowMap={mapModal.openMap}
+          onRemoveDay={handleRemoveDay}
+          onShowDayMap={mapModal.openDayMap}
         />
       </div>
+
+      <GlobalMapModal 
+        isOpen={mapModal.isOpen}
+        onClose={mapModal.closeMap}
+        locations={mapModal.locations}
+        title={mapModal.title}
+      />
     </SidebarProvider>
   )
 }

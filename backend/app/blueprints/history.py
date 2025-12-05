@@ -32,7 +32,14 @@ def get_history_messages(session_id):
         return jsonify({"error": "Invalid session ID"}), 400
     
     try:
-        history = history_service.get_history(session_id, 10)
+        try:
+            limit = int(request.args.get('limit', 20))
+            offset = int(request.args.get('offset', 0))
+        except ValueError:
+            limit = 20
+            offset = 0
+
+        history = history_service.get_history(session_id, limit=limit, offset=offset)
         messages = []
         
         for msg in history:

@@ -1,21 +1,12 @@
-
 export interface User {
   id: string;
   email: string;
   full_name?: string;
 }
 
-
-// interface ErrorResponse {
-//   error: string;
-// }
-
-
-
 const API_URL = '/api/history';
 
 export const hisService = {
-  // sidebarHistory
   sidebarHistory: async () => {
     const token = localStorage.getItem('token');
 
@@ -31,7 +22,6 @@ export const hisService = {
         });
 
         const data = await response.json();
-        // console.log("SidebarHistory API Response:", data);
         if (!response.ok) {
         throw new Error(data.error || 'Sessions failed');
         }
@@ -49,13 +39,13 @@ export const hisService = {
     }
   },
 
-  chatHistory: async (session_id : string) => {
+  chatHistory: async (session_id : string, limit: number = 20, offset: number = 0) => {
     const token = localStorage.getItem('token');
 
     if (!token) return;
 
     try {
-      const response = await fetch(`${API_URL}/${session_id}`,{
+      const response = await fetch(`${API_URL}/${session_id}?limit=${limit}&offset=${offset}`,{
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -64,8 +54,6 @@ export const hisService = {
       });
 
       const data = await response.json();
-      // console.log(`ChatHistory API Response (session ${session_id}):`, data); // 
-
       if (!response.ok) {
         throw new Error(data.error || 'Chat history of Sessions failed');
       }
@@ -78,6 +66,7 @@ export const hisService = {
 
     } catch (error) {
       console.error("Error when calling API chatHistory:", error);
+      throw error;
     }
   } 
 };

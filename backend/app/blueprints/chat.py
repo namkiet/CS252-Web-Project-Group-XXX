@@ -4,9 +4,10 @@ from flask import Blueprint, request, jsonify
 from app.utils.decorators import token_required
 from app.services.history_service import ChatHistoryService
 from app.services.chat_service import ChatService
-
+from app.services.chat_service_C import AIService
 chat_bp = Blueprint('chat', __name__)
 
+chat_mock = AIService()
 history_service = ChatHistoryService()
 chat_service = ChatService()
 
@@ -38,31 +39,32 @@ def handle_message():
         history_service.add_message(session_id, "user", user_message)
         chat_history = history_service.get_history(session_id)
         
-        response = chat_service.generate_response(user_message, chat_history)
-        
+        # response = chat_service.generate_response(user_message, chat_history)
+        response = chat_mock.process_message(user_message, chat_history)
         if not response:
             return jsonify({"error" : "No response"}), 500
         
         history_service.add_message(
             session_id,
             "assistant",
-            response['content'],
+            response.get('content', "") ,
             metadata = response.get('metadata', {})
         ) 
-        
+
         return jsonify({
             "status" : "success",
             "session_id": session_id,
             "message": {
                 "role" : "assistant",
-                "content" : response['content']            
+                "content" : response.get('content', "")          
             },
             "widget" : {
-                "type" : response['type'],
-                "payload" : response['payload']
+                "type" : response.get("type", "chat"),
+                "payload" : response.get("payload")
             }
         }), 200
         
     except Exception as e:
+        print(f"{e}")
         return jsonify({"error" : "Internal server error"}), 500
     
