@@ -7,9 +7,16 @@ import { ProfileTabContent } from "../components/profile-tab-content";
 import { SecurityTabContent } from "../components/security-tab-content";
 import { NotificationsTabContent } from "../components/notification-tab-content";
 import { Button } from "@/shared/components/ui/button";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { user, isLoading, logout } = useAuth();
+
+  const handleDeleteAccount = () => {
+    const confirmed = window.confirm("Are you sure you want to delete your account? This cannot be undone.");
+    if (!confirmed) return;
+    toast.success("Account deletion requested.");
+  };
 
   // Loading state
   if (isLoading) {
@@ -30,13 +37,16 @@ export default function ProfilePage() {
     <div className="container mx-auto max-w-4xl py-10">
       
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start gap-4">
         <ProfileHeader user={user} />
-        
-        {/* LogOut button */}
-        <Button variant="destructive" onClick={logout}>
-            Logout
-        </Button>
+        <div className="flex flex-col items-center gap-2">
+          <Button variant="destructive" onClick={logout} className="w-40">
+              Logout
+          </Button>
+          <Button variant="destructive" onClick={handleDeleteAccount} className="w-40">
+              Delete Account
+          </Button>
+        </div>
       </div>
 
       {/* Tabs Navigation System */}

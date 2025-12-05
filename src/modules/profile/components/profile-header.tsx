@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avat
 import { Button } from "@/shared/components/ui/button";
 import { Loader2, Upload } from "lucide-react";
 import { toast } from "sonner"; 
+import { uploadAvatar } from "@/services/profile.service";
 
 interface ProfileHeaderProps {
   user: User | null;
@@ -11,6 +12,9 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(
+    (user as any)?.avatar_url || (user as any)?.image || undefined
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getInitials = (name: string) => {
@@ -34,8 +38,15 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 
     try {
       setIsUploading(true);
-      toast.success("Avatar updated successfully!");
+      const res = await uploadAvatar(file);
+      if (res.success) {
+        if (res.url) setAvatarUrl(res.url);
+        toast.success("Avatar updated successfully!");
+      } else {
+        toast.error(res.message || "Failed to update avatar.");
+      }
     } catch (error) {
+       console.error(error);
        toast.error("Failed to update avatar.");
     } finally {
       setIsUploading(false);
@@ -63,6 +74,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
         <Avatar className="h-full w-full">
           <AvatarImage 
             alt={user?.full_name} 
+            src={avatarUrl}
             className="object-cover"
           />
           <AvatarFallback className="text-lg">

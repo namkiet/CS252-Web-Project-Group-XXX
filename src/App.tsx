@@ -7,6 +7,7 @@ import StaffPage from './modules/staff'
 import FoodGuidePage from './modules/guide';
 import LogInPage from './modules/login';
 import ProfilePage from './modules/profile';
+import SettingsPage from './modules/settings';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/food-guide" element={<FoodGuidePage/>} />
         <Route path="/login" element={<LogInPage/>} />
         <Route path="/profile" element={<ProfilePage/>} />
+        <Route path="/settings" element={<SettingsPage/>} />
       </Route>
     </Routes>
   )
