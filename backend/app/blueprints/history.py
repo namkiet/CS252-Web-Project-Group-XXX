@@ -75,3 +75,30 @@ def get_history_messages(session_id):
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"Error" : "Internal server error"}), 500
+    
+@history_bp.route('/<session_id>', methods=['DELETE'])
+@token_required
+def delete_chat_session(session_id):
+    user = request.current_user
+
+    if not session_id:
+        return jsonify({"error": "Invalid session ID"}), 400
+    
+    try:
+        is_deleted = history_service.delete_session(user.id, session_id)
+        
+        if is_deleted:
+            return jsonify({
+                "status": "success",
+                "message": "Session deleted successfully",
+                "session_id": session_id
+            }), 200
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "Session not found or access denied"
+            }), 404
+            
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal server error"}), 500

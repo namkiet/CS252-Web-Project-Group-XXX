@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { chatService } from "../../../services/chat.service";
+import { hisService } from '@/services/history.service';
 import type { FoodItem, Message, ScheduleDay, ScheduleItem } from '../types'
 import { flushSync } from 'react-dom';
 
@@ -27,7 +28,8 @@ export function useChat() {
   const [isScheduleSidebarOpen, setIsScheduleSidebarOpen] = useState<boolean>(true)
 
   useEffect(() => {
-    if (chatStore.length > 0) {
+    const activeSession = chatStore[currentIdChat];
+    if (chatStore.length > 0 && activeSession && activeSession.id) {
       fetchInitialMessages(currentIdChat);
     }
   }, [currentIdChat, chatStore.length, fetchInitialMessages]);
@@ -311,6 +313,36 @@ export function useChat() {
     }
   };
 
+  const handleDeleteSession = async (sessionId: string) => {
+    if (!window.confirm("Are you sure you want to delete this conversation?")) return;
+
+    try {
+      const isDelete = await hisService.deleteSession(sessionId);
+
+      if (isDelete) {
+        const newChatStore = chatStore.filter((chat) => chat.id !== sessionId);
+        setChatStore(newChatStore);
+
+        if (newChatStore.length === 0) {
+          setChatStore([{
+              id: "",
+              title: "New Conversation",
+              messages: []
+            }]);
+            setCurrentIdChat(0);
+        } else {
+          setChatStore(newChatStore);
+          setCurrentIdChat(0);
+        }
+        
+      } else {
+        console.error("Failed to delete session");
+      }
+    } catch (error) {
+      console.error("Error deleting session:", error);
+    }
+  };
+
   return {
     inputValue,
     setInputValue,
@@ -332,6 +364,7 @@ export function useChat() {
     isScheduleSidebarOpen,
     toggleScheduleSidebar,
     handleRemoveDay,
-    handleOpenDayMap
+    handleOpenDayMap,
+    handleDeleteSession
   }
 }

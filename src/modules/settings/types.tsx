@@ -38,7 +38,7 @@ export function useGeneralSettingsStore(): GeneralSettingsStore {
 
   const loadSettings = useCallback(() => {
     try {
-      const savedSettings = localStorage.getItem("generalSettings");
+      const savedSettings = sessionStorage.getItem("generalSettings");
       let loadedSettings: GeneralSettings;
       
       if (savedSettings) {
@@ -60,7 +60,7 @@ export function useGeneralSettingsStore(): GeneralSettingsStore {
   const saveSettings = () => {
     try {
       setCurrent(fixing);
-      localStorage.setItem("generalSettings", JSON.stringify(fixing));
+      sessionStorage.setItem("generalSettings", JSON.stringify(fixing));
     } catch (error) {
       console.error("Failed to save settings:", error);
     }
@@ -69,7 +69,7 @@ export function useGeneralSettingsStore(): GeneralSettingsStore {
   const resetToDefault = () => {
     setCurrent(defaultSettings);
     setFixing(defaultSettings);
-    localStorage.removeItem("generalSettings");
+    sessionStorage.removeItem("generalSettings");
   };
 
   return {

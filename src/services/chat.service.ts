@@ -39,7 +39,7 @@ export const chatService = {
     user_context?: { location?: string; timezone?: string };
     attachments?: any[];
   }): Promise<ChatAPIResponse> => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
@@ -66,7 +66,7 @@ export const chatService = {
       data.widget.payload = data.widget.payload.map(enrichFoodItem);
     }
 
-    localStorage.setItem("last_session_id", data.session_id);
+    sessionStorage.setItem("last_session_id", data.session_id);
 
     return data as ChatAPIResponse;
   },

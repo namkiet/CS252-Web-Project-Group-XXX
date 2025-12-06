@@ -65,7 +65,7 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
   }, []);
 
   const loadHistory = useCallback(async () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) return;
 
     setIsLoadingHistory(true);
@@ -186,7 +186,7 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
   }, [mapMessages]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token && !isLoadedSessions) {
         loadHistory();
     }

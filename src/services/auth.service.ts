@@ -42,10 +42,10 @@ export const authService = {
         throw new Error((data as ErrorResponse).error || 'Sign-in failed');
       }
 
-      // Store Token and User into LocalStorage
+      // Store Token and User into SessionStorage
       if (data.access_token) {
-        localStorage.setItem('token', data.access_token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        sessionStorage.setItem('token', data.access_token);
+        sessionStorage.setItem('user', JSON.stringify(data.user));
       }
 
       return data as LoginResponse;
@@ -76,9 +76,9 @@ export const authService = {
       }
 
       if (data.token) {
-        localStorage.setItem('token', data.token);
+        sessionStorage.setItem('token', data.token);
         if (data.user) {
-           localStorage.setItem('user', JSON.stringify(data.user));
+          sessionStorage.setItem('user', JSON.stringify(data.user));
         }
       }
 
@@ -90,7 +90,7 @@ export const authService = {
 
   // LogOut
   logout: async () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     
     if (token) {
       try {
@@ -105,23 +105,23 @@ export const authService = {
       }
     }
 
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
   },
 
   // Get current token
   getToken: () => {
-    return localStorage.getItem('token');
+    return sessionStorage.getItem('token');
   },
 
   // Get current user
   getCurrentUser: (): User | null => {
-    const userStr = localStorage.getItem('user');
+    const userStr = sessionStorage.getItem('user');
     if (userStr) return JSON.parse(userStr);
     return null;
   },
 
   isAuthenticated: () => {
-    return !!localStorage.getItem('token');
+    return !!sessionStorage.getItem('token');
   }
 };

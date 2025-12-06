@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { SidebarLeft } from '../components/left-sidebar/user-sidebar'
 import { ScheduleSidebar } from '../components/right-sidebar/schedule-sidebar'
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
@@ -33,14 +32,15 @@ export default function ChatPage() {
     setFoodCardSelected,
     isScheduleSidebarOpen,
     toggleScheduleSidebar,
-    handleRemoveDay
+    handleRemoveDay,
+    handleDeleteSession
   } = useChat();
 
   const mapModal = useMapModal();
 
   const activeConversation: Conversation = chatStore && chatStore[currentIdChat] 
     ? chatStore[currentIdChat] 
-    : { id: "loading", title: "Loading...", messages: [] };
+    : { id: "", title: "New Conversation...", messages: [] };
 
   return (
     <SidebarProvider
@@ -51,7 +51,9 @@ export default function ChatPage() {
       <SidebarLeft 
         chatStore={chatStore}
         setCurrentIdChat={setCurrentIdChat}
-        addConversation={addConversation}/>
+        addConversation={addConversation}
+        onDeleteSession={handleDeleteSession}
+      />
       
       {/* Main Chat Area */}
       <SidebarInset className="h-full flex flex-col flex-1 overflow-hidden">

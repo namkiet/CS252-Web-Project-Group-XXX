@@ -90,3 +90,22 @@ class ChatHistoryService:
         except Exception as e:
             print(f"error getting user profile: {e}")
             raise e
+    
+    # delete sessions
+    def delete_session(self, user_id, session_id):
+        try:
+            supabase = get_auth_db()
+            response = (
+                supabase.table('chat_sessions')
+                .delete()
+                .eq('id', session_id)
+                .eq('user_id', user_id)
+                .execute()
+            )
+
+            if response.data and len(response.data) > 0:
+                return True
+            return False
+        except Exception as e:
+            print(f"error deleting session: {e}")
+            raise e
