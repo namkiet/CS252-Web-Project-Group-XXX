@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Card, CardContent } from "@/shared/components/ui/card";
 import { Label } from "@/shared/components/ui/label";
 import { Input } from "@/shared/components/ui/input";
 import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
-import { Clock, Info, LogOut } from "lucide-react";
+import { Clock, Info } from "lucide-react";
 
 export function SessionTabContent() {
   const [lastActivity, setLastActivity] = useState(new Date().toLocaleString());
@@ -18,51 +17,42 @@ export function SessionTabContent() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogout = () => {
-    if (confirm("Are you sure you want to logout?")) {
-      window.location.href = "/login";
-    }
-  };
-
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Session Management</CardTitle>
-        </CardHeader>
+      <Card className="border-orange-100 shadow-sm">
         <CardContent>
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="auto-logout">Auto Logout Time</Label>
+              <Label htmlFor="auto-logout" className=" text-orange-700">Auto Logout Time</Label>
               <div className="flex items-center space-x-3">
                 <Input
                   id="auto-logout"
                   value={autoLogoutTime}
                   disabled
-                  className="max-w-[200px]"
+                  className="max-w-[200px] border-gray-300 bg-white text-gray-900"
                 />
-                <Badge variant="secondary" className="flex items-center">
-                  <Clock className="mr-1 h-3 w-3" />
+                <Badge variant="secondary" className="flex items-center border border-orange-200 bg-orange-50 text-orange-700">
+                  <Clock className="mr-1 h-3 w-3 text-orange-500" />
                   Fixed
                 </Badge>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Info className="h-4 w-4" />
+              <div className="flex items-center space-x-2 text-sm text-gray-900">
+                <Info className="h-4 w-4 " />
                 <p>Auto logout time is currently fixed at 1 hour for security purposes</p>
               </div>
             </div>
 
             <div className="border-t pt-6">
               <div className="space-y-4">
-                <Label>Session Information</Label>
+                <Label className="text-orange-700">Session Information</Label>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">Last Activity</Label>
-                    <p className="text-sm text-muted-foreground">{lastActivity}</p>
+                    <Label className="text-sm font-medium text-orange-700">Last Activity</Label>
+                    <p className="text-sm text-gray-600">{lastActivity}</p>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">Session Status</Label>
-                    <Badge variant="default" className="w-fit">
+                    <Label className="text-sm font-medium text-orange-700">Session Status</Label>
+                    <Badge variant="default" className="w-fit border border-orange-200 bg-orange-50 text-orange-700">
                       Active
                     </Badge>
                   </div>
@@ -72,33 +62,22 @@ export function SessionTabContent() {
 
             <div className="border-t pt-6">
               <div className="space-y-4">
-                <Label>Session Security</Label>
+                <Label className="text-orange-700">Session Security</Label>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Automatic logout after inactivity</span>
-                    <Badge variant="outline">Enabled</Badge>
+                    <span className="text-sm text-gray-700">Automatic logout after inactivity</span>
+                    <Badge variant="outline" className="border-orange-300 text-orange-700">Enabled</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Session timeout warning</span>
-                    <Badge variant="outline">5 minutes before</Badge>
+                    <span className="text-sm text-gray-700">Session timeout warning</span>
+                    <Badge variant="outline" className="border-orange-300 text-orange-700">5 minutes before</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Remember login session</span>
-                    <Badge variant="outline">Disabled</Badge>
+                    <span className="text-sm text-gray-700">Remember login session</span>
+                    <Badge variant="outline" className="border-orange-300 text-orange-700">Disabled</Badge>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="border-t pt-6">
-              <Button 
-                variant="destructive" 
-                onClick={handleLogout}
-                className="w-full"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout Now
-              </Button>
             </div>
           </div>
         </CardContent>

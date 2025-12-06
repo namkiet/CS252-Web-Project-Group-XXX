@@ -106,8 +106,12 @@ export function Navbar() {
                 className="flex items-center gap-3 p-1 pr-3 rounded-full border border-transparent hover:border-orange-200 hover:bg-orange-50 transition-all duration-200 group"
               >
                 {/* Avatar Circle */}
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold shadow-sm group-hover:shadow-md transition-all">
-                  {avatarChar}
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold shadow-sm group-hover:shadow-md transition-all overflow-hidden">
+                  {user?.avatar_url ? (
+                    <img src={user.avatar_url} alt={displayName} className="h-full w-full object-cover" />
+                  ) : (
+                    avatarChar
+                  )}
                 </div>
                 
                 {/* User Name */}
@@ -135,13 +139,15 @@ export function Navbar() {
                     <User size={16} /> My Profile
                   </Link>
 
-                  <Link 
-                    to="/settings" 
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                  <button 
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      navigate('/profile?tab=general');
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors text-left"
                   >
                     <Settings size={16} /> Settings
-                  </Link>
+                  </button>
 
                   <div className="h-px bg-gray-100 my-1 mx-2"></div>
 

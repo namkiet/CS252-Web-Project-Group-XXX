@@ -50,29 +50,29 @@ export default function SettingsPage() {
     <div className="container mx-auto max-w-4xl py-10">
       
       <div className="mb-8">
-        <h1 className="flex items-center gap-3 text-3xl font-bold">
-          <Settings className="h-8 w-8" />
+        <h1 className="flex items-center gap-3 text-3xl font-bold text-orange-700">
+          <Settings className="h-8 w-8 text-orange-500" />
           Settings
         </h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="mt-2 text-gray-600">
           Manage your application preferences and configurations
         </p>
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="mb-8 grid w-full grid-cols-2 bg-transparent p-0 md:w-[400px]">
+        <TabsList className="mb-8 grid w-full grid-cols-2 bg-transparent p-0 gap-0 md:w-[400px]">
           <TabsTrigger
             value="general"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:rounded-md data-[state=active]:border-none transition-all duration-200 hover:scale-105 hover:-translate-y-0.5"
+            className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
           >
-            <Settings className="mr-2 h-4 w-4" />
+            <Settings className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
             General Settings
           </TabsTrigger>
           <TabsTrigger
             value="session"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:rounded-md data-[state=active]:border-none transition-all duration-200 hover:scale-105 hover:-translate-y-0.5"
+            className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
           >
-            <Clock className="mr-2 h-4 w-4" />
+            <Clock className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
             Session
           </TabsTrigger>
         </TabsList>

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import type { User } from "@/services/auth.service";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/shared/components/ui/button";
 import { Loader2, Upload } from "lucide-react";
 import { toast } from "sonner"; 
@@ -11,9 +11,10 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
+  const { updateUser } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(
-    (user as any)?.avatar_url || (user as any)?.image || undefined
+    user?.avatar_url
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,7 +41,11 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
       setIsUploading(true);
       const res = await uploadAvatar(file);
       if (res.success) {
-        if (res.url) setAvatarUrl(res.url);
+        if (res.url) {
+          setAvatarUrl(res.url);
+          // Sync avatar to auth context so nav-bar updates
+          updateUser({ avatar_url: res.url });
+        }
         toast.success("Avatar updated successfully!");
       } else {
         toast.error(res.message || "Failed to update avatar.");
@@ -70,17 +75,14 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
         className="hidden"
       />
 
-      <div className="relative h-20 w-20 md:h-24 md:w-24 rounded-full overflow-hidden border-2 border-border">
-        <Avatar className="h-full w-full">
-          <AvatarImage 
-            alt={user?.full_name} 
-            src={avatarUrl}
-            className="object-cover"
-          />
-          <AvatarFallback className="text-lg">
-            {getInitials(user?.full_name || "")}
-          </AvatarFallback>
-        </Avatar>
+      <div className="relative h-20 w-20 md:h-24 md:w-24 rounded-full overflow-hidden border-2 border-orange-400 shadow-sm group-hover:shadow-md transition-all">
+        <div className="h-full w-full rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={user?.full_name} className="h-full w-full object-cover" />
+          ) : (
+            <span className="text-2xl">{getInitials(user?.full_name || "")}</span>
+          )}
+        </div>
         
         {isUploading && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -91,8 +93,8 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 
       <div className="space-y-2">
         <div>
-          <h1 className="text-2xl font-bold">{user?.full_name || "Account Settings"}</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{user?.full_name || "Account Settings"}</h1>
+          <p className="text-muted-foreground dark:text-gray-400">
             {user?.email}
           </p>
         </div>
@@ -102,7 +104,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
             size="sm" 
             onClick={handleButtonClick}
             disabled={isUploading}
-            className="mt-2"
+            className="mt-2 border-orange-500 text-orange-600 hover:text-gray-900 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:text-gray-100 dark:hover:bg-orange-900/20 transition-colors"
         >
             {isUploading ? (
                 <>Upload...</>

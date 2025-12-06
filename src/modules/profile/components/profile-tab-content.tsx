@@ -80,63 +80,66 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
   return (
     <div className="space-y-6">
       {/* Profile Details Card */}
-      <Card>
+      <Card className="border-orange-100 shadow-sm dark:border-orange-900">
         <CardHeader>
-          <CardTitle>Profile Details</CardTitle>
+          <CardTitle className="text-orange-700 dark:text-orange-500">Profile Details</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="firstname">First name</Label>
-              <Input id="firstname" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name" />
+              <Label htmlFor="firstname" className="text-gray-900 dark:text-gray-100">First name</Label>
+              <Input id="firstname" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name" className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastname">Last name</Label>
-              <Input id="lastname" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" />
+              <Label htmlFor="lastname" className="text-gray-900 dark:text-gray-100">Last name</Label>
+              <Input id="lastname" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-900 dark:text-gray-100">Email</Label>
               {/* Readonly for email */}
-              <Input id="email" defaultValue={user?.email || ""} disabled />
+              <Input id="email" defaultValue={user?.email || ""} disabled className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="nickname">Nickname</Label>
-              <Input id="nickname" value={nickname} disabled />
+              <Label htmlFor="nickname" className="text-gray-900 dark:text-gray-100">Nickname</Label>
+              <Input id="nickname" value={nickname} disabled className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
             </div>
           </div>
           <div className="mt-6 flex flex-col gap-3">
             {showChangePassword && (
               <div className="grid gap-3 md:grid-cols-3">
                 <div className="space-y-1">
-                  <Label htmlFor="current-password">Current Password</Label>
+                  <Label htmlFor="current-password" className="text-gray-900 dark:text-gray-100">Current Password</Label>
                   <Input
                     id="current-password"
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="new-password">New Password</Label>
+                  <Label htmlFor="new-password" className="text-gray-900 dark:text-gray-100">New Password</Label>
                   <Input
                     id="new-password"
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
+                    className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="confirm-password">Confirm New Password</Label>
+                  <Label htmlFor="confirm-password" className="text-gray-900 dark:text-gray-100">Confirm New Password</Label>
                   <Input
                     id="confirm-password"
                     type="password"
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
+                    className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                   />
                 </div>
 
                 {changePwdResult && (
-                  <div className="md:col-span-3 text-sm text-muted-foreground">
+                  <div className="md:col-span-3 text-sm text-muted-foreground dark:text-gray-400">
                     {changePwdResult}
                   </div>
                 )}
@@ -148,10 +151,15 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
                       setShowChangePassword(false);
                       resetPasswordFields();
                     }}
+                    className="border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleChangePassword}>
+                  <Button 
+                    onClick={handleChangePassword}
+                    variant="outline"
+                    className="border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
+                  >
                     OK{changePwdResult ? ` – ${changePwdResult}` : ""}
                   </Button>
                 </div>
@@ -159,32 +167,43 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
             )}
 
             <div className="flex justify-between gap-3">
-              <Button variant="secondary" onClick={() => setShowChangePassword((v) => !v)}>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowChangePassword((v) => !v)}
+                className="border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
+              >
                 {showChangePassword ? "Hide Change Password" : "Change Password"}
               </Button>
-              <Button onClick={handleSaveProfile}>Save Changes</Button>
+              <Button 
+                onClick={handleSaveProfile}
+                variant="outline"
+                className="border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
+              >
+                Save Changes
+              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Not yet */}
-      <Card>
+      <Card className="border-orange-100 shadow-sm dark:border-orange-900">
         <CardHeader>
-          <CardTitle>Connected Accounts</CardTitle>
+          <CardTitle className="text-orange-700 dark:text-orange-500">Connected Accounts</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           {socials.map((social) => (
-            <div key={social.platform} className="flex items-center justify-between border rounded-md p-4">
+            <div key={social.platform} className="flex items-center justify-between border border-gray-300 rounded-md p-4 dark:border-gray-600 dark:bg-gray-800">
               <div className="space-y-1">
-                <p className="font-medium capitalize">{social.platform}</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-medium capitalize text-gray-900 dark:text-gray-100">{social.platform}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {social.connected ? "Connected" : "Not connected"}
                 </p>
               </div>
               <Button
-                variant={social.connected ? "outline" : "default"}
+                variant="outline"
                 onClick={() => toggleSocial(social.platform)}
+                className={social.connected ? "border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700" : "border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"}
               >
                 {social.connected ? "Disconnect" : "Connect"}
               </Button>
