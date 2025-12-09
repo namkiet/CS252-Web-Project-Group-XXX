@@ -537,6 +537,7 @@ function SidebarMenuButton({
         side="right"
         align="center"
         hidden={state !== "collapsed" || isMobile}
+        className="bg-orange-500 text-white border-orange-500 [&_svg]:fill-orange-500"
         {...tooltip}
       />
     </Tooltip>

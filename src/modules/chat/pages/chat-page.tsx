@@ -33,7 +33,8 @@ export default function ChatPage() {
     isScheduleSidebarOpen,
     toggleScheduleSidebar,
     handleRemoveDay,
-    handleDeleteSession
+    handleDeleteSession,
+    handleRenameSession
   } = useChat();
 
   const mapModal = useMapModal();
@@ -53,6 +54,7 @@ export default function ChatPage() {
         setCurrentIdChat={setCurrentIdChat}
         addConversation={addConversation}
         onDeleteSession={handleDeleteSession}
+        onRenameSession={handleRenameSession} 
       />
       
       {/* Main Chat Area */}

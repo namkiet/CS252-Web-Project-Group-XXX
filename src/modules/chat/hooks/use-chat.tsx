@@ -343,6 +343,26 @@ export function useChat() {
     }
   };
 
+  const handleRenameSession = async (sessionId: string, newTitle: string) => {
+    if (!newTitle.trim()) return;
+
+    setChatStore(prev => prev.map(chat => 
+      chat.id === sessionId 
+        ? { ...chat, title: newTitle } 
+        : chat
+    ));
+
+    try {
+      const isSuccess = await hisService.renameSession(sessionId, newTitle);
+      
+      if (!isSuccess) {
+        console.error("Failed to rename on server");
+      }
+    } catch (error) {
+      console.error("Error renaming:", error);
+    }
+  }
+
   return {
     inputValue,
     setInputValue,
@@ -365,6 +385,7 @@ export function useChat() {
     toggleScheduleSidebar,
     handleRemoveDay,
     handleOpenDayMap,
-    handleDeleteSession
+    handleDeleteSession,
+    handleRenameSession
   }
 }

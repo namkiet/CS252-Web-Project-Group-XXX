@@ -14,6 +14,7 @@ type NavHistoryProps = {
   children?: React.ReactNode;
   setCurrentIdChat: (id: number) => void;
   onDeleteSession: (id: string) => void;
+  onRenameSession: (id: string, newTitle: string) => void;
 };
 
 import {
@@ -24,13 +25,13 @@ import {
   useSidebar,
 } from "@/shared/components/ui/sidebar"
 
-function NavHistory({ history, setCurrentIdChat, onDeleteSession } : NavHistoryProps) {
+function NavHistory({ history, setCurrentIdChat, onDeleteSession, onRenameSession } : NavHistoryProps) {
   const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <div className="px-2 pt-0 py-2 text-xs font-medium text-muted-foreground">
-       Chat history
+        Chat history
       </div>
 
       <SidebarMenu>
@@ -46,7 +47,9 @@ function NavHistory({ history, setCurrentIdChat, onDeleteSession } : NavHistoryP
             <HistoryActionsMenu
               isMobile={isMobile}
               sessionId={item.sessionId}
+              currentTitle={item.name}
               onDelete={onDeleteSession}
+              onRename={onRenameSession}
             />
           </SidebarMenuItem>
         ))}

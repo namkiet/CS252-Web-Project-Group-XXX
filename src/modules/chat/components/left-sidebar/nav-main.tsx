@@ -1,10 +1,9 @@
-import { type LucideIcon,  PlusCircle } from "lucide-react"
+import { type LucideIcon,  SquarePen } from "lucide-react"
 
 import {
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarGroupLabel
+  SidebarMenuItem
 } from "@/shared/components/ui/sidebar"
 
 type NavMainProps = {
@@ -20,15 +19,9 @@ type NavMainProps = {
 export function NavMain({ items, addConversation }: NavMainProps) {
   return (
     <SidebarMenu>
-      <br></br><br></br><br></br>
-
-      <SidebarGroupLabel className="px-2 py-1 text-2xl font-bold text-orange-500 tracking-tight">
-        Food Tour
-      </SidebarGroupLabel>
-
       {items.map((item) => (
         <SidebarMenuItem key={item.title}>
-          <SidebarMenuButton asChild isActive={item.isActive}>
+          <SidebarMenuButton asChild isActive={item.isActive} tooltip={item.title}>
             <a href={item.url}>
               <item.icon />
               <span>{item.title}</span>
@@ -38,14 +31,17 @@ export function NavMain({ items, addConversation }: NavMainProps) {
       ))}
 
         <SidebarMenuItem >
-          <SidebarMenuButton onClick={addConversation} className="font-medium py-0">
-            <PlusCircle className="size-5" />
+          <SidebarMenuButton
+            onClick={addConversation}
+            className="font-medium py-0"
+            tooltip="New Chat"
+          >
+            <SquarePen className="size-5" />
             <span>New Chat</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
 
     </SidebarMenu>
 
-    
   )
 }

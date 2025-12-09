@@ -96,6 +96,32 @@ export const hisService = {
       console.error("Error when calling API deleteSession:", error);
       return false;
     }
+  },
+
+  renameSession: async (session_id: string, new_title: string) => {
+    const token = sessionStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      const response = await fetch(`${API_URL}/${session_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ title: new_title })
+      });
+
+      if (response.ok) {
+        sessionStorage.removeItem('historySessions');
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Error when calling API renameSession:", error);
+      return false;
+    }
   }
 };
 

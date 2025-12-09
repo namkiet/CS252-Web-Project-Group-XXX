@@ -3,6 +3,7 @@ import {
   Home,
   MessageCircleQuestion,
   Settings,
+  Menu
 } from "lucide-react"
 
 import { NavMain } from "./nav-main.tsx"
@@ -12,11 +13,14 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
+  useSidebar,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton
 } from "@/shared/components/ui/sidebar"
 
 import type { Conversation } from '../../types'
 
-// This is sample data.
 const data = {
   navMain: [
     {
@@ -44,9 +48,11 @@ type SidebarLeftProps = {
   setCurrentIdChat: (id: number) => void;
   addConversation: () => void;
   onDeleteSession: (id: string) => void;
+  onRenameSession: (id: string, newTitle: string) => void;
 } & React.ComponentProps<typeof Sidebar>;
 
-export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDeleteSession }: SidebarLeftProps) {
+export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDeleteSession, onRenameSession }: SidebarLeftProps) {
+  const { toggleSidebar } = useSidebar()
 
   const historyItems = chatStore.map((c, index) => ({
     name: c.title || `Conversation ${index + 1}`,
@@ -56,8 +62,19 @@ export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDe
     emoji: "💬",
   }));
   return (
-    <Sidebar className="border-r-0" >
-      <SidebarHeader>
+    <Sidebar collapsible="icon" className="border-r-0" >
+      <SidebarHeader className="pt-20">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton 
+              onClick={toggleSidebar}
+              tooltip="Close Sidebar"
+              className="text-sidebar-foreground/70 hover:text-sidebar-foreground"
+            >
+              <Menu className="size-4" /> 
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         <NavMain items={data.navMain} addConversation={addConversation} />
       </SidebarHeader>
       <SidebarContent>
@@ -65,6 +82,7 @@ export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDe
           history={historyItems} 
           setCurrentIdChat={setCurrentIdChat}
           onDeleteSession={onDeleteSession}
+          onRenameSession={onRenameSession}
         />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
