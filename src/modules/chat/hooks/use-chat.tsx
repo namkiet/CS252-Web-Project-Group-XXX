@@ -26,6 +26,7 @@ export function useChat() {
   const [scheduleItemSelected, setScheduleItemSelected] = useState<ScheduleItem|null>(null)
   const [foodCardSelected, setFoodCardSelected] = useState<FoodItem | null>(null);
   const [isScheduleSidebarOpen, setIsScheduleSidebarOpen] = useState<boolean>(true)
+  const [swappedItemIds, setSwappedItemIds] = useState<string[]>([])
 
   useEffect(() => {
     const activeSession = chatStore[currentIdChat];
@@ -305,6 +306,72 @@ export function useChat() {
     });
   };
 
+  const handleSwapScheduleItems = (item1: ScheduleItem, item2: ScheduleItem) => {
+    setSchedule((prev) => {
+      // Find indices and days of both items
+      let item1Day = -1, item1Idx = -1;
+      let item2Day = -1, item2Idx = -1;
+
+      prev.forEach((dayObj) => {
+        const idx1 = dayObj.scheduleInDay.findIndex(
+          (item) => item === item1 || (item.id === item1.id && item.id)
+        );
+        if (idx1 !== -1) {
+          item1Day = dayObj.day;
+          item1Idx = idx1;
+        }
+
+        const idx2 = dayObj.scheduleInDay.findIndex(
+          (item) => item === item2 || (item.id === item2.id && item.id)
+        );
+        if (idx2 !== -1) {
+          item2Day = dayObj.day;
+          item2Idx = idx2;
+        }
+      });
+
+      // If items not found, return unchanged
+      if (item1Day === -1 || item2Day === -1) return prev;
+
+      // If items are in same day, swap within day
+      if (item1Day === item2Day) {
+        return prev.map((dayObj) => {
+          if (dayObj.day === item1Day) {
+            const items = [...dayObj.scheduleInDay];
+            [items[item1Idx], items[item2Idx]] = [items[item2Idx], items[item1Idx]];
+            return { ...dayObj, scheduleInDay: items };
+          }
+          return dayObj;
+        });
+      }
+
+      // If items are in different days, swap across days
+      return prev.map((dayObj) => {
+        if (dayObj.day === item1Day) {
+          const items = [...dayObj.scheduleInDay];
+          items[item1Idx] = { ...item2, day: item1Day };
+          return { ...dayObj, scheduleInDay: items };
+        } else if (dayObj.day === item2Day) {
+          const items = [...dayObj.scheduleInDay];
+          items[item2Idx] = { ...item1, day: item2Day };
+          return { ...dayObj, scheduleInDay: items };
+        }
+        return dayObj;
+      });
+    });
+
+    // Collect ids for animation feedback
+    const id1 = item1.id || item1.food?.id;
+    const id2 = item2.id || item2.food?.id;
+    if (id1 && id2) {
+      setSwappedItemIds([id1, id2]);
+      setTimeout(() => setSwappedItemIds([]), 900);
+    }
+
+    // Reset selection after swap
+    setScheduleItemSelected(null);
+  };
+
   const handleOpenDayMap = (daySchedule: ScheduleDay) => {
     const locations = getLocationsFromDay(daySchedule);
 
@@ -386,6 +453,8 @@ export function useChat() {
     handleRemoveDay,
     handleOpenDayMap,
     handleDeleteSession,
-    handleRenameSession
+    handleRenameSession,
+    handleSwapScheduleItems,
+    swappedItemIds
   }
 }

@@ -1,22 +1,70 @@
-import { MapPin, Star, Trash2, Map as MapIcon } from 'lucide-react';
+import { MapPin, Star, Trash2, Map as MapIcon, ArrowRightLeft } from 'lucide-react';
 import type { FoodItem } from '../../types';
 
 interface ScheduleFoodCardProps {
   food: FoodItem;
   onRemove?: () => void;
   onShowMap?: (item: FoodItem) => void;
+  isSwapMode?: boolean;
+  isSelected?: boolean;
+  onSwap?: () => void;
+  isSwapping?: boolean;
 }
 
-export const ScheduleFoodCard = ({ food, onRemove, onShowMap }: ScheduleFoodCardProps) => {
+export const ScheduleFoodCard = ({
+  food,
+  onRemove,
+  onShowMap,
+  isSwapMode = false,
+  isSelected = false,
+  onSwap,
+  isSwapping = false,
+}: ScheduleFoodCardProps) => {
   return (
-    <div className="bg-white p-3 rounded-lg border border-orange-200 shadow-sm hover:border-orange-400 hover:shadow-md transition-all group flex flex-col gap-1.5">
-      <div className="flex items-start justify-between gap-2">
+    <div
+      className="relative bg-white p-3 rounded-lg border border-orange-200 shadow-sm hover:border-orange-400 hover:shadow-md transition-all duration-300 group flex flex-col gap-1.5"
+      style={isSwapping ? { animation: 'swapPulse 0.85s ease-out' } : undefined}
+    >
+      <style>{`
+        @keyframes swapPulse {
+          0% { transform: scale(0.98) rotate(-0.3deg); box-shadow: 0 0 0 rgba(249, 115, 22, 0); }
+          50% { transform: scale(1.03) rotate(0.3deg); box-shadow: 0 10px 24px -12px rgba(249, 115, 22, 0.55); }
+          100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 0 rgba(249, 115, 22, 0); }
+        }
+        @keyframes shimmerSlide {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
+      {isSwapping && (
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg">
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-200/60 to-transparent"
+            style={{ animation: 'shimmerSlide 1s linear' }}
+          />
+        </div>
+      )}
+        <div className="flex items-start justify-between gap-2">
         {/* Header (name of food) */}
         <h4 className="text-sm font-bold text-gray-900 line-clamp-1 flex-1 leading-tight" title={food.restaurant_name}>
           {food.restaurant_name}
         </h4>
 
         <div className="flex items-center gap-1 shrink-0">
+          {/* Swap button - only show when in swap mode and not selected */}
+          {isSwapMode && !isSelected && onSwap && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onSwap();
+              }}
+              className="w-7 h-7 flex items-center justify-center rounded bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white transition-colors"
+              title="Swap with selected"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" />
+            </button>
+          )}
+
           {/* Map */}
           <button
             onClick={(e) => {

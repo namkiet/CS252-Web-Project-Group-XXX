@@ -27,6 +27,8 @@ interface ScheduleSidebarProps extends React.ComponentProps<typeof Sidebar> {
   onShowMap?: (item: FoodItem) => void;
   onRemoveDay: (day: number) => void;
   onShowDayMap?: (daySchedule: ScheduleDay) => void;
+  onSwapItems?: (item1: ScheduleItem, item2: ScheduleItem) => void;
+  swappedItemIds?: string[];
 }
 
 export function ScheduleSidebar({
@@ -41,6 +43,8 @@ export function ScheduleSidebar({
   onShowMap,
   onRemoveDay,
   onShowDayMap,
+  onSwapItems,
+  swappedItemIds = [],
   ...props
 }: ScheduleSidebarProps) {
 
@@ -196,6 +200,14 @@ export function ScheduleSidebar({
                                   food={item.food}
                                   onRemove={() => onRemoveItem(item.id || item.food?.id || "")}
                                   onShowMap={onShowMap}
+                                  isSwapMode={Boolean(scheduleItemSelected && onSwapItems)}
+                                  isSelected={scheduleItemSelected === item}
+                                  onSwap={
+                                    scheduleItemSelected && scheduleItemSelected !== item && onSwapItems
+                                      ? () => onSwapItems(scheduleItemSelected, item)
+                                      : undefined
+                                  }
+                                  isSwapping={swappedItemIds.includes(item.id || item.food?.id || "")}
                                 />
                               ) : (
                                 <p className="text-sm font-medium text-gray-800">

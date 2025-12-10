@@ -34,7 +34,9 @@ export default function ChatPage() {
     toggleScheduleSidebar,
     handleRemoveDay,
     handleDeleteSession,
-    handleRenameSession
+    handleRenameSession,
+    handleSwapScheduleItems,
+    swappedItemIds
   } = useChat();
 
   const mapModal = useMapModal();
@@ -106,6 +108,8 @@ export default function ChatPage() {
           onShowMap={mapModal.openMap}
           onRemoveDay={handleRemoveDay}
           onShowDayMap={mapModal.openDayMap}
+          onSwapItems={handleSwapScheduleItems}
+          swappedItemIds={swappedItemIds}
         />
       </div>
 
