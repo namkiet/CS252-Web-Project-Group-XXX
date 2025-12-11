@@ -1,7 +1,8 @@
 import re
 from app.agents.supervisor import RootControllerAgent
 from app.agents.tools.sub_tools.Router.Ollama import OllamaLocalModel
-from app.agents.tools.sub_tools.Router.Ollama import OllamaLocalModel
+from app.agents.tools.sub_tools.Router.openRouter import novaLite
+
 class ChatService:
     
     def __init__(self):
@@ -13,7 +14,8 @@ class ChatService:
         try:
             URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
             router = OllamaLocalModel("qwen2.5:14b")
-            self.root = RootControllerAgent(router)
+            router2 = novaLite()
+            self.root = RootControllerAgent(router2)
             self._register_agent()
         except Exception as e:
             print(f"Failed to initialize AI Agent: {e}")
