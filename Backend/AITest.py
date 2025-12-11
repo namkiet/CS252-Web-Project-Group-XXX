@@ -16,6 +16,7 @@ root = RootControllerAgent(router2)
 DeepseekF = DeepseekFinder()
 FoodFounder = GeminiFoodFinder()
 locFinder = LocationFinder()
+
 root.register_agent(DeepseekF)
 root.register_agent(FoodFounder)
 root.register_agent(locFinder)

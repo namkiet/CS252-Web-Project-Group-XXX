@@ -20,7 +20,7 @@ def handle_message():
     user_id = user.id
     
     user_message = data.get('message', '')
-    user_message = html.escape(user_message)
+    # user_message = html.escape(user_message)
 
     session_id = data.get('session_id')
     
@@ -39,8 +39,8 @@ def handle_message():
         history_service.add_message(session_id, "user", user_message)
         chat_history = history_service.get_history(session_id)
         
-        # response = chat_service.generate_response(user_message, chat_history)
-        response = chat_mock.process_message(user_message, chat_history)
+        response = chat_service.generate_response(user_message, chat_history)
+        # response = chat_mock.process_message(user_message, chat_history)
         if not response:
             return jsonify({"error" : "No response"}), 500
         

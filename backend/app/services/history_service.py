@@ -22,11 +22,11 @@ class ChatHistoryService:
     
     def add_message(self, session_id, role : str, user_message : str, 
                     type = 'chat', data = None, metadata = None):
-        import html
-        user_message = html.escape(user_message)
+        # import html
+        # user_message = html.escape(user_message)
 
         supabase = get_auth_db()
-        data = {
+        payload  = {
             "session_id" : session_id,
             "role" : role,
             "content" : user_message,
@@ -36,8 +36,9 @@ class ChatHistoryService:
                 "info" : metadata
             }
         }
-        
-        supabase.table('chat_messages').insert(data).execute()
+        print("ADD MESSAGE")
+        resp = supabase.table('chat_messages').insert(payload).execute()
+        print("SUPABASE RESP:", resp)
         return 
     
     # for sidebar history
