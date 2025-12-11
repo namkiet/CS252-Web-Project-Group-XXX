@@ -78,6 +78,7 @@ class RootControllerAgent:
             If the agent output ask the user for futher clarification, then consider it is FINAL.
             Some model may ask for other agentic to run first with keyword "agent". If that happen then continue.
             If the answer still not answer the user query, continue.
+            If there is apology in generation, stop.
 
             Reply with ONLY one word
             - "continue"
@@ -100,6 +101,7 @@ class RootControllerAgent:
                 - Combine and integrate the information
                 - Remove duplicates
                 - produce the BEST final answer in clear message.
+                - If there is apology content from outputs, focus on that ONLY.
             Keep user friendly attitude.
 """
         prompt = base_prompt
@@ -122,9 +124,10 @@ class RootControllerAgent:
             loop_count += 1
 
             agent_result = self.LLM_Handle(payload)
-            last_result = agent_result
+            
 
             output = agent_result.get("output", {})
+            last_result = output["message"]
             message = json_to_prompt(output)
             conversation_history_str = (
                 "-------------------"
@@ -154,7 +157,10 @@ class RootControllerAgent:
             output["message"] = payload["message"]
             payload = output
         final_result = {}
+        
         final_result["output"] = output
-        final_result["output"]["message"] = self.sythesize(user_input, conversation_history)
-
-        return final_result
+        
+        if (loop_count == 1):
+            final_result["output"]["message"] = last_result
+        else:   
+            final_result["output"]["message"] = self.sythesize(user_input, conversation_history)
