@@ -1,3 +1,104 @@
+<<<<<<< HEAD:Backend/app/agents/sub_agents/GeminiFoodFinder.py
+from app.agents.BaseAgent import BaseAgent
+
+import re
+
+class GeminiFoodFinder(BaseAgent):
+    def __init__(self) -> None:
+        super().__init__(
+            "FoodFinder",
+            "This is food finder agent, If there is no longitude and latitude, please call LocationFinder first."
+        )
+
+    def run(self, payload: dict) -> dict:
+        try:
+            from google import genai
+            from google.genai import types
+            import os
+            from dotenv import load_dotenv
+
+            load_dotenv()
+            api_key = os.environ.get("GOOGLE_API_KEY")
+
+
+            client = genai.Client(api_key=api_key)
+            # I ASSUME THAT YOU ALREADY HAVE MESSAGE IN THE INPUT
+    
+            prompt = payload["message"]
+            pos = payload.get("position")
+            lat = None
+            lng = None
+            if pos is not None:
+                lat = pos.get("latitude", None)
+                lng = pos.get("longitude", None)
+
+            if lat is None or lng is None:
+                return {
+                    "output":{
+                        "message": (
+                            "Currently missing position, please call the agent LocationFinder to get the exact latitude and longitude. Keep continue calling agent!"
+                        )
+                    }
+                }
+        
+            print("Location found:", lat, lng)
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    # Turn on grounding with Google Maps
+                    tools=[types.Tool(google_maps=types.GoogleMaps())],
+                    # Optionally provide the relevant location context (this is in Los Angeles)
+                    tool_config=types.ToolConfig(retrieval_config=types.RetrievalConfig(
+                        lat_lng=types.LatLng(
+                            latitude=lat, longitude=lng))),
+                ),
+            )
+
+            
+            final_result = {
+                "message": (
+                    "This will end the loop if there is no FoodRanker in the list.",
+                    response.text
+                ),
+                "payload": []
+            }
+
+            if grounding := response.candidates[0].grounding_metadata:
+                if grounding.grounding_chunks:
+                    for chunk in grounding.grounding_chunks:
+
+                        if chunk.maps.uri:
+                            coords_match = re.search(r'@(-?\d+\.\d+),(-?\d+\.\d+)', chunk.maps.uri)
+                        if coords_match:
+                            lat = coords_match.group(1)
+                            lng = coords_match.group(2)
+
+                        final_result["payload"].append(
+                            {
+                                "restaurant_name": chunk.maps.title,
+                                "description": "",
+                                "địa chỉ": "",
+                                "url": chunk.maps.uri,
+                                "lat": lat,
+                                "lon": lng
+                            }
+                        )
+            return {
+                "position": {
+                    "latitude": lat,
+                    "longitude": lng,
+                },
+                "output" :final_result}
+        except:
+            return {
+                    "output":{
+                        "message": (
+                            "Xin lỗi bạn, API Gemini đạt limit rồi, mình không tìm được nữa. ;-;"
+                        )
+                    }
+                }
+=======
 from app.agents.BaseAgent import BaseAgent
 
 import re
@@ -88,3 +189,4 @@ class GeminiFoodFinder(BaseAgent):
                 "longitude": lng,
             },
             "output" :final_result}
+>>>>>>> cbbc0d014d53e282b4db16aaa43982cd72226692:backend/app/agents/sub_agents/GeminiFoodFinder.py
