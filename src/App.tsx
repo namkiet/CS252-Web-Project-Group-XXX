@@ -6,6 +6,7 @@ import HomePage from './modules/home'
 import StaffPage from './modules/staff'
 import FoodGuidePage from './modules/guide';
 import LogInPage from './modules/login';
+import ProfilePage from './modules/profile';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/staff" element={<StaffPage/>} />
         <Route path="/food-guide" element={<FoodGuidePage/>} />
         <Route path="/login" element={<LogInPage/>} />
+        <Route path="/profile" element={<ProfilePage/>} />
       </Route>
     </Routes>
   )

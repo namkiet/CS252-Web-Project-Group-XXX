@@ -1,23 +1,14 @@
-
 export interface User {
   id: string;
   email: string;
   full_name?: string;
 }
 
-
-// interface ErrorResponse {
-//   error: string;
-// }
-
-
-
 const API_URL = '/api/history';
 
 export const hisService = {
-  // sidebarHistory
   sidebarHistory: async () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     if (!token) return;
 
@@ -31,15 +22,12 @@ export const hisService = {
         });
 
         const data = await response.json();
-        // console.log("SidebarHistory API Response:", data);
         if (!response.ok) {
         throw new Error(data.error || 'Sessions failed');
         }
 
         if (data.status === "success") {
-
-          localStorage.setItem('historySessions', JSON.stringify(data));
-
+          sessionStorage.setItem('historySessions', JSON.stringify(data));
         }
 
         return data;
@@ -49,13 +37,13 @@ export const hisService = {
     }
   },
 
-  chatHistory: async (session_id : string) => {
-    const token = localStorage.getItem('token');
+  chatHistory: async (session_id : string, limit: number = 20, offset: number = 0) => {
+    const token = sessionStorage.getItem('token');
 
     if (!token) return;
 
     try {
-      const response = await fetch(`${API_URL}/${session_id}`,{
+      const response = await fetch(`${API_URL}/${session_id}?limit=${limit}&offset=${offset}`,{
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -64,21 +52,76 @@ export const hisService = {
       });
 
       const data = await response.json();
-      // console.log(`ChatHistory API Response (session ${session_id}):`, data); // 
-
       if (!response.ok) {
         throw new Error(data.error || 'Chat history of Sessions failed');
       }
 
       if (data.status === "success") {
-      localStorage.setItem(`chatHistory_${session_id}`, JSON.stringify(data));
+        sessionStorage.setItem(`chatHistory_${session_id}`, JSON.stringify(data));
       }
 
       return data;
 
     } catch (error) {
       console.error("Error when calling API chatHistory:", error);
+      throw error;
     }
-  } 
+  },
+
+  deleteSession: async (session_id: string) => {
+    const token = sessionStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      const response = await fetch(`${API_URL}/${session_id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        sessionStorage.removeItem(`chatHistory_${session_id}`);
+        
+        sessionStorage.removeItem('historySessions'); 
+        
+        return true;
+      } else {
+        const data = await response.json();
+        console.error("Delete failed:", data.message);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error when calling API deleteSession:", error);
+      return false;
+    }
+  },
+
+  renameSession: async (session_id: string, new_title: string) => {
+    const token = sessionStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      const response = await fetch(`${API_URL}/${session_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ title: new_title })
+      });
+
+      if (response.ok) {
+        sessionStorage.removeItem('historySessions');
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Error when calling API renameSession:", error);
+      return false;
+    }
+  }
 };
 

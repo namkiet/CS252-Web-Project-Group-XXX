@@ -1,16 +1,13 @@
 import * as React from "react"
 
-import { Calendar} from 'lucide-react';
-
+import { Calendar, Trash2, Map as MapIcon } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
 } from "@/shared/components/ui/sidebar"
-
 import { cn } from "@/shared/lib/utils";
-
 import{ ScheduleFooter } from './schedule-footer'
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { Card } from '@/shared/components/ui/card';
@@ -24,9 +21,14 @@ interface ScheduleSidebarProps extends React.ComponentProps<typeof Sidebar> {
   onAddDay: (day:number) => void;
   onAddInDay: (daynumber: number, position: number |ScheduleItem, activity: string, food: FoodItem | null) => void ;
   scheduleItemSelected: ScheduleItem|null;
-  setScheduleItemSelected: (item: ScheduleItem|null) => void ;
-  foodCardSelected: FoodItem | null ;
-  setFoodCardSelected: (item: FoodItem | null) => void ;
+  setScheduleItemSelected: (item: ScheduleItem|null) => void;
+  foodCardSelected: FoodItem | null;
+  setFoodCardSelected: (item: FoodItem | null) => void;
+  onShowMap?: (item: FoodItem) => void;
+  onRemoveDay: (day: number) => void;
+  onShowDayMap?: (daySchedule: ScheduleDay) => void;
+  onSwapItems?: (item1: ScheduleItem, item2: ScheduleItem) => void;
+  swappedItemIds?: string[];
 }
 
 export function ScheduleSidebar({
@@ -38,6 +40,11 @@ export function ScheduleSidebar({
   setScheduleItemSelected,
   foodCardSelected,
   setFoodCardSelected,
+  onShowMap,
+  onRemoveDay,
+  onShowDayMap,
+  onSwapItems,
+  swappedItemIds = [],
   ...props
 }: ScheduleSidebarProps) {
 
@@ -45,7 +52,6 @@ export function ScheduleSidebar({
   const AddDay = () => {
     const targetDay = scheduleItemSelected === null ? -1 : scheduleItemSelected.day;
     onAddDay(targetDay);
-    if (scheduleItemSelected !== null) console.log(scheduleItemSelected.day)
   };
 
   const AddInDay = () => {
@@ -53,7 +59,6 @@ export function ScheduleSidebar({
       onAddInDay(-1, -1, "Activity", null);
     } else {
       onAddInDay(scheduleItemSelected.day,scheduleItemSelected, "Activity", null);
-      console.log(scheduleItemSelected.day)
     }
   };
 
@@ -88,7 +93,6 @@ export function ScheduleSidebar({
     );
   };
 
-
   return (
     <Sidebar
       collapsible="none"
@@ -105,7 +109,7 @@ export function ScheduleSidebar({
         </div>
       </SidebarHeader>
 
-         <SidebarContent>
+      <SidebarContent>
         <ScrollArea className="flex-1 p-2">
           <div className="space-y-5">
 
@@ -129,11 +133,37 @@ export function ScheduleSidebar({
                   onDrop={(e) => handleDrop(e, dayItem.day)}
                 >
                   {/* Day Header */}
-                  <div className="px-3 pb-1 border-b bg-white">
+                  <div className="flex items-center justify-between px-3 pb-1 pt-2 border-b bg-white">
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="bg-blue-600 text-white">
                         Day {dayItem.day}
                       </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      {onShowDayMap && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onShowDayMap(dayItem);
+                          }}
+                          className="w-7 h-7 flex items-center justify-center rounded bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white transition-colors"
+                          title={`See Map Day ${dayItem.day}`}
+                        >
+                          <MapIcon className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRemoveDay(dayItem.day);
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                        title={`Delete Day ${dayItem.day}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
 
@@ -150,11 +180,13 @@ export function ScheduleSidebar({
                       </div>
                     ) : (
                       dayItem.scheduleInDay.map((item, idx) => (
-                        <Card
+                        <div
                           key={idx}
                           className={cn(
-                            "p-2.5 hover:shadow-md transition cursor-pointer border",
-                            scheduleItemSelected === item ? "border-blue-500 shadow-lg" : ""
+                            "transition-all duration-200 rounded-lg cursor-pointer",
+                            scheduleItemSelected === item
+                              ? "[&_.bg-white]:!bg-orange-50 shadow-md transform scale-[1.02]"
+                              : "hover:shadow-sm"
                           )}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -164,7 +196,19 @@ export function ScheduleSidebar({
                           <div className="flex items-start gap-3">
                             <div className="flex-1 min-w-0">
                               {item.food ? (
-                                <ScheduleFoodCard food={item.food} />
+                                <ScheduleFoodCard
+                                  food={item.food}
+                                  onRemove={() => onRemoveItem(item.id || item.food?.id || "")}
+                                  onShowMap={onShowMap}
+                                  isSwapMode={Boolean(scheduleItemSelected && onSwapItems)}
+                                  isSelected={scheduleItemSelected === item}
+                                  onSwap={
+                                    scheduleItemSelected && scheduleItemSelected !== item && onSwapItems
+                                      ? () => onSwapItems(scheduleItemSelected, item)
+                                      : undefined
+                                  }
+                                  isSwapping={swappedItemIds.includes(item.id || item.food?.id || "")}
+                                />
                               ) : (
                                 <p className="text-sm font-medium text-gray-800">
                                   {item.activity || "Activity"}
@@ -172,7 +216,7 @@ export function ScheduleSidebar({
                               )}
                             </div>
                           </div>
-                        </Card>
+                        </div>
                       ))
                     )}
                   </div>

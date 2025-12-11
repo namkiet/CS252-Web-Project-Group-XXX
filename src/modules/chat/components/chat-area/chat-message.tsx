@@ -6,11 +6,12 @@ interface ChatMessageProps {
   message: Message;
   currentSchedule: ScheduleDay[];
   onAddToSchedule: (item: FoodItem) => void;
-  foodCardSelected: FoodItem | null ;
-  setFoodCardSelected: (item: FoodItem | null) => void ;
+  foodCardSelected: FoodItem | null;
+  setFoodCardSelected: (item: FoodItem | null) => void;
+  onShowMap: (item: FoodItem) => void;
 }
 
-export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCardSelected,setFoodCardSelected }: ChatMessageProps) {
+export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCardSelected, setFoodCardSelected, onShowMap }: ChatMessageProps) {
   const isAi = message.role === 'ai';
 
   return (
@@ -65,6 +66,7 @@ export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCar
                     item={place}
                     isAdded={isAdded}
                     onToggle={() => onAddToSchedule(place)}
+                    onShowMap={onShowMap}
                   />
                 </div>
               )

@@ -1,13 +1,17 @@
 export type FoodItem = {
   id: string;
-  name: string;
+  restaurant_name: string;
   image: string;
-  description: string;
+  desc: string;
   address: string;
-  rating: number;
-  cuisine?: string;
+  star: number;
+  dish_name?: string;
   priceRange?: string;
   openTime?: string;
+  coordinates?: { 
+    lat: number; 
+    lng: number; 
+  };
 };
 
 export type Message = {
@@ -18,18 +22,19 @@ export type Message = {
 };
 
 export type Conversation = {
-  id: string ;
+  id: string;
   messages: Message[];
   title: string ;
 };
 
 export type ScheduleItem = {
+  id?: string;
   activity: string;
   day: number;
   food?: FoodItem | null;
 }
 
 export type ScheduleDay = {
-  day: number ;
+  day: number;
   scheduleInDay: ScheduleItem[];
 }
