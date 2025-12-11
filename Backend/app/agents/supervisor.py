@@ -157,4 +157,4 @@ class RootControllerAgent:
         final_result["output"] = output
         final_result["output"]["message"] = self.sythesize(user_input, conversation_history)
 
-        return final_result["output"]
+        return final_result

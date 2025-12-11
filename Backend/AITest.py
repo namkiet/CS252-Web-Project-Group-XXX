@@ -6,7 +6,7 @@ from app.agents.sub_agents.LocationFinder import LocationFinder
 from app.agents.tools.sub_tools.Router.openRouter import novaLite
 from app.agents.tools.PromptCreater import json_to_prompt
 payload = {
-    "message": "Xung quanh tôi tại Thành phố Hồ Chí Minh có những quán ăn nào?"
+    "message": "Hello bạn?"
 }
 
 router = OllamaLocalModel("qwen2.5:14b")
@@ -21,8 +21,8 @@ root.register_agent(DeepseekF)
 root.register_agent(FoodFounder)
 root.register_agent(locFinder)
 ans = root.handle(payload)
-print("My message:", ans["output"]["message"])
-print("------------------------------------\n",ans["output"]["payload"])
+print("My message:", ans)
+print("------------------------------------\n",ans)
 # GOOGLE_API_KEY = ""
 # from google import genai
 # from google.genai import types

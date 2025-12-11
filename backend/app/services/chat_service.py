@@ -1,7 +1,7 @@
 import re
 from app.agents.supervisor import RootControllerAgent
 from app.agents.tools.sub_tools.Router.Ollama import OllamaLocalModel
-
+from app.agents.tools.sub_tools.Router.Ollama import OllamaLocalModel
 class ChatService:
     
     def __init__(self):
@@ -12,7 +12,7 @@ class ChatService:
     def _init_agent(self):
         try:
             URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
-            router = OllamaLocalModel(base_url = URL, model="qwen2.5:14b")
+            router = OllamaLocalModel("qwen2.5:14b")
             self.root = RootControllerAgent(router)
             self._register_agent()
         except Exception as e:
@@ -84,6 +84,7 @@ class ChatService:
         return True
         
     def generate_response(self, user_message, chat_history):
+
         if not self.root:
             return {
                 "type" : "chat",
@@ -121,18 +122,19 @@ class ChatService:
                 "raw_input" : user_message,
                 "chat_history" : chat_history
             }
-            
+
             agent_output = self.root.handle(payload)["output"]
-            
+
             msg_type = "chat"
-            if agent_output["payload"]:
+            myPayload = agent_output.get("payload", None)
+            if myPayload:
                 msg_type = "recommendation"
-                
+            print("Get here?")
             return {
                 "type": msg_type,
                 "role": "assistant",
                 "content": agent_output["message"] if not None else "I couldn't generate a text response.",
-                "payload": agent_output["payload"] if not None else None,
+                "payload": myPayload if not None else None,
                 "metadata": "normal chat"    
             }
         except Exception as e:
