@@ -79,10 +79,13 @@ class LocationFinder(BaseAgent):
                 }
             }
         return {
-            "position": {
-                "latitude": lat,
-                "longitude": lng,
-            },
-            "output" :"Now there is position, you are free to call other agent that need position.",
-            "payload": {}
+            
+            "output" :{
+                    "position": {
+                        "latitude": lat,
+                        "longitude": lng,
+                    },
+                    "message": "Now there is position, you are free to call other agent that need position.",
+                    "payload": {}
+                }
             }

@@ -1,4 +1,7 @@
 from app.agents.BaseAgent import BaseAgent
+
+import re
+
 class GeminiFoodFinder(BaseAgent):
     def __init__(self) -> None:
         super().__init__(
@@ -18,6 +21,7 @@ class GeminiFoodFinder(BaseAgent):
 
         client = genai.Client(api_key=api_key)
         # I ASSUME THAT YOU ALREADY HAVE MESSAGE IN THE INPUT
+ 
         prompt = payload["message"]
         pos = payload.get("position")
         lat = None
@@ -55,18 +59,29 @@ class GeminiFoodFinder(BaseAgent):
                 "This will end the loop if there is no FoodRanker in the list.",
                 response.text
             ),
-            "payload": {}
+            "payload": []
         }
 
         if grounding := response.candidates[0].grounding_metadata:
             if grounding.grounding_chunks:
                 for chunk in grounding.grounding_chunks:
-                    final_result["payload"][chunk.maps.title] = {
-                        "name": chunk.maps.title,
-                        "description": "",
-                        "địa chỉ": "",
-                        "url": chunk.maps.uri
-                    }
+
+                    if chunk.maps.uri:
+                        coords_match = re.search(r'@(-?\d+\.\d+),(-?\d+\.\d+)', chunk.maps.uri)
+                    if coords_match:
+                        lat = coords_match.group(1)
+                        lng = coords_match.group(2)
+
+                    final_result["payload"].append(
+                        {
+                            "restaurant_name": chunk.maps.title,
+                            "description": "",
+                            "địa chỉ": "",
+                            "url": chunk.maps.uri,
+                            "lat": lat,
+                            "lon": lng
+                        }
+                    )
         return {
             "position": {
                 "latitude": lat,
