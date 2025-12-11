@@ -103,7 +103,7 @@ export function ScheduleSidebar({
         {/* Header here */}
         <div className="border-sidebar-border border-b p-6 bg-white">
           <div className="flex items-center gap-2 mb-2">
-            <Calendar className="h-5 w-5 text-blue-600" />
+            <Calendar className="h-5 w-5 text-orange-600" />
             <h2>Your Schedule</h2>
           </div>
         </div>
@@ -115,10 +115,10 @@ export function ScheduleSidebar({
 
             {schedule.length === 0 ? (
               <div className="text-center py-20">
-                <div className="bg-gray-100 border-2 border-dashed rounded-xl w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                  <Calendar className="h-10 w-10 text-gray-400" />
+                <div className="bg-orange-100 border-2 border-dashed rounded-xl w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                  <Calendar className="h-10 w-10 text-orange-400" />
                 </div>
-                <p className="text-sm text-gray-500">Start chatting to build your plan</p>
+                <p className="text-sm text-orange-500">Start chatting to build your plan</p>
               </div>
             ) : (
               schedule.map((dayItem) => (
@@ -135,7 +135,7 @@ export function ScheduleSidebar({
                   {/* Day Header */}
                   <div className="flex items-center justify-between px-3 pb-1 pt-2 border-b bg-white">
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="bg-blue-600 text-white">
+                      <Badge variant="secondary" className="bg-orange-500 text-white">
                         Day {dayItem.day}
                       </Badge>
                     </div>
@@ -159,7 +159,7 @@ export function ScheduleSidebar({
                           e.stopPropagation();
                           onRemoveDay(dayItem.day);
                         }}
-                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                        className="p-1.5 bg-gray-100 text-gray-400 hover:bg-red-500 hover:text-white rounded transition-colors"
                         title={`Delete Day ${dayItem.day}`}
                       >
                         <Trash2 className="w-4 h-4" />

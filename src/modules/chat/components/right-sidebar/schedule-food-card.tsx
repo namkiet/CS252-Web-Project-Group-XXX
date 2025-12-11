@@ -64,7 +64,7 @@ export const ScheduleFoodCard = ({
               <ArrowRightLeft className="w-3.5 h-3.5" />
             </button>
           )}
-
+          
           {/* Map */}
           <button
             onClick={(e) => {

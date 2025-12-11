@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/shared/components/ui/button'
-import { SlideInOnScroll } from './slideInOnScroll'
+import { SlideInOnScroll } from '@/shared/components/slideInOnScroll';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import heroBgImage from '@/assets/images/slide1.jpg'
 
 export const HeroSection = () => (
   <div
-    className='relative flex h-screen min-h-[700px] items-center justify-center text-center text-white'
+    className='relative flex h-screen min-h-[800px] -mt-18 items-center justify-center text-center text-white'
     style={{
       backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${heroBgImage})`,
       backgroundSize: 'cover',
@@ -14,7 +14,7 @@ export const HeroSection = () => (
     }}
   >
     <div className="flex flex-col items-center p-4">
-      <SlideInOnScroll>
+      <SlideInOnScroll direction='down' duration={1100}>
         <div className="mb-3 text-lg font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-2" style={{ color: 'var(--color-brand)' }}>
           <Sparkles className="w-5 h-5" />
           AI-Powered Food Planner 
@@ -29,18 +29,20 @@ export const HeroSection = () => (
         </p>
       </SlideInOnScroll>
 
-      <div className= "flex justify-center">
-        <Button
-          asChild
-          className="bg-transparent border-1 border-yellow-300 text-yellow-400 hover:bg-yellow-400/10 
-                     text-base font-semibold rounded-full min-w-[150px] py-6 flex items-center gap-2 transition-all duration-300"
-        >
-          <Link to="/chat">
-            Explore
-            <ArrowRight className="w-5 h-5 transform scale-x-150 origin-left" />
-          </Link>
-        </Button>
-      </div>
+      <SlideInOnScroll direction='up' duration={1100}>
+        <div className= "flex justify-center">
+          <Button
+            asChild
+            className="bg-transparent border-1 border-yellow-300 text-yellow-400 hover:bg-yellow-400/10 
+              text-base font-semibold rounded-full min-w-[150px] py-6 flex items-center gap-2 transition-all duration-300"
+          >
+            <Link to="/chat">
+              Explore
+              <ArrowRight className="w-5 h-5 transform scale-x-150 origin-left" />
+            </Link>
+          </Button>
+        </div>
+      </SlideInOnScroll>
     </div>
   </div>
 )
