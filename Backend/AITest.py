@@ -11,7 +11,7 @@ payload = {
 
 router = OllamaLocalModel("qwen2.5:14b")
 router2 = novaLite()
-root = RootControllerAgent(router2)
+root = RootControllerAgent(router)
 
 DeepseekF = DeepseekFinder()
 FoodFounder = GeminiFoodFinder()
@@ -20,8 +20,9 @@ locFinder = LocationFinder()
 root.register_agent(DeepseekF)
 root.register_agent(FoodFounder)
 root.register_agent(locFinder)
-print(root.handle(payload)["output"])
-
+ans = root.handle(payload)
+print("My message:", ans["output"]["message"])
+print("------------------------------------\n",ans["output"]["payload"])
 # GOOGLE_API_KEY = ""
 # from google import genai
 # from google.genai import types
