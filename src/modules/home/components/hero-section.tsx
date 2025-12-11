@@ -1,4 +1,4 @@
-import React from 'react'
+import { Link } from 'react-router-dom';
 import { Button } from '@/shared/components/ui/button'
 import { SlideInOnScroll } from './slideInOnScroll'
 import { Sparkles, ArrowRight } from 'lucide-react';
@@ -35,10 +35,10 @@ export const HeroSection = () => (
           className="bg-transparent border-1 border-yellow-300 text-yellow-400 hover:bg-yellow-400/10 
                      text-base font-semibold rounded-full min-w-[150px] py-6 flex items-center gap-2 transition-all duration-300"
         >
-          <a href="/chat">
+          <Link to="/chat">
             Explore
             <ArrowRight className="w-5 h-5 transform scale-x-150 origin-left" />
-          </a>
+          </Link>
         </Button>
       </div>
     </div>

@@ -1,88 +1,41 @@
-import { useState } from 'react'
-// import { sendMessageToAI } from '../data/chat-service' // Check lại đường dẫn service của bạn
+import { useState, useEffect } from 'react'
 import { chatService } from "../../../services/chat.service";
-import type { FoodItem, Message, Conversation, ScheduleDay, ScheduleItem } from '../types'
+import { hisService } from '@/services/history.service';
+import type { FoodItem, Message, ScheduleDay, ScheduleItem } from '../types'
 import { flushSync } from 'react-dom';
 
-import { hisService } from '@/services/history.service';
+import { getLocationsFromDay } from '../utils/map-helpers'
+import { useChatContext } from '@/context/chat-context';
 
 export function useChat() {
-  // --- STATE ---
-  const [inputValue, setInputValue] = useState('')
+  const { 
+    chatStore, 
+    setChatStore, 
+    currentIdChat, 
+    setCurrentIdChat, 
+    isLoadingHistory,
+    fetchInitialMessages
+  } = useChatContext();
+
+  const [inputValue, setInputValue] = useState('');
   const [schedule, setSchedule] = useState<ScheduleDay[]>([
-    {
-      day: 1,
-      scheduleInDay: []
-    }
+    { day: 1, scheduleInDay: [] }
   ]);
-  const [isLoading, setIsLoading] = useState(false)
-  const [chatStore, setChatStore] = useState<Conversation[]>([  ]);
-  const [currentIdChat, setCurrentIdChat] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [scheduleItemSelected, setScheduleItemSelected] = useState<ScheduleItem|null>(null)
   const [foodCardSelected, setFoodCardSelected] = useState<FoodItem | null>(null);
-  const [fstLoadInfo, setFstLoadInfo] = useState< Boolean>(false)
   const [isScheduleSidebarOpen, setIsScheduleSidebarOpen] = useState<boolean>(true)
+  const [swappedItemIds, setSwappedItemIds] = useState<string[]>([])
 
-  // --- LOGIC SCHEDULE ---
-
- const FirstLoadInfo = async () => {
-    if (fstLoadInfo) return;
-    setFstLoadInfo(true);
-
-    const data = await hisService.sidebarHistory();
-    if (!data || data.status !== "success") return;
-
-    const conversations: Conversation[] = data.data.map((item: any) => ({
-      id: item.id,
-      title: item.title || "New Conversation",
-      messages: [],
-    }));
-
-    for (const conv of conversations) {
-      const sessionId = conv.id;
-
-      const data2 = await hisService.chatHistory(sessionId);
-      if (!data2 || data2.status !== "success") continue;
-
-      const msgs = data2.messages || [];
-
-      const parsedMessages: Message[] = msgs.map((m: any) => {
-        const baseMessage: Message = {
-          role: m.message.role === "assistant" ? "ai" : "user",
-          type: "chat",
-          content: m.message.content,
-        };
-
-        if (m.widget && m.widget.type === "recommendation") {
-          return {
-            role: "ai",
-            type: "recommendation",
-            content: m.message.content,
-            data: m.widget.payload.map((item: any) => ({
-              id: crypto.randomUUID(),
-              name: item.restaurant_name,
-              image: "", 
-              description: item.desc,
-              address: "",
-              rating: Number(item.star),
-              cuisine: item.dish_name,
-              priceRange: "",
-              openTime: "",
-            })),
-          };
-        }
-
-        return baseMessage;
-      });
-
-      conv.messages = parsedMessages;
+  useEffect(() => {
+    const activeSession = chatStore[currentIdChat];
+    if (chatStore.length > 0 && activeSession && activeSession.id) {
+      fetchInitialMessages(currentIdChat);
     }
+  }, [currentIdChat, chatStore.length, fetchInitialMessages]);
 
-    setChatStore(conversations);
-  };
-
-
- const onAddDay = (insertAtIndex: number = -1) => {
+  const onAddDay = (insertAtIndex: number = -1) => {
   setSchedule(prev => {
     const insertPos =
       insertAtIndex === -1 || insertAtIndex >= prev.length
@@ -120,7 +73,6 @@ export function useChat() {
       day: newDayNumber,
       scheduleInDay: []
     });
-
 
     return result;
   });
@@ -228,26 +180,32 @@ export function useChat() {
     setIsScheduleSidebarOpen(prev => !prev);
   };
 
-  const handleRemoveFromSchedule = (id: string) => {
-    // setSchedule(schedule.filter(item => item.id !== id))
+  const handleRemoveFromSchedule = (idToRemove: string) => {
+    if (!idToRemove) return;
+    
+    setSchedule((prevSchedule) => {
+      return prevSchedule.map((day) => ({
+        ...day,
+        scheduleInDay: day.scheduleInDay.filter((item) => {
+          const currentId = item.id || item.food?.id;
+          return currentId !== idToRemove;
+        }),
+      }));
+    });
   }
 
   // --- LOGIC SEND MESSAGE ---
   const addMessageToCurrentChat = (msg: Message) => {
-    console.log("before send message id",chatStore[currentIdChat].id)
-    console.log("Messages before update:", chatStore[currentIdChat].messages);
     setChatStore(prev => {
+      if (prev.length === 0) return prev;
+      
       const newState = prev.map((chat, index) =>
         index === currentIdChat
           ? { ...chat, messages: [...chat.messages, msg] }
           : chat
       );
-      console.log("after send message newState id",newState[currentIdChat].id)
-      console.log("Messages after newState update:", newState[currentIdChat].messages);
       return newState;
     });
-    console.log("after send message id",chatStore[currentIdChat].id)
-    console.log("Messages after update:", chatStore[currentIdChat].messages);
   };
 
 
@@ -262,7 +220,6 @@ export function useChat() {
         }
       ];
 
-      // console.log("All messages after adding:");
       newState.forEach((conv, i) => {
         console.log(`Conversation ${i} messages:`, conv.messages);
       });
@@ -288,30 +245,23 @@ export function useChat() {
     setInputValue('');
     setIsLoading(true);
     try {
-      // console.log("Before setter the new id" , chatStore[currentIdChat].id)
-      // 2. Determine if we are inside an existing valid chat session
       let sessionIdToSend: string | undefined = undefined;
 
       sessionIdToSend = chatStore[currentIdChat].id;
 
-      // 3. Send message to backend
       const aiResponse = await chatService.sendText(
         userMessageContent,
-        sessionIdToSend               // undefined if new chat, string if continuing
-        // location not available yet → omitted
+        sessionIdToSend
       );
 
-      // 4. Build AI message according to your exact Message type
       const aiMsg: Message = {
         role: 'ai',
-        type: aiResponse.widget.type,           // "chat" or "recommendation"
+        type: aiResponse.widget.type,
         content: aiResponse.message.content,
-        data: aiResponse.widget.payload,        // null or FoodItem[] (already enriched)
+        data: aiResponse.widget.payload,
       };
 
-      // 5. Add AI response to UI
       addMessageToCurrentChat(aiMsg);
-      // 6. If this was a brand-new conversation → save the session_id returned by backend
       if (!sessionIdToSend && aiResponse.session_id) {
         flushSync(() => {
           setChatStore(prevChatStore =>
@@ -330,22 +280,161 @@ export function useChat() {
       const errorMsg: Message = {
         role: 'ai',
         type: 'chat',
-        content: 'Xin lỗi, mình đang gặp lỗi. Vui lòng thử lại sau ít phút nhé',
+        content: 'Sorry, I\'m having trouble. Please try again in a few minutes.',
         data: undefined,
       };
       addMessageToCurrentChat(errorMsg);
     } finally {
       setIsLoading(false);
     }
-    // console.log("After setter the new id" , chatStore[currentIdChat].id)
   };
 
-  // Return all for UI in chat-page
+  const handleRemoveDay = (dayToRemove: number) => {
+    setSchedule((prev) => {
+      const filteredSchedule = prev.filter((d) => d.day !== dayToRemove);
+
+      const reindexedSchedule = filteredSchedule.map((day, index) => ({
+        ...day,
+        day: index + 1,
+        scheduleInDay: day.scheduleInDay.map((item) => ({
+          ...item,
+          day: index + 1,
+        })),
+      }));
+
+      return reindexedSchedule;
+    });
+  };
+
+  const handleSwapScheduleItems = (item1: ScheduleItem, item2: ScheduleItem) => {
+    setSchedule((prev) => {
+      // Find indices and days of both items
+      let item1Day = -1, item1Idx = -1;
+      let item2Day = -1, item2Idx = -1;
+
+      prev.forEach((dayObj) => {
+        const idx1 = dayObj.scheduleInDay.findIndex(
+          (item) => item === item1 || (item.id === item1.id && item.id)
+        );
+        if (idx1 !== -1) {
+          item1Day = dayObj.day;
+          item1Idx = idx1;
+        }
+
+        const idx2 = dayObj.scheduleInDay.findIndex(
+          (item) => item === item2 || (item.id === item2.id && item.id)
+        );
+        if (idx2 !== -1) {
+          item2Day = dayObj.day;
+          item2Idx = idx2;
+        }
+      });
+
+      // If items not found, return unchanged
+      if (item1Day === -1 || item2Day === -1) return prev;
+
+      // If items are in same day, swap within day
+      if (item1Day === item2Day) {
+        return prev.map((dayObj) => {
+          if (dayObj.day === item1Day) {
+            const items = [...dayObj.scheduleInDay];
+            [items[item1Idx], items[item2Idx]] = [items[item2Idx], items[item1Idx]];
+            return { ...dayObj, scheduleInDay: items };
+          }
+          return dayObj;
+        });
+      }
+
+      // If items are in different days, swap across days
+      return prev.map((dayObj) => {
+        if (dayObj.day === item1Day) {
+          const items = [...dayObj.scheduleInDay];
+          items[item1Idx] = { ...item2, day: item1Day };
+          return { ...dayObj, scheduleInDay: items };
+        } else if (dayObj.day === item2Day) {
+          const items = [...dayObj.scheduleInDay];
+          items[item2Idx] = { ...item1, day: item2Day };
+          return { ...dayObj, scheduleInDay: items };
+        }
+        return dayObj;
+      });
+    });
+
+    // Collect ids for animation feedback
+    const id1 = item1.id || item1.food?.id;
+    const id2 = item2.id || item2.food?.id;
+    if (id1 && id2) {
+      setSwappedItemIds([id1, id2]);
+      setTimeout(() => setSwappedItemIds([]), 900);
+    }
+
+    // Reset selection after swap
+    setScheduleItemSelected(null);
+  };
+
+  const handleOpenDayMap = (daySchedule: ScheduleDay) => {
+    const locations = getLocationsFromDay(daySchedule);
+
+    if(locations.length > 0) {
+      
+    }
+  };
+
+  const handleDeleteSession = async (sessionId: string) => {
+    if (!window.confirm("Are you sure you want to delete this conversation?")) return;
+
+    try {
+      const isDelete = await hisService.deleteSession(sessionId);
+
+      if (isDelete) {
+        const newChatStore = chatStore.filter((chat) => chat.id !== sessionId);
+        setChatStore(newChatStore);
+
+        if (newChatStore.length === 0) {
+          setChatStore([{
+              id: "",
+              title: "New Conversation",
+              messages: []
+            }]);
+            setCurrentIdChat(0);
+        } else {
+          setChatStore(newChatStore);
+          setCurrentIdChat(0);
+        }
+        
+      } else {
+        console.error("Failed to delete session");
+      }
+    } catch (error) {
+      console.error("Error deleting session:", error);
+    }
+  };
+
+  const handleRenameSession = async (sessionId: string, newTitle: string) => {
+    if (!newTitle.trim()) return;
+
+    setChatStore(prev => prev.map(chat => 
+      chat.id === sessionId 
+        ? { ...chat, title: newTitle } 
+        : chat
+    ));
+
+    try {
+      const isSuccess = await hisService.renameSession(sessionId, newTitle);
+      
+      if (!isSuccess) {
+        console.error("Failed to rename on server");
+      }
+    } catch (error) {
+      console.error("Error renaming:", error);
+    }
+  }
+
   return {
     inputValue,
     setInputValue,
     schedule,
-    isLoading,
+    isLoading: isLoading || isLoadingHistory,
     currentIdChat,
     chatStore,
     handleAddToSchedule,
@@ -359,9 +448,13 @@ export function useChat() {
     setScheduleItemSelected,
     foodCardSelected,
     setFoodCardSelected,
-    FirstLoadInfo,
     isScheduleSidebarOpen,
-    toggleScheduleSidebar
-
+    toggleScheduleSidebar,
+    handleRemoveDay,
+    handleOpenDayMap,
+    handleDeleteSession,
+    handleRenameSession,
+    handleSwapScheduleItems,
+    swappedItemIds
   }
 }

@@ -1,4 +1,3 @@
-import { SidebarTrigger } from "@/shared/components/ui/sidebar"
 import { Button } from "@/shared/components/ui/button"
 import { PanelRightClose, PanelRightOpen } from "lucide-react"
 
@@ -12,7 +11,6 @@ export function ChatHeader({title, isScheduleSidebarOpen, onToggleScheduleSideba
   return (
     <header className="bg-background sticky top-0 flex h-14 shrink-0 items-center gap-2 border-b px-4 z-10">
       <div className="flex flex-1 items-center gap-2 px-3">
-        <SidebarTrigger />
         <span className="font-semibold text-gray-700">{title}</span>
       </div>
       <div className="flex items-center gap-2">

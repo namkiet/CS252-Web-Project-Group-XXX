@@ -1,7 +1,7 @@
 import re
 from app.agents.supervisor import RootControllerAgent
-from app.agents.tools.Ollama import OllamaLocalModel
-
+from app.agents.tools.sub_tools.Router.Ollama import OllamaLocalModel
+from app.agents.tools.sub_tools.Router.Ollama import OllamaLocalModel
 class ChatService:
     
     def __init__(self):
@@ -11,6 +11,7 @@ class ChatService:
     
     def _init_agent(self):
         try:
+            URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
             router = OllamaLocalModel("qwen2.5:14b")
             self.root = RootControllerAgent(router)
             self._register_agent()
@@ -22,8 +23,17 @@ class ChatService:
         try:
             from app.agents.sub_agents.Test import DeepseekFinder
             DeepseekF = DeepseekFinder()
-            
             self.root.register_agent(DeepseekF)
+            
+            from app.agents.sub_agents.GeminiFoodFinder import GeminiFoodFinder
+            FoodFounder = GeminiFoodFinder()
+            self.root.register_agent(FoodFounder)
+            
+            from app.agents.sub_agents.LocationFinder import LocationFinder
+            locFinder = LocationFinder()
+            self.root.register_agent(locFinder)
+            
+            
         except Exception as e:
             print(f"Failed to register agents: {e}")
     
@@ -74,6 +84,7 @@ class ChatService:
         return True
         
     def generate_response(self, user_message, chat_history):
+
         if not self.root:
             return {
                 "type" : "chat",
@@ -87,9 +98,10 @@ class ChatService:
             }
         try:
             import html
-            user_message = html.escape(user_message)
+            user_message_tmp = user_message
+            user_message = html.escape(user_message_tmp)
             
-            is_safe = self._classify_intent(user_message)
+            is_safe = self._classify_intent(user_message_tmp)
             
             if not is_safe:
                 return {
@@ -101,24 +113,29 @@ class ChatService:
                 }
 
             history_context = self._format_history(chat_history)
+            print("---------------")
+            print(history_context)
+            print("--------------")
             prompt = f"{history_context}\nUser's current input: {user_message}"
             payload = {
                 "message" : prompt,
-                "raw_input" : user_message
+                "raw_input" : user_message,
+                "chat_history" : chat_history
             }
-            
-            agent_output = self.root.handle(payload)
-            
+
+            agent_output = self.root.handle(payload)["output"]
+
             msg_type = "chat"
-            if agent_output.get("payload"):
+            myPayload = agent_output.get("payload", None)
+            if myPayload:
                 msg_type = "recommendation"
-                
+            print("Get here?")
             return {
                 "type": msg_type,
                 "role": "assistant",
-                "content": agent_output.get("message", "I couldn't generate a text response."),
-                "payload": agent_output.get("payload"),
-                "metadata": agent_output.get("metadata")        
+                "content": agent_output["message"] if not None else "I couldn't generate a text response.",
+                "payload": myPayload if not None else None,
+                "metadata": "normal chat"    
             }
         except Exception as e:
             print(f"ChatService Error: {e}")

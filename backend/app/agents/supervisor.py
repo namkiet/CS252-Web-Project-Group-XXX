@@ -1,6 +1,8 @@
 from app.agents.BaseAgent import BaseAgent
 from app.agents.sub_agents.Default import DefaultAgent
+from app.agents.tools.PromptCreater import json_to_prompt
 import json
+
 
 class RootControllerAgent:
     def __init__(self, router_model = None):
@@ -34,9 +36,11 @@ class RootControllerAgent:
 
         Choose the most suitable agent ONLY from the list BELOW:
         {agents_info}
+        
+        Pay attention to the previous request from agent, if it requested then call it.
 
         Replay ONLY in simple name:
-        "chosen_agent_name"
+        chosen_agent_name
         """
 
         
@@ -45,6 +49,7 @@ class RootControllerAgent:
     
     def LLM_Handle(self, payload) -> dict:
         user_input = payload["message"]
+        print("user_input:", user_input)
         agent_name = self.route(user_input)
         
         if agent_name not in self.agents:
@@ -57,7 +62,7 @@ class RootControllerAgent:
             print("Falling back to default agent...")
             agent_name = "default_agent"
             agent = self.agents[agent_name]
-
+        print("I'm calling:", agent_name)
         return agent.run(payload)
     
     def should_continue(self, user_input, agent_output):
@@ -71,6 +76,8 @@ class RootControllerAgent:
 
             Decide whether the agent's answer is FINAL or needs ADDITIONAL questions.
             If the agent output ask the user for futher clarification, then consider it is FINAL.
+            Some model may ask for other agentic to run first with keyword "agent". If that happen then continue.
+            If the answer still not answer the user query, continue.
 
             Reply with ONLY one word
             - "continue"
@@ -92,98 +99,25 @@ class RootControllerAgent:
             your job are descripe as following:
                 - Combine and integrate the information
                 - Remove duplicates
-                - produce the BEST final answer in clear JSON format:
-                "{{
-                    "message": "...",
-                    "payload": {{ ... }}
-                }}"
-
-            payload is a diction as below:
-                "quán ăn 1" : {{"name", "description", "địa chỉ"}}
-                "quán ăn 2" : {{"name", "description", "địa chỉ"}}
-                "quán ăn n" : {{"name", "description", "địa chỉ"}}
-                ...
-
-            with n is the ammount of "quán ăn"
-            respond ONLY with the final JSON format for the code to understand, anything else will NOT be accept
-            Example response:
-            "{{
-                "message": "Các món ăn phổ biến giữa phở và bún như cơm phụ hoặc bún hủ sẽ giúp bạn có một trải nghiệm ăn uống thú vị hơn.",
-                "payload":{{
-                    {{"name": "Quán Gà Rán","description": "Bánh quanh, thịt mềm, vị đặc trưng của món ăn dân dã.","địa chỉ": "83 Nguyễn Thị Minh Khai, Q. Đống Đa"}}
-                }} 
-            }}"
-            STRICT RULE:
-                - ONLY JSON INCLUDE
-                - NO \\n
-                - NO ADDITION TEXT
-                - NO ADDITION TAB
+                - produce the BEST final answer in clear message.
+            Keep user friendly attitude.
 """
         prompt = base_prompt
         last_raw = None
         max_retries = 1
-        for attempt in range(max_retries):
-            raw = self.router_model(prompt)
-            if isinstance(raw, dict):
-                return raw
-            last_raw = raw
-
-            try:
-                parsed = json.loads(raw)
-                if "message" not in parsed:
-                    raise ValueError("Missing 'message' key in sythesis result")
-                return parsed
-            except Exception:
-                prompt = f"""
-                The previous answer fail to satify a VALID JSON or did not match the required structure most likely you put \\n and json text at the beginning.
-                Here is What you returned:
-                {raw}
-
-                You MUST now reponse again with VALID JSON ONLY for THE CODE TO READ, following EXACTLY this schema:
-                {{
-                    "message": "...",
-                    "payload": {{ ... }}
-                }} 
-                payload is a diction as below:
-                    "quán ăn 1" : {{"name", "description", "địa chỉ"}}
-                    "quán ăn 2" : {{"name", "description", "địa chỉ"}}
-                    "quán ăn n" : {{"name", "description", "địa chỉ"}}
-                    ...
-                with n is the ammount of "quán ăn"             
-                do NOT INCLUDE any extra text outside the JSON
-                Example response:
-            "{{
-                "message": "Các món ăn phổ biến giữa phở và bún như cơm phụ hoặc bún hủ sẽ giúp bạn có một trải nghiệm ăn uống thú vị hơn.",
-                "payload":{{
-                    {{"name": "Quán Gà Rán","description": "Bánh quanh, thịt mềm, vị đặc trưng của món ăn dân dã.","địa chỉ": "83 Nguyễn Thị Minh Khai, Q. Đống Đa"}}
-                }} 
-            }}"
-            STRICT RULE:
-                - ONLY JSON INCLUDE
-                - NO \\n
-                - NO ADDITION TEXT
-                - NO ADDITION TAB
-                - NO include "json" text at the start
-                - NO endline if in message
-""".strip()
-                print(f"WARNING: Synthesis attempt {attempt} failed, retrying")
-        print("ERROR: Synthesis model failed to return valid JSON after retries.")
-        
-        return {
-            "message": last_raw or "Synthesis failed",
-            "payload": None
-        }
+        raw = self.router_model(prompt)
+        return raw
 
     def handle(self, payload) -> dict:
         if self.router_model is None:
             return self.LLM_Handle(payload)
-        user_input = payload["message"]
+        user_input = json_to_prompt(payload)
         MAX_LOOPs = 5
         loop_count = 0
 
         conversation_history = []
         last_result = None
-
+        conversation_history_str = ""
         while loop_count < MAX_LOOPs:
             loop_count += 1
 
@@ -191,7 +125,13 @@ class RootControllerAgent:
             last_result = agent_result
 
             output = agent_result.get("output", {})
-            message = output.get("message", "")
+            message = json_to_prompt(output)
+            conversation_history_str = (
+                "-------------------"
+                f"Agent: {loop_count}"
+                f"Response: {message}"
+            )
+
             extra_payload = output.get("payload", None)
 
             conversation_history.append({
@@ -201,16 +141,20 @@ class RootControllerAgent:
 
             if self.router_model is None:
                 break
-
-            if not self.should_continue(user_input, output):
+            
+            if not self.should_continue(user_input, conversation_history_str):
                 break
-
+            
 
             payload["message"] = (
                 f"{user_input}\n\n"
                 f"Previous agent attempt:\n{message}\n"
                 f"Additional data: {extra_payload}"
             )
+            output["message"] = payload["message"]
+            payload = output
+        final_result = {}
+        final_result["output"] = output
+        final_result["output"]["message"] = self.sythesize(user_input, conversation_history)
 
-        final_result = self.sythesize(user_input, conversation_history)
-        return {"output" :final_result}
+        return final_result
