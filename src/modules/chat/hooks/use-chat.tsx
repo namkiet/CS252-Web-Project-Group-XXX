@@ -308,7 +308,6 @@ export function useChat() {
 
   const handleSwapScheduleItems = (item1: ScheduleItem, item2: ScheduleItem) => {
     setSchedule((prev) => {
-      // Find indices and days of both items
       let item1Day = -1, item1Idx = -1;
       let item2Day = -1, item2Idx = -1;
 
@@ -330,10 +329,8 @@ export function useChat() {
         }
       });
 
-      // If items not found, return unchanged
       if (item1Day === -1 || item2Day === -1) return prev;
 
-      // If items are in same day, swap within day
       if (item1Day === item2Day) {
         return prev.map((dayObj) => {
           if (dayObj.day === item1Day) {
@@ -345,7 +342,6 @@ export function useChat() {
         });
       }
 
-      // If items are in different days, swap across days
       return prev.map((dayObj) => {
         if (dayObj.day === item1Day) {
           const items = [...dayObj.scheduleInDay];
@@ -360,7 +356,6 @@ export function useChat() {
       });
     });
 
-    // Collect ids for animation feedback
     const id1 = item1.id || item1.food?.id;
     const id2 = item2.id || item2.food?.id;
     if (id1 && id2) {
@@ -368,7 +363,6 @@ export function useChat() {
       setTimeout(() => setSwappedItemIds([]), 900);
     }
 
-    // Reset selection after swap
     setScheduleItemSelected(null);
   };
 
