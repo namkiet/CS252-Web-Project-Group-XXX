@@ -15,7 +15,7 @@ class ChatService:
             URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
             router = OllamaLocalModel("qwen2.5:14b")
             router2 = novaLite()
-            self.root = RootControllerAgent(router2)
+            self.root = RootControllerAgent(router)
             self._register_agent()
         except Exception as e:
             print(f"Failed to initialize AI Agent: {e}")
