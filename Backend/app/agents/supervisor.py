@@ -1,6 +1,8 @@
 from app.agents.BaseAgent import BaseAgent
 from app.agents.sub_agents.Default import DefaultAgent
+from app.agents.tools.PromptCreater import json_to_prompt
 import json
+
 
 class RootControllerAgent:
     def __init__(self, router_model = None):
@@ -36,7 +38,7 @@ class RootControllerAgent:
         {agents_info}
 
         Replay ONLY in simple name:
-        "chosen_agent_name"
+        chosen_agent_name
         """
 
         
@@ -57,7 +59,7 @@ class RootControllerAgent:
             print("Falling back to default agent...")
             agent_name = "default_agent"
             agent = self.agents[agent_name]
-
+        print("I'm calling:", agent_name)
         return agent.run(payload)
     
     def should_continue(self, user_input, agent_output):
@@ -71,6 +73,8 @@ class RootControllerAgent:
 
             Decide whether the agent's answer is FINAL or needs ADDITIONAL questions.
             If the agent output ask the user for futher clarification, then consider it is FINAL.
+            Some model may ask for other agentic to run first with keyword "agent". If that happen then continue.
+            If the answer still not answer the user query, continue.
 
             Reply with ONLY one word
             - "continue"
@@ -177,13 +181,13 @@ class RootControllerAgent:
     def handle(self, payload) -> dict:
         if self.router_model is None:
             return self.LLM_Handle(payload)
-        user_input = payload["message"]
+        user_input = json_to_prompt(payload)
         MAX_LOOPs = 5
         loop_count = 0
 
         conversation_history = []
         last_result = None
-
+        conversation_history_str = ""
         while loop_count < MAX_LOOPs:
             loop_count += 1
 
@@ -191,7 +195,13 @@ class RootControllerAgent:
             last_result = agent_result
 
             output = agent_result.get("output", {})
-            message = output.get("message", "")
+            message = json_to_prompt(output)
+            conversation_history_str = (
+                "-------------------"
+                f"Agent: {loop_count}"
+                f"Response: {message}"
+            )
+            print("full detail:", conversation_history_str)
             extra_payload = output.get("payload", None)
 
             conversation_history.append({
@@ -201,8 +211,8 @@ class RootControllerAgent:
 
             if self.router_model is None:
                 break
-
-            if not self.should_continue(user_input, output):
+            
+            if not self.should_continue(user_input, conversation_history_str):
                 break
 
 
