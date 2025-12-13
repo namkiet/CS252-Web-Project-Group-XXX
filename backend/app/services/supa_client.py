@@ -7,9 +7,6 @@ url: str = Config.SUPABASE_URL
 key1: str = Config.SUPABASE_SECRET_KEY
 key2: str = Config.SUPABASE_KEY
 
-def get_db() -> Client:
-    return create_client(url, key2)
-
 def get_auth_db() -> Client:
     if 'auth_db' not in g:
         client = create_client(url, key2)
@@ -24,7 +21,3 @@ def get_auth_db() -> Client:
 
         g.auth_db = client
     return g.auth_db
-
-    
-def get_admin_db() -> Client:
-    return create_client(url, key1)

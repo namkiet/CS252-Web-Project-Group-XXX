@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 
-from app.services.supa_client import get_auth_db, get_db
+from service.supabase import get_db
+from app.services.supa_client import get_auth_db
 from app.utils.decorators import token_required
 from app.services.history_service import ChatHistoryService
 

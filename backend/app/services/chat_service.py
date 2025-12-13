@@ -13,7 +13,7 @@ class ChatService:
     def _init_agent(self):
         try:
             URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
-            router = OllamaLocalModel("qwen2.5:14b")
+            router = OllamaLocalModel(base_url=URL, model="qwen2.5:14b")
             router2 = novaLite()
             self.root = RootControllerAgent(router)
             self._register_agent()
