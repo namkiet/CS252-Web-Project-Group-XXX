@@ -3,17 +3,20 @@ from supabase import Client
 from service.supabase import get_admin_db
 from service.vector_store import VectorStore
 from service.ollama_emb import OllamaEmb
+from service.embedding_service import EmbeddingService
+
+
 class Ingestor:
     
     def __init__(self):
         self.vector_store = VectorStore()
-        URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
-        self.embed_model = OllamaEmb(base_url = URL)
+        self.embedder = EmbeddingService()
+        # URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
+        # self.embed_model = OllamaEmb(base_url = URL)
         
     def _embed_text(self, text):
         try:
-            vector = self.embed_model.embed(prompt=text)
-            return vector
+            return self.embedder.embed_text(text)
         except Exception as e:
             print(f"Ingestor Embed text error: {e}")
             return []
