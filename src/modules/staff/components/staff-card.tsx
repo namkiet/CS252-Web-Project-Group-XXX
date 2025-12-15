@@ -30,29 +30,31 @@ const StaffCard: React.FC<StaffCardProps> = ({ name, role, image, description, f
 
       <div className="flex gap-3 mt-auto">
         {facebookUrl && (
-            <SocialButton 
-                icon={<Facebook size={16} />} 
-                href={facebookUrl} 
-            />
+          <SocialButton 
+            icon={<Facebook size={16} />} 
+            href={facebookUrl}
+            color="bg-[#1877F2]"
+          />
         )}
         
         {linkedinUrl && (
-            <SocialButton 
-                icon={<Linkedin size={16} />} 
-                href={linkedinUrl} 
-            />
+          <SocialButton 
+            icon={<Linkedin size={16} />} 
+            href={linkedinUrl}
+            color="bg-[#0A66C2]"
+          />
         )}
       </div>
     </div>
   );
 };
 
-const SocialButton = ({ icon, href }: { icon: React.ReactNode; href: string }) => (
+const SocialButton = ({ icon, href, color }: { icon: React.ReactNode; href: string; color: string }) => (
   <a 
     href={href} 
     target="_blank"
     rel="noopener noreferrer"
-    className="w-8 h-8 flex items-center justify-center bg-[#3b5998] text-white rounded hover:bg-opacity-90 transition-colors"
+    className={`w-8 h-8 flex items-center justify-center ${color} text-white rounded-full hover:opacity-90 transition-opacity shadow-sm hover:scale-110 transform duration-200`}
   >
     {icon}
   </a>

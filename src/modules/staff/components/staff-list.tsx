@@ -4,8 +4,8 @@ import { STAFF_DATA } from './data';
 
 export const StaffList = () => {
   return (
-    <div className="container mx-auto px-4 pb-24">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="container mx-auto px-4 pb-16 md:pb-24">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 sm:gap-6">
         {STAFF_DATA.map((staff, index) => (
           <div key={staff.id} style={{ transitionDelay: `${index * 100}ms` }}>
             <SlideInOnScroll>

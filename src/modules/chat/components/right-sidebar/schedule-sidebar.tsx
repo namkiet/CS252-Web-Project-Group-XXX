@@ -45,6 +45,7 @@ export function ScheduleSidebar({
   onShowDayMap,
   onSwapItems,
   swappedItemIds = [],
+  className,
   ...props
 }: ScheduleSidebarProps) {
 
@@ -96,36 +97,35 @@ export function ScheduleSidebar({
   return (
     <Sidebar
       collapsible="none"
-      className="sticky top-0 hidden h-svh border-l lg:flex w-1/4"
+      className={cn("sticky top-0 h-full w-full border-l bg-white", className)}
       {...props}
     >
       <SidebarHeader className="p-0">  
         {/* Header here */}
-        <div className="border-sidebar-border border-b p-6 bg-white">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="border-sidebar-border border-b p-4 md:p-6 bg-white">
+          <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-orange-600" />
-            <h2>Your Schedule</h2>
+            <h2 className="font-semibold text-lg text-gray-800">Your Schedule</h2>
           </div>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
-        <ScrollArea className="flex-1 p-2">
-          <div className="space-y-5">
-
+        <ScrollArea className="flex-1 p-3 md:p-4">
+          <div className="space-y-4 md:space-y-5">
             {schedule.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="bg-orange-100 border-2 border-dashed rounded-xl w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                  <Calendar className="h-10 w-10 text-orange-400" />
+              <div className="text-center py-10 md:py-20">
+                <div className="bg-orange-50 border-2 border-dashed border-orange-200 rounded-full w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 flex items-center justify-center">
+                  <Calendar className="h-8 w-8 md:h-10 md:w-10 text-orange-400" />
                 </div>
-                <p className="text-sm text-orange-500">Start chatting to build your plan</p>
+                <p className="text-sm text-orange-500 px-4">Start chatting to build your plan</p>
               </div>
             ) : (
               schedule.map((dayItem) => (
                 <Card
                   key={dayItem.day}
                   className={cn(
-                    "overflow-hidden border-2 transition-all duration-300 rounded-xl cursor-pointer p-1.5",
+                    "overflow-hidden border transition-all duration-300 rounded-xl cursor-pointer p-1.5",
                     "min-h-10"
                   )}
                   onDragOver={handleDragOver}

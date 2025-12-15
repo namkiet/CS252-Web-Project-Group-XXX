@@ -1,6 +1,6 @@
 import React from 'react';
 import type { DishData } from '../index';
-import { MapPin } from 'lucide-react';
+import { MapPin, X } from 'lucide-react';
 
 interface DishDetailModalProps {
   dish: DishData | null;
@@ -12,67 +12,86 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose 
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-300"
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Image */}
-        <div className="relative h-80">
-          <img
-            src={dish.image}
-            alt={dish.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-          
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 bg-white/90 hover:bg-white rounded-full p-2 transition-colors shadow-sm"
-          >
-            <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+        {/* Scrollable Container */}
+        <div className="overflow-y-auto custom-scrollbar">
+            
+          {/* Modal Image Header */}
+          <div className="relative h-64 md:h-72 shrink-0">
+            <img
+              src={dish.image}
+              alt={dish.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition-all backdrop-blur-md"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="absolute bottom-5 left-5 right-5">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 leading-tight">{dish.name}</h2>
+              <div className="flex items-center gap-2 text-orange-200 font-medium bg-black/30 backdrop-blur-sm w-fit px-3 py-1 rounded-full text-sm">
+                <MapPin className="w-4 h-4" />
+                <span>{dish.origin}, {dish.country}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Modal Content Body */}
+          <div className="p-6 md:p-8 space-y-8">
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  🍽️ What is it?
+              </h3>
+              <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                  {dish.whatIsIt}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  🥕 Main Ingredients
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {dish.mainIngredients.map((ingredient, index) => (
+                  <span 
+                      key={index} 
+                      className="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-lg text-sm font-medium border border-orange-100"
+                  >
+                    {ingredient}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3 pb-4">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  🥢 How it's served
+              </h3>
+              <div className="bg-gray-50 p-4 rounded-xl border-l-4 border-orange-400 text-gray-700 text-sm md:text-base italic leading-relaxed">
+                  "{dish.servingStyle}"
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="p-4 border-t border-gray-100 bg-white md:hidden sticky bottom-0 z-10">
+          <button onClick={onClose} className="w-full bg-gray-100 text-gray-800 font-bold py-3 rounded-xl hover:bg-gray-200">
+            Close
           </button>
-
-          <div className="absolute bottom-6 left-6 right-6">
-            <h2 className="text-3xl font-bold text-white mb-2">{dish.name}</h2>
-            <div className="flex items-center gap-2 text-white/90">
-              <MapPin className="w-5 h-5" />
-              <span className="text-lg font-medium">{dish.origin}, {dish.country}</span>
-            </div>
-          </div>
         </div>
 
-        {/* Modal Content */}
-        <div className="p-8 space-y-8">
-          <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">What is it?</h3>
-            <p className="text-gray-700 leading-relaxed text-lg">{dish.whatIsIt}</p>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Main Ingredients</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {dish.mainIngredients.map((ingredient, index) => (
-                <div key={index} className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                  <span className="text-orange-600 text-xl">•</span>
-                  <span className="text-gray-700 font-medium">{ingredient}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">How it's served</h3>
-            <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 text-gray-800 leading-relaxed">
-               {dish.servingStyle}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

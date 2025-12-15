@@ -2,11 +2,11 @@ import { Bot } from 'lucide-react'
 
 export function ChatEmptyState() {
   return (
-    <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4 p-4">
-      <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-        <Bot className="w-8 h-8 text-[var(--color-brand)]" />
+    <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4 p-4 animate-in fade-in duration-500">
+      <div className="w-12 h-12 md:w-16 md:h-16 bg-orange-100 rounded-full flex items-center justify-center shadow-sm">
+        <Bot className="w-6 h-6 md:w-8 md:h-8 text-[var(--color-brand)]" />
       </div>
-      <p className="text-lg">Start chatting to plan your food tour!</p>
+      <p className="text-base md:text-lg text-center max-w-[80%]">Start chatting to plan your food tour!</p>
     </div>
   )
 }

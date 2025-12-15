@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/shared/components/ui/button'
-import { ChevronDown, LogOut, User, Settings } from 'lucide-react'
+import { ChevronDown, LogOut, User, Settings, Menu, Home, Map, BookOpen, Users, Phone } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 
 import { useAuth } from '@/context/auth-context'
@@ -9,6 +9,16 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/shared/components/ui/hover-card'
+
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/shared/components/ui/sheet"
 
 import logoImage from '@/assets/images/logo.png'
 
@@ -69,6 +79,15 @@ export function Navbar() {
     }`;
   };
 
+  const getMobileLinkClass = (path: string) => {
+    const isActive = currentPath === path;
+    return `flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors ${
+       isActive 
+         ? 'bg-orange-50 text-orange-600' 
+         : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+    }`;
+  };
+
   return (
     <nav className="sticky top-0 z-50 h-18 font-navbar transition-all duration-300">
       <div 
@@ -77,17 +96,17 @@ export function Navbar() {
         }`} 
       />
 
-      <div className="relative z-10 flex h-full items-center justify-between px-8">
+      <div className="relative z-10 flex h-full items-center justify-between px-4 md:px-8">
         <Link to="/" className="flex items-center">
           <img 
             src={logoImage} 
             alt="Local Food Logo"
-            className="h-22 w-auto object-contain"
+            className="h-16 md:h-22 w-auto object-contain"
           />
         </Link>
 
-        {/* Link and Login Button */}
-        <div className="flex items-center space-x-10 mr-28">
+        {/* DESKTOP */}
+        <div className="hidden lg:flex items-center space-x-10 mr-28">
           <div className="hidden space-x-9 md:flex items-center">
             <Link to="/" className={getLinkClass('/')}>
               Home
@@ -122,7 +141,7 @@ export function Navbar() {
             </HoverCard>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-4">
             {user ? (
               // SignIn
               <div className="relative" ref={menuRef}>
@@ -202,6 +221,74 @@ export function Navbar() {
               </Button>
             )}
           </div>
+        </div>
+
+        {/* MOBILE */}
+        <div className="lg:hidden flex items-center">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className={isTransparent ? "text-orange-500 hover:bg-white/20" : "text-gray-800 hover:bg-gray-100"}>
+                <Menu className="h-8 w-8" />
+              </Button>
+            </SheetTrigger>
+
+            <SheetContent side="right" className="w-[300px] flex flex-col pt-4 bg-white sm:w-[350px]">
+              <SheetHeader>
+                <SheetTitle className="hidden">Menu</SheetTitle>
+                <SheetDescription className="hidden">
+                  Mobile Navigation
+                </SheetDescription>
+              </SheetHeader>
+
+              {/* Mobile User Info */}
+              {user && (
+                <div className="flex items-center gap-3 mb-6 p-4 bg-orange-50 rounded-lg mx-1">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold">
+                    {user?.avatar_url ? <img src={user.avatar_url} alt={displayName} className="h-full w-full object-cover rounded-full" /> : avatarChar}
+                  </div>
+                  <div className="overflow-hidden">
+                    <p className="font-bold text-gray-800 truncate">{displayName}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Mobile Navigation Links */}
+              <div className="flex flex-col gap-1">
+                <SheetClose asChild><Link to="/" className={getMobileLinkClass('/')}><Home size={18} /> Home</Link></SheetClose>
+                <SheetClose asChild><Link to="/chat" className={getMobileLinkClass('/chat')}><Map size={18} /> Food Tour</Link></SheetClose>
+                <SheetClose asChild><Link to="/food-guide" className={getMobileLinkClass('/food-guide')}><BookOpen size={18} /> Food Guide</Link></SheetClose>
+                <SheetClose asChild><Link to="/staff" className={getMobileLinkClass('/staff')}><Users size={18} /> Staff</Link></SheetClose>
+                <SheetClose asChild>
+                  <a href="https://www.facebook.com/na.mkiet42" target="_blank" rel="noopener noreferrer" className={getMobileLinkClass('#')}><Phone size={18} />Contact Us</a>
+                </SheetClose>
+              </div>
+
+              {/* Mobile Actions */}
+              <div className="mt-auto mb-8 flex flex-col gap-2">
+                {user ? (
+                  <>
+                    <SheetClose asChild>
+                      <Link to="/profile" className="flex items-center gap-3 px-4 py-3 rounded-md text-gray-700 hover:bg-gray-100 transition-colors font-medium">
+                        <User size={18} /> My Profile
+                      </Link>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <Button variant="ghost" onClick={handleLogout} className="justify-start text-red-600 hover:text-red-700 hover:bg-red-50 px-4 py-6 w-full text-base font-medium">
+                        <LogOut size={18} className="mr-2"/> Log Out
+                      </Button>
+                    </SheetClose>
+                  </>
+                ) : (
+                  <SheetClose asChild>
+                    <Button className="w-full bg-[var(--color-brand)] hover:bg-[var(--color-brand)]/90 text-white h-12 text-base" asChild>
+                        <Link to="/login">Log In</Link>
+                    </Button>
+                  </SheetClose>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </nav>

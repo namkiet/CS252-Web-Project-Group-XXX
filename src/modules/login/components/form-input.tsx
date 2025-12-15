@@ -20,7 +20,7 @@ export const FormInput: React.FC<FormInputProps> = ({ id, label, type, value, on
 
   return (
     <div>
-      <label htmlFor={id} className="block text-gray-700 mb-1 text-sm">
+      <label htmlFor={id} className="block text-gray-700 mb-1 text-sm font-medium">
         {label}
       </label>
       {/* Each input line */}
@@ -35,7 +35,7 @@ export const FormInput: React.FC<FormInputProps> = ({ id, label, type, value, on
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full pl-9 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white outline-none transition-all duration-200 text-sm ${isPassword ? 'pr-9' : 'pr-3'}`}
+          className={`w-full pl-9 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white outline-none transition-all duration-200 text-base md:text-sm ${isPassword ? 'pr-10' : 'pr-3'}`}
           required={required}
         />
 

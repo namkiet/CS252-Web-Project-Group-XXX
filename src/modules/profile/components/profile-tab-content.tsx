@@ -85,7 +85,7 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
           <CardTitle className="text-orange-700 dark:text-orange-500">Profile Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="firstname" className="text-gray-900 dark:text-gray-100">First name</Label>
               <Input id="firstname" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name" className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
@@ -97,59 +97,61 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-900 dark:text-gray-100">Email</Label>
               {/* Readonly for email */}
-              <Input id="email" defaultValue={user?.email || ""} disabled className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
+              <Input id="email" defaultValue={user?.email || ""} disabled className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 bg-gray-50" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="nickname" className="text-gray-900 dark:text-gray-100">Nickname</Label>
-              <Input id="nickname" value={nickname} disabled className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
+              <Input id="nickname" value={nickname} disabled className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 bg-gray-50" />
             </div>
           </div>
-          <div className="mt-6 flex flex-col gap-3">
+          
+          <div className="mt-8 flex flex-col gap-4">
             {showChangePassword && (
-              <div className="grid gap-3 md:grid-cols-3">
-                <div className="space-y-1">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700">
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div className="space-y-1">
                   <Label htmlFor="current-password" className="text-gray-900 dark:text-gray-100">Current Password</Label>
                   <Input
                     id="current-password"
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                    className="bg-white border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                   />
-                </div>
-                <div className="space-y-1">
+                  </div>
+                  <div className="space-y-1">
                   <Label htmlFor="new-password" className="text-gray-900 dark:text-gray-100">New Password</Label>
                   <Input
                     id="new-password"
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                    className="bg-white border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                   />
-                </div>
-                <div className="space-y-1">
+                  </div>
+                  <div className="space-y-1">
                   <Label htmlFor="confirm-password" className="text-gray-900 dark:text-gray-100">Confirm New Password</Label>
                   <Input
                     id="confirm-password"
                     type="password"
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                    className="bg-white border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                   />
-                </div>
+                  </div>
 
-                {changePwdResult && (
+                  {changePwdResult && (
                   <div className="md:col-span-3 text-sm text-muted-foreground dark:text-gray-400">
                     {changePwdResult}
                   </div>
-                )}
+                  )}
 
-                <div className="md:col-span-3 flex justify-end gap-2">
+                  <div className="md:col-span-3 flex justify-end gap-2 pt-2">
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setShowChangePassword(false);
-                      resetPasswordFields();
+                    setShowChangePassword(false);
+                    resetPasswordFields();
                     }}
                     className="border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
                   >
@@ -158,26 +160,27 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
                   <Button 
                     onClick={handleChangePassword}
                     variant="outline"
-                    className="border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
+                    className="bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:text-white"
                   >
                     OK{changePwdResult ? ` – ${changePwdResult}` : ""}
                   </Button>
+                  </div>
                 </div>
               </div>
             )}
 
-            <div className="flex justify-between gap-3">
+            <div className="flex flex-col sm:flex-row justify-between gap-3">
               <Button 
                 variant="outline" 
                 onClick={() => setShowChangePassword((v) => !v)}
-                className="border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
+                className="w-full sm:w-auto border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
               >
                 {showChangePassword ? "Hide Change Password" : "Change Password"}
               </Button>
               <Button 
                 onClick={handleSaveProfile}
                 variant="outline"
-                className="border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
+                className="w-full sm:w-auto border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
               >
                 Save Changes
               </Button>
@@ -186,14 +189,14 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
         </CardContent>
       </Card>
 
-      {/* Not yet */}
+      {/* Connected Accounts Card */}
       <Card className="border-orange-100 shadow-sm dark:border-orange-900">
         <CardHeader>
           <CardTitle className="text-orange-700 dark:text-orange-500">Connected Accounts</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           {socials.map((social) => (
-            <div key={social.platform} className="flex items-center justify-between border border-gray-300 rounded-md p-4 dark:border-gray-600 dark:bg-gray-800">
+            <div key={social.platform} className="flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-300 rounded-md p-4 gap-4 dark:border-gray-600 dark:bg-gray-800">
               <div className="space-y-1">
                 <p className="font-medium capitalize text-gray-900 dark:text-gray-100">{social.platform}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -203,7 +206,7 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
               <Button
                 variant="outline"
                 onClick={() => toggleSocial(social.platform)}
-                className={social.connected ? "border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700" : "border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"}
+                className={`w-full sm:w-auto ${social.connected ? "border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700" : "border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"}`}
               >
                 {social.connected ? "Disconnect" : "Connect"}
               </Button>

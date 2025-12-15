@@ -1,57 +1,59 @@
 import { Clock, Wallet, MapPin, Star } from 'lucide-react'
 import { SlideInOnScroll } from '@/shared/components/slideInOnScroll'
 
-export const FeaturedOnSection = () => (
-  <section className="bg-gray-50 py-16 border-b border-gray-200">
-    <div className="container mx-auto max-w-6xl px-6 text-center">
-      <SlideInOnScroll direction='down' duration={1100}>
-        <h3 className="mb-10 text-sm font-bold uppercase tracking-widest text-gray-400">
-          Why travelers love us
-        </h3>
-      </SlideInOnScroll>
-      <SlideInOnScroll direction='up' duration={1100}>
-        <div className="flex flex-wrap items-center justify-center gap-10 md:gap-24">
-          <div className="flex flex-col items-center gap-3 group">
-            <div className="p-3 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all">
-                <Clock className="w-8 h-8 text-orange-500" />
-            </div>
-            <span className="text-lg font-bold text-gray-700">
-              Save Time
-            </span>
-            <span className="text-sm text-gray-500">Plan in seconds</span>
-          </div>
+export const FeaturedOnSection = () => {
+  const features = [
+    {
+      icon: Clock,
+      title: "Save Time",
+      desc: "Plan in seconds"
+    },
+    {
+      icon: MapPin,
+      title: "Authentic Spots",
+      desc: "No tourist traps"
+    },
+    {
+      icon: Wallet,
+      title: "Smart Budget",
+      desc: "Price estimation"
+    },
+    {
+      icon: Star,
+      title: "Top Rated",
+      desc: "Curated by AI"
+    }
+  ];
 
-          <div className="flex flex-col items-center gap-3 group">
-            <div className="p-3 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all">
-                <MapPin className="w-8 h-8 text-orange-500" />
-            </div>
-            <span className="text-lg font-bold text-gray-700">
-              Authentic Spots
-            </span>
-            <span className="text-sm text-gray-500">No tourist traps</span>
-          </div>
+  return (
+    <section className="bg-gray-50 py-12 md:py-16 border-b border-gray-200">
+      <div className="container mx-auto max-w-6xl px-4 md:px-6 text-center">
+        <SlideInOnScroll direction='down' duration={1100}>
+          <h3 className="mb-8 md:mb-12 text-xs md:text-sm font-bold uppercase tracking-widest text-gray-400">
+            Why travelers love us
+          </h3>
+        </SlideInOnScroll>
 
-          <div className="flex flex-col items-center gap-3 group">
-            <div className="p-3 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all">
-                <Wallet className="w-8 h-8 text-orange-500" />
-            </div>
-            <span className="text-lg font-bold text-gray-700">
-              Smart Budget
-            </span>
-            <span className="text-sm text-gray-500">Price estimation</span>
+        <SlideInOnScroll direction='up' duration={1100}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-10 md:gap-12">
+            {features.map((feature, index) => (
+              <div key={index} className="flex flex-col items-center gap-3 group">
+                <div className="p-3 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all duration-300 transform group-hover:-translate-y-1">
+                  <feature.icon className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-base md:text-lg font-bold text-gray-700">
+                    {feature.title}
+                  </span>
+                  <span className="text-xs md:text-sm text-gray-500">
+                    {feature.desc}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
-
-          <div className="flex flex-col items-center gap-3 group">
-            <div className="p-3 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all">
-                <Star className="w-8 h-8 text-orange-500" />
-            </div>
-            <span className="text-lg font-bold text-gray-700">
-              Top Rated
-            </span>
-            <span className="text-sm text-gray-500">Curated by AI</span>
-          </div>
-        </div>
-      </SlideInOnScroll>
-    </div>
-  </section>
-)
+        </SlideInOnScroll>
+      </div>
+    </section>
+  )
+}

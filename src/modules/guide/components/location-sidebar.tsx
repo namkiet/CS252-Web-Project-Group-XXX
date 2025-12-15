@@ -12,25 +12,25 @@ export const LocationSidebar: React.FC<LocationSidebarProps> = ({
   locations, activeLocationId, activeTab, onScrollToLocation 
 }) => {
   return (
-    <aside className="hidden lg:block w-72 flex-shrink-0">
-      <div className="sticky top-[152px]">
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-orange-100">
-          <h3 className="text-gray-900 mb-4 font-bold text-lg">
+    <aside className="w-full lg:w-72 flex-shrink-0">
+      <div className="lg:sticky lg:top-[152px]">
+        <div className="bg-white lg:rounded-xl lg:shadow-lg lg:p-6 lg:border lg:border-orange-100">
+          <h3 className="text-gray-900 mb-4 font-bold text-lg hidden lg:block">
             {activeTab === 'vietnam' ? 'Provinces' : 'Countries'}
           </h3>
-          <nav className="space-y-0.5">
+          <nav className="space-y-1">
             {locations.map((location, index) => (
               <button
                 key={location.id}
                 onClick={() => onScrollToLocation(location.id)}
-                className={`w-full text-left px-4 py-1.5 rounded-lg transition-all duration-200 flex items-center gap-3 ${
+                className={`w-full text-left px-4 py-3 lg:py-2 rounded-lg transition-all duration-200 flex items-center gap-3 ${
                   activeLocationId === location.id
-                    ? 'bg-orange-100 text-orange-700 font-medium'
+                    ? 'bg-orange-100 text-orange-700 font-medium shadow-sm'
                     : 'hover:bg-orange-50 text-gray-700'
                 }`}
               >
-                <span className="text-orange-600 min-w-[24px] font-bold">{index + 1}.</span>
-                <span>{location.name}</span>
+                <span className="text-orange-600 min-w-[24px] font-bold text-sm">{index + 1}.</span>
+                <span className="text-sm lg:text-base">{location.name}</span>
               </button>
             ))}
           </nav>

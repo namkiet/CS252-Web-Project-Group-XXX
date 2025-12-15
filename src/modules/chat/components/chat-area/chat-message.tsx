@@ -15,14 +15,14 @@ export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCar
   const isAi = message.role === 'ai';
 
   return (
-    <div className={`flex flex-col gap-2 ${!isAi ? 'items-end' : 'items-start'}`}>
-      <div className={`flex gap-3 max-w-[90%] ${!isAi ? 'flex-row-reverse' : 'flex-row'}`}>
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0
+    <div className={`flex flex-col gap-1.5 md:gap-2 ${!isAi ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+      <div className={`flex gap-2 md:gap-3 max-w-[95%] md:max-w-[85%] ${!isAi ? 'flex-row-reverse' : 'flex-row'}`}>
+        <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center shrink-0
           ${isAi ? 'bg-[var(--color-brand)] text-white' : 'bg-gray-200 text-gray-600'}`}>
-            {isAi ? <Bot size={16}/> : <User size={16}/>}
+          {isAi ? <Bot size={16} className="md:w-4 md:h-4"/> : <User size={16} className="md:w-4 md:h-4"/>}
         </div>
 
-        <div className={`rounded-2xl px-5 py-3 text-sm leading-relaxed shadow-sm
+        <div className={`rounded-2xl px-4 py-2.5 md:px-5 md:py-3 text-sm leading-relaxed shadow-sm
           ${!isAi ? 'bg-gray-100 text-gray-900 rounded-tr-none' 
             : 'bg-white border border-gray-200 text-gray-800 rounded-tl-none'}`}>
           {message.content}
@@ -30,8 +30,8 @@ export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCar
       </div>
 
       {isAi && message.type === 'recommendation' && message.data && (
-        <div className="pl-11 w-full max-w-2xl pt-2">
-          <div className="flex flex-col gap-4">
+        <div className="pl-9 md:pl-11 w-full max-w-2xl pt-1 md:pt-2">
+          <div className="flex flex-col gap-3 md:gap-4">
             {message.data.map((place) => {
               // Check whether this item added
               const isAdded = currentSchedule.some(day =>

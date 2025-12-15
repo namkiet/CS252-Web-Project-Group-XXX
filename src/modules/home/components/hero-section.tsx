@@ -6,23 +6,23 @@ import heroBgImage from '@/assets/images/slide1.jpg'
 
 export const HeroSection = () => (
   <div
-    className='relative flex h-screen min-h-[800px] -mt-18 items-center justify-center text-center text-white'
+    className='relative flex h-screen min-h-[700px] md:min-h-[800px] -mt-18 items-center justify-center text-center text-white'
     style={{
       backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${heroBgImage})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}
   >
-    <div className="flex flex-col items-center p-4">
+    <div className="flex flex-col items-center p-4 w-full max-w-4xl px-6">
       <SlideInOnScroll direction='down' duration={1100}>
-        <div className="mb-3 text-lg font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-2" style={{ color: 'var(--color-brand)' }}>
-          <Sparkles className="w-5 h-5" />
+        <div className="mb-3 text-sm md:text-lg font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-2" style={{ color: 'var(--color-brand)' }}>
+          <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
           AI-Powered Food Planner 
         </div>
-        <h1 className="mb-6 text-4xl font-bold md:text-8xl">
+        <h1 className="mb-6 text-5xl sm:text-6xl md:text-8xl font-bold leading-tight">
           Taste & Plan
         </h1>
-        <p className="mx-auto mt-14 text-center max-w-2xl text-lg text-gray-100 drop-shadow-md mb-8">
+        <p className="mx-auto mt-8 md:mt-14 text-center max-w-2xl text-base md:text-lg text-gray-100 drop-shadow-md mb-8">
           Don't waste hours searching. Just tell us where you're going, 
           and our AI will generate a personalized food itinerary 
           tailored to your taste.
@@ -34,7 +34,7 @@ export const HeroSection = () => (
           <Button
             asChild
             className="bg-transparent border-1 border-yellow-300 text-yellow-400 hover:bg-yellow-400/10 
-              text-base font-semibold rounded-full min-w-[150px] py-6 flex items-center gap-2 transition-all duration-300"
+              text-base font-semibold rounded-full min-w-[140px] md:min-w-[150px] py-6 flex items-center gap-2 transition-all duration-300"
           >
             <Link to="/chat">
               Explore

@@ -1,6 +1,22 @@
+import { useState } from 'react';
+import { 
+  Calendar, 
+  Menu
+} from 'lucide-react';
+
 import { SidebarLeft } from '../components/left-sidebar/user-sidebar'
 import { ScheduleSidebar } from '../components/right-sidebar/schedule-sidebar'
-import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/shared/components/ui/sidebar"
+
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription
+} from "@/shared/components/ui/sheet"
+
+import { Button } from "@/shared/components/ui/button"
 
 import { ChatHeader } from '../components/chat-area/chat-header'
 import { ChatList } from '../components/chat-area/chat-list'
@@ -40,6 +56,7 @@ export default function ChatPage() {
   } = useChat();
 
   const mapModal = useMapModal();
+  const [isMobileScheduleOpen, setIsMobileScheduleOpen] = useState(false);
 
   const activeConversation: Conversation = chatStore && chatStore[currentIdChat] 
     ? chatStore[currentIdChat] 
@@ -61,11 +78,28 @@ export default function ChatPage() {
       
       {/* Main Chat Area */}
       <SidebarInset className="h-full flex flex-col flex-1 overflow-hidden">
-        <ChatHeader 
-          title={activeConversation.title}
-          isScheduleSidebarOpen={isScheduleSidebarOpen}
-          onToggleScheduleSidebar={toggleScheduleSidebar}
-        />
+        <header className="flex h-12 sm:h-16 items-center gap-2 border-b px-4 shrink-0 bg-white justify-between">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <SidebarTrigger className="-ml-2 md:hidden text-gray-500" />
+            
+            <div className="flex-1 min-w-0">
+              <ChatHeader 
+                title={activeConversation.title}
+                isScheduleSidebarOpen={isScheduleSidebarOpen}
+                onToggleScheduleSidebar={toggleScheduleSidebar}
+              />
+            </div>
+          </div>
+
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="lg:hidden text-orange-600 hover:bg-orange-50 shrink-0"
+            onClick={() => setIsMobileScheduleOpen(true)}
+          >
+            <Calendar className="h-6 w-6" />
+          </Button>
+        </header>
 
         <div className="flex flex-1 flex-col min-h-0 relative bg-white">
           {/* List Message */}
@@ -112,6 +146,35 @@ export default function ChatPage() {
           swappedItemIds={swappedItemIds}
         />
       </div>
+
+      <Sheet open={isMobileScheduleOpen} onOpenChange={setIsMobileScheduleOpen}>
+        <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 bg-white">
+          {/* Header ẩn để fix lỗi accessibility */}
+          <SheetHeader className="hidden">
+            <SheetTitle>Schedule</SheetTitle>
+            <SheetDescription>Mobile Schedule View</SheetDescription>
+          </SheetHeader>
+
+          <div className="h-full flex flex-col">
+            <ScheduleSidebar
+              className="flex-1 w-full border-none"
+              schedule={schedule} 
+              onRemoveItem={handleRemoveFromSchedule}
+              onAddDay={onAddDay}
+              onAddInDay={onAddInDay}
+              scheduleItemSelected={scheduleItemSelected}
+              setScheduleItemSelected={setScheduleItemSelected}
+              foodCardSelected={foodCardSelected}
+              setFoodCardSelected={setFoodCardSelected}  
+              onShowMap={mapModal.openMap}
+              onRemoveDay={handleRemoveDay}
+              onShowDayMap={mapModal.openDayMap}
+              onSwapItems={handleSwapScheduleItems}
+              swappedItemIds={swappedItemIds}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <GlobalMapModal 
         isOpen={mapModal.isOpen}

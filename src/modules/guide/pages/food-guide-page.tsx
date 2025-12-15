@@ -2,18 +2,30 @@ import { useEffect, useState, useRef } from 'react';
 import { locations } from '../data/location-data';
 import { dishes } from '../data/dish-data';
 import type { DishData } from '../index';
+import { Map } from 'lucide-react';
 
 import { MainHeader } from '../components/main-header';
 import { CategoryTabs } from '../components/category-tabs';
 import { DishSectionList } from '../components/dish-section-list';
 import { LocationSidebar } from '../components/location-sidebar';
 import { DishDetailModal } from '../components/dish-detail-modal';
+import { Button } from '@/shared/components/ui/button';
+
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription
+} from "@/shared/components/ui/sheet";
 
 export default function FoodGuidePage() {
   // --- STATE ---
   const [activeTab, setActiveTab] = useState<'vietnam' | 'international'>('vietnam');
   const [selectedDish, setSelectedDish] = useState<DishData | null>(null);
   const [activeLocation, setActiveLocation] = useState<string>('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // --- LOGIC ---
   const isManualScrolling = useRef(false);
@@ -33,7 +45,7 @@ export default function FoodGuidePage() {
       },
       {
         root: null,
-        rootMargin: '-150px 0px -50% 0px', 
+        rootMargin: '-100px 0px -80% 0px', 
         threshold: 0
       }
     );
@@ -52,12 +64,13 @@ export default function FoodGuidePage() {
   const handleScrollToLocation = (locationId: string) => {
     isManualScrolling.current = true;
     setActiveLocation(locationId);
+    setIsMobileMenuOpen(false);
 
     const element = document.getElementById(`location-${locationId}`);
     if (element) {
-      const offsetTop = element.offsetTop - 140;
+      const offset = window.innerWidth < 768 ? 100 : 140; 
+      const offsetTop = element.offsetTop - offset;
       window.scrollTo({ top: offsetTop, behavior: 'smooth' });
-      setActiveLocation(locationId);
     }
     
     setTimeout(() => {
@@ -73,29 +86,61 @@ export default function FoodGuidePage() {
       <MainHeader />
 
       {/* Tabs */}
-      <CategoryTabs 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
-      />
+      <div className="sticky top-[72px] z-30 bg-white/80 backdrop-blur-md py-2 border-b border-orange-100 shadow-sm">
+        <CategoryTabs 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+        />
+      </div>
 
       {/* Main Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+        <div className="flex flex-col lg:flex-row gap-8 relative">
           
-          <DishSectionList 
-            locations={filteredLocations}
-            allDishes={dishes}
-            onDishClick={setSelectedDish}
-          />
+          <div className="w-full lg:w-3/4">
+            <DishSectionList 
+              locations={filteredLocations}
+              allDishes={dishes}
+              onDishClick={setSelectedDish}
+            />
+          </div>
 
-          <LocationSidebar 
-            locations={filteredLocations}
-            activeLocationId={activeLocation}
-            activeTab={activeTab}
-            onScrollToLocation={handleScrollToLocation}
-          />
+          <div className="hidden lg:block lg:w-1/4 relative">
+            <div className="sticky top-32">
+              <LocationSidebar 
+                locations={filteredLocations}
+                activeLocationId={activeLocation}
+                activeTab={activeTab}
+                onScrollToLocation={handleScrollToLocation}
+              />
+            </div>
+          </div>
           
         </div>
+      </div>
+
+      <div className="lg:hidden fixed bottom-6 right-6 z-40">
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button className="rounded-full w-14 h-14 bg-orange-500 hover:bg-orange-600 shadow-lg shadow-orange-500/30 flex items-center justify-center">
+              <Map className="w-6 h-6 text-white" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[60vh] rounded-t-3xl">
+             <SheetHeader className="mb-4 text-left">
+                <SheetTitle>Select Location</SheetTitle>
+                <SheetDescription>Jump to a region to explore dishes</SheetDescription>
+             </SheetHeader>
+             <div className="overflow-y-auto h-full pb-10">
+                <LocationSidebar 
+                    locations={filteredLocations}
+                    activeLocationId={activeLocation}
+                    activeTab={activeTab}
+                    onScrollToLocation={handleScrollToLocation}
+                  />
+             </div>
+          </SheetContent>
+        </Sheet>
       </div>
 
       <DishDetailModal 
@@ -103,7 +148,7 @@ export default function FoodGuidePage() {
         onClose={() => setSelectedDish(null)} 
       />
 
-      <footer className="bg-white border-t border-orange-100 mt-16">
+      <footer className="bg-white border-t border-orange-100 mt-16 pb-20 lg:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-center text-gray-600">
             Explore the world one dish at a time 🍜

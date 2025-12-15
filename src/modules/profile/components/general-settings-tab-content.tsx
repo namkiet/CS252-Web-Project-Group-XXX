@@ -1,5 +1,4 @@
-
-import { Card, CardContent } from "@/shared/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
 import { 
@@ -8,7 +7,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/shared/components/ui/dropdown-menu";
-import {  Globe, Bell, BellOff, ChevronDown, Check, Volume2, VolumeX, Sun, Moon, Monitor } from "lucide-react";
+import { Globe, Bell, BellOff, ChevronDown, Check, Volume2, VolumeX, Sun, Moon, Monitor } from "lucide-react";
 import type { GeneralSettings } from "../types";
 
 interface GeneralSettingsTabContentProps {
@@ -54,30 +53,33 @@ export function GeneralSettingsTabContent({ fixing, setFixing, saveSettings }: G
   return (
     <div className="space-y-6">
       <Card className="border-orange-100 shadow-sm dark:border-orange-900">
+        <CardHeader>
+          <CardTitle className="text-orange-700 dark:text-orange-500 text-lg md:text-xl">General Settings</CardTitle>
+        </CardHeader>
         <CardContent>
-          <div className="space-y-6">
+          <div className="space-y-6 md:space-y-8">
             
             {/* Theme Setting */}
-            <div className="space-y-2">
-              <Label className="text-orange-700 dark:text-orange-500">Theme</Label>
+            <div className="space-y-3 md:space-y-2">
+              <Label className="text-base md:text-sm text-gray-900 dark:text-gray-100 font-medium">Theme Preference</Label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-between border-gray-300 bg-white text-gray-900 shadow-none hover:bg-orange-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700">
+                  <Button variant="outline" className="w-full justify-between border-gray-300 bg-white text-gray-900 shadow-none hover:bg-orange-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 h-11 md:h-10">
                     <div className="flex items-center space-x-2">
                       {selectedTheme?.icon && <selectedTheme.icon className="h-4 w-4 text-orange-500" />}
                       <span>{selectedTheme?.label}</span>
                     </div>
-                    <ChevronDown className="h-4 w-4 text-gray-900 dark:text-gray-300" />
+                    <ChevronDown className="h-4 w-4 text-gray-500" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 border-orange-100 dark:border-orange-900 dark:bg-gray-800" align="start">
+                <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-[200px] border-orange-100 dark:border-orange-900 dark:bg-gray-800" align="start">
                   {themes.map((theme) => {
                     const IconComponent = theme.icon;
                     return (
                       <DropdownMenuItem
                         key={theme.value}
                         onClick={() => handleThemeChange(theme.value)}
-                        className="flex items-center justify-between data-[highlighted]:bg-orange-50 dark:text-gray-100 dark:data-[highlighted]:bg-orange-900/30"
+                        className="flex items-center justify-between cursor-pointer focus:bg-orange-50 dark:focus:bg-gray-700"
                       >
                         <div className="flex items-center space-x-2">
                           <IconComponent className="h-4 w-4 text-orange-500" />
@@ -92,25 +94,25 @@ export function GeneralSettingsTabContent({ fixing, setFixing, saveSettings }: G
             </div>
 
             {/* Language Setting */}
-            <div className="space-y-2">
-              <Label className="text-orange-700 dark:text-orange-500">Language</Label>
+            <div className="space-y-3 md:space-y-2">
+              <Label className="text-base md:text-sm text-gray-900 dark:text-gray-100 font-medium">Language</Label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-between border-gray-300 bg-white text-gray-900 shadow-none hover:bg-orange-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700">
+                  <Button variant="outline" className="w-full justify-between border-gray-300 bg-white text-gray-900 shadow-none hover:bg-orange-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 h-11 md:h-10">
                     <div className="flex items-center space-x-2">
                       <Globe className="h-4 w-4 text-orange-500" />
                       <span>{selectedLanguage?.label}</span>
-                      <span className="text-muted-foreground text-xs dark:text-gray-400">({selectedLanguage?.nativeLabel})</span>
+                      <span className="text-muted-foreground text-xs dark:text-gray-400 hidden sm:inline">({selectedLanguage?.nativeLabel})</span>
                     </div>
-                    <ChevronDown className="h-4 w-4 text-gray-900 dark:text-gray-300" />
+                    <ChevronDown className="h-4 w-4 text-gray-500" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 border-orange-100 dark:border-orange-900 dark:bg-gray-800" align="start">
+                <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-[200px] border-orange-100 dark:border-orange-900 dark:bg-gray-800" align="start">
                   {languages.map((language) => (
                     <DropdownMenuItem
                       key={language.value}
                       onClick={() => handleLanguageChange(language.value)}
-                      className="flex items-center justify-between data-[highlighted]:bg-orange-50 dark:text-gray-100 dark:data-[highlighted]:bg-orange-900/30"
+                      className="flex items-center justify-between cursor-pointer focus:bg-orange-50 dark:focus:bg-gray-700"
                     >
                       <div className="flex items-center space-x-2">
                         <span>{language.label}</span>
@@ -123,11 +125,11 @@ export function GeneralSettingsTabContent({ fixing, setFixing, saveSettings }: G
               </DropdownMenu>
             </div>
 
-            {/* Message Notifications */}
-            <div className="flex items-center justify-between">
+            {/* Notifications Toggle */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2 border-t border-gray-100 md:border-none pt-4 md:pt-0">
               <div className="space-y-1">
-                <Label className="text-orange-700 dark:text-orange-500">Message Notifications</Label>
-                <p className="text-sm text-muted-foreground dark:text-gray-400">
+                <Label className="text-base md:text-sm text-gray-900 dark:text-gray-100 font-medium">Message Notifications</Label>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   Receive notifications when you get new messages
                 </p>
               </div>
@@ -135,27 +137,25 @@ export function GeneralSettingsTabContent({ fixing, setFixing, saveSettings }: G
                 variant="outline"
                 size="sm"
                 onClick={handleNotificationToggle}
-                className="min-w-[140px] border-gray-300 bg-white text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                className={`w-full sm:w-[160px] h-10 border-gray-300 ${fixing.messageNotifications ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-white text-gray-600'}`}
               >
                 {fixing.messageNotifications ? (
                   <>
-                    <Bell className="mr-2 h-4 w-4 text-orange-500" />
-                    Enabled
+                    <Bell className="mr-2 h-4 w-4 text-orange-500" /> Enabled
                   </>
                 ) : (
                   <>
-                    <BellOff className="mr-2 h-4 w-4 text-orange-500" />
-                    Disabled
+                    <BellOff className="mr-2 h-4 w-4 text-gray-400" /> Disabled
                   </>
                 )}
               </Button>
             </div>
 
-            {/* Sound Effects */}
-            <div className="flex items-center justify-between">
+            {/* Sound Effects Toggle */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2 border-t border-gray-100 md:border-none pt-4 md:pt-0">
               <div className="space-y-1">
-                <Label className="text-orange-700 dark:text-orange-500">Sound Effects</Label>
-                <p className="text-sm text-muted-foreground dark:text-gray-400">
+                <Label className="text-base md:text-sm text-gray-900 dark:text-gray-100 font-medium">Sound Effects</Label>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   Play sound effects for app interactions
                 </p>
               </div>
@@ -163,17 +163,15 @@ export function GeneralSettingsTabContent({ fixing, setFixing, saveSettings }: G
                 variant="outline"
                 size="sm"
                 onClick={handleSoundEffectsToggle}
-                className="min-w-[140px] border-gray-300 bg-white text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                className={`w-full sm:w-[160px] h-10 border-gray-300 ${fixing.soundEffects ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-white text-gray-600'}`}
               >
                 {fixing.soundEffects ? (
                   <>
-                    <Volume2 className="mr-2 h-4 w-4 text-orange-500" />
-                    Enabled
+                    <Volume2 className="mr-2 h-4 w-4 text-orange-500" /> Enabled
                   </>
                 ) : (
                   <>
-                    <VolumeX className="mr-2 h-4 w-4 text-orange-500" />
-                    Disabled
+                    <VolumeX className="mr-2 h-4 w-4 text-gray-400" /> Disabled
                   </>
                 )}
               </Button>
@@ -181,20 +179,20 @@ export function GeneralSettingsTabContent({ fixing, setFixing, saveSettings }: G
 
           </div>
 
-          <div className="mt-6 flex justify-end space-x-2">
+          <div className="mt-8 flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-gray-100">
             <Button
-              variant="outline"
+              variant="ghost"
               onClick={() => window.location.reload()}
-              className="border-orange-300 bg-white text-orange-700 transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-orange-50 dark:border-orange-600 dark:bg-gray-800 dark:text-orange-500 dark:hover:bg-orange-900/20"
+              className="w-full sm:w-auto text-gray-500 hover:text-gray-900 hover:bg-gray-100"
             >
-              Reset
+              Reset to Defaults
             </Button>
             <Button
-              variant="outline"
+              variant="default"
               onClick={saveSettings}
-              className="border-orange-400 bg-white text-orange-700 transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-orange-50 dark:border-orange-600 dark:bg-gray-800 dark:text-orange-500 dark:hover:bg-orange-900/20"
+              className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white shadow-sm"
             >
-              Save Settings
+              Save Preferences
             </Button>
           </div>
         </CardContent>
