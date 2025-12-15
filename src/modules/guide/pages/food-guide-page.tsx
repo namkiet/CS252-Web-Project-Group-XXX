@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { locations } from '../data/location-data';
 import { dishes } from '../data/dish-data';
-import type { DishData } from '../index';
+import type { DishData, SuggestedRestaurant } from '../index';
 import { Map } from 'lucide-react';
+import { useChatContext } from '@/context/chat-context';
 
 import { MainHeader } from '../components/main-header';
 import { CategoryTabs } from '../components/category-tabs';
@@ -21,6 +22,9 @@ import {
 } from "@/shared/components/ui/sheet";
 
 export default function FoodGuidePage() {
+  // --- HOOKS ---
+  const { chatStore, setChatStore, setCurrentIdChat, fetchInitialMessages } = useChatContext();
+
   // --- STATE ---
   const [activeTab, setActiveTab] = useState<'vietnam' | 'international'>('vietnam');
   const [selectedDish, setSelectedDish] = useState<DishData | null>(null);
@@ -30,6 +34,75 @@ export default function FoodGuidePage() {
   // --- LOGIC ---
   const isManualScrolling = useRef(false);
   const filteredLocations = locations.filter(loc => loc.category === activeTab);
+
+  const handleAddRestaurantToSchedule = async (restaurant: SuggestedRestaurant, conversationIndex: number) => {
+    const conversation = chatStore[conversationIndex];
+    if (!conversation) return;
+
+    // Check if conversation has loaded messages, if not, fetch them first
+    if (!conversation.messages || conversation.messages.length === 0) {
+      console.log(`Loading messages for conversation: ${conversation.title}`);
+      await fetchInitialMessages(conversationIndex);
+    }
+
+    // Switch to the target conversation
+    setCurrentIdChat(conversationIndex);
+
+    // Convert restaurant to FoodItem format
+    const foodItem = {
+      id: restaurant.restaurantName,
+      restaurant_name: restaurant.restaurantName,
+      image: restaurant.image,
+      desc: restaurant.dishName,
+      address: restaurant.address,
+      star: restaurant.rating,
+      dish_name: restaurant.dishName,
+      priceRange: restaurant.price.toString(),
+      openTime: '',
+      coordinates: undefined
+    };
+
+    // Directly update chatStore to add to the last day of the target conversation's schedule
+    setChatStore(prev => {
+      const newStore = [...prev];
+      const targetConv = newStore[conversationIndex];
+      
+      if (!targetConv) return prev;
+
+      const schedule = targetConv.schedule || [{ day: 1, scheduleInDay: [] }];
+      const lastDay = schedule[schedule.length - 1];
+
+      // Check if food already exists
+      const foodExists = schedule.some(dayObj =>
+        dayObj.scheduleInDay.some(item => item.food?.id === foodItem.id)
+      );
+      if (foodExists) {
+        console.warn(`Food "${foodItem.restaurant_name}" already exists in schedule`);
+        return prev;
+      }
+
+      // Add to last day
+      const newSchedule = schedule.map(dayObj => {
+        if (dayObj.day === lastDay.day) {
+          return {
+            ...dayObj,
+            scheduleInDay: [
+              ...dayObj.scheduleInDay,
+              { activity: '', day: lastDay.day, food: foodItem }
+            ]
+          };
+        }
+        return dayObj;
+      });
+
+      newStore[conversationIndex] = {
+        ...targetConv,
+        schedule: newSchedule
+      } as any;
+
+      return newStore;
+    });
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -145,7 +218,8 @@ export default function FoodGuidePage() {
 
       <DishDetailModal 
         dish={selectedDish} 
-        onClose={() => setSelectedDish(null)} 
+        onClose={() => setSelectedDish(null)}
+        onAddRestaurant={handleAddRestaurantToSchedule}
       />
 
       <footer className="bg-white border-t border-orange-100 mt-16 pb-20 lg:pb-8">

@@ -37,7 +37,7 @@ export function NavMain({ items, addConversation }: NavMainProps) {
             tooltip="New Chat"
           >
             <SquarePen className="size-5" />
-            <span>New Chat</span>
+            <span>New Schedule Chat</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
 

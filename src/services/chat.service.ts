@@ -39,6 +39,7 @@ export const chatService = {
     user_context?: { location?: string; timezone?: string };
     attachments?: any[];
   }): Promise<ChatAPIResponse> => {
+    // console.log('[sendMessage] Sending message:', payload);
     const token = sessionStorage.getItem("token");
     if (!token) {
       throw new Error("Authentication token not found");
@@ -53,6 +54,7 @@ export const chatService = {
     });
 
     const data = await response.json();
+    // console.log('[sendMessage] Received response:', data);
     if (!response.ok) {
       console.error("Chat API error:", data);
       throw new Error(data.error || "Failed to send message");

@@ -66,7 +66,17 @@ export const dishes: DishData[] = [
     whatIsIt: 'Unpretentious and not overly elaborate, Thanh Tri Steamed Rice Rolls (Bánh Cuốn) is a simple dish that has been loved by Hanoians for generations. The rolls are made from finely ground rice flour, steamed extremely thinly over a pot of water vapor, and usually filled with minced pork and wood ear mushrooms. Bánh Cuốn is best enjoyed piping hot, right after steaming, accompanied by fish sauce that is often traditionally flavored with a drop of cà cuống essence (giant water bug essence)—a traditional seasoning of old Hanoi.',
     mainIngredients: ['Grilled pork belly', 'Pork patties', 'Rice vermicelli', 'Fish sauce', 'Fresh herbs', 'Pickled vegetables'],
     servingStyle: 'Served with noodles separate from the grilled meat in broth, meant to be mixed together',
-    image: 'https://res.cloudinary.com/dwtr086dw/image/upload/f_auto,q_auto/v1763901632/76dc242a-ceb2-4a85-a397-7d1b134af6ff.png'
+    image: 'https://res.cloudinary.com/dwtr086dw/image/upload/f_auto,q_auto/v1763901632/76dc242a-ceb2-4a85-a397-7d1b134af6ff.png',
+    suggestedRestaurants: [
+      {
+        dishName: 'Bánh Cuốn Trứng',
+        price: 39000,
+        image: 'https://mms.img.susercontent.com/vn-11134517-7r98o-ls25stv7p6l5c3',
+        restaurantName: 'Bánh Cuốn Hà Nội Sơn Tây',
+        address: '56/23 Đường Số 3, P. An Khánh',
+        rating: 0
+      }
+    ]
   },
   {
     id: 'xoikhuc',

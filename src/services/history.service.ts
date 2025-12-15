@@ -27,6 +27,7 @@ export const hisService = {
         }
 
         if (data.status === "success") {
+          // console.log('[sidebarHistory] Loaded sessions:', data);
           sessionStorage.setItem('historySessions', JSON.stringify(data));
         }
 
@@ -57,6 +58,7 @@ export const hisService = {
       }
 
       if (data.status === "success") {
+        // console.log(`[chatHistory] Loaded messages for session ${session_id}:`, data.messages);
         sessionStorage.setItem(`chatHistory_${session_id}`, JSON.stringify(data));
       }
 

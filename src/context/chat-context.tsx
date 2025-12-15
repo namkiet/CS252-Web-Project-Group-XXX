@@ -79,8 +79,9 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
         messages: [],
         hasMore: true,
         offset: 0,
-        isLoaded: false
-      }));
+        isLoaded: false,
+        schedule: [{ day: 1, scheduleInDay: [] }]
+      } as any));
 
       setChatStore(conversations);
       setIsLoadedSessions(true);

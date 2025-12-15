@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { chatService } from "../../../services/chat.service";
 import { hisService } from '@/services/history.service';
 import type { FoodItem, Message, ScheduleDay, ScheduleItem } from '../types'
@@ -18,12 +18,12 @@ export function useChat() {
   } = useChatContext();
 
   const [inputValue, setInputValue] = useState('');
-  const [schedule, setSchedule] = useState<ScheduleDay[]>([
-    { day: 1, scheduleInDay: [] }
-  ]);
+  const defaultSchedule = useMemo<ScheduleDay[]>(() => ([{ day: 1, scheduleInDay: [] }]), []);
+  const [schedule, setSchedule] = useState<ScheduleDay[]>(defaultSchedule);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [scheduleItemSelected, setScheduleItemSelected] = useState<ScheduleItem|null>(null)
+  // Allow selecting either a specific schedule item or a whole day (by day number)
+  const [scheduleItemSelected, setScheduleItemSelected] = useState<ScheduleItem | number | null>(null)
   const [foodCardSelected, setFoodCardSelected] = useState<FoodItem | null>(null);
   const [isScheduleSidebarOpen, setIsScheduleSidebarOpen] = useState<boolean>(true)
   const [swappedItemIds, setSwappedItemIds] = useState<string[]>([])
@@ -35,8 +35,36 @@ export function useChat() {
     }
   }, [currentIdChat, chatStore.length, fetchInitialMessages]);
 
+  // Sync schedule when switching conversations
+  useEffect(() => {
+    const activeSession = chatStore[currentIdChat];
+    if (activeSession && activeSession.schedule && activeSession.schedule.length > 0) {
+      setSchedule(activeSession.schedule);
+    } else {
+      setSchedule(defaultSchedule);
+    }
+  }, [chatStore, currentIdChat, defaultSchedule]);
+
+  // helper to update schedule and persist into chatStore for the current conversation
+  const updateSchedule = (updater: (prev: ScheduleDay[]) => ScheduleDay[]) => {
+    setSchedule(prev => {
+      const next = updater(prev);
+      setChatStore(prevStore => {
+        const newStore = [...prevStore];
+        if (newStore[currentIdChat]) {
+          newStore[currentIdChat] = {
+            ...newStore[currentIdChat],
+            schedule: next,
+          } as any;
+        }
+        return newStore;
+      });
+      return next;
+    });
+  };
+
   const onAddDay = (insertAtIndex: number = -1) => {
-  setSchedule(prev => {
+    updateSchedule(prev => {
     const insertPos =
       insertAtIndex === -1 || insertAtIndex >= prev.length
         ? prev.length
@@ -75,8 +103,8 @@ export function useChat() {
     });
 
     return result;
-  });
-};
+    });
+  };
 
   const onAddInDay = (
     dayNumber: number = -1,
@@ -84,8 +112,19 @@ export function useChat() {
     activity: string = "",
     food: FoodItem | null = null
   ) => {
-    setSchedule(prev => {
+    updateSchedule(prev => {
       if (prev.length === 0) return prev;
+
+      // Check if food already exists in schedule
+      if (food) {
+        const foodExists = prev.some(dayObj =>
+          dayObj.scheduleInDay.some(item => item.food?.id === food.id)
+        );
+        if (foodExists) {
+          console.warn(`Food "${food.restaurant_name}" already exists in schedule`);
+          return prev;
+        }
+      }
 
       let targetDay: number;
       let insertPos: number = -1;
@@ -136,8 +175,8 @@ export function useChat() {
     foodItem: FoodItem,
     targetDay?: number
   ) => {
-    setSchedule(prev => {
-      if (scheduleItemSelected) {
+    updateSchedule(prev => {
+      if (scheduleItemSelected && typeof scheduleItemSelected !== "number") {
         return prev.map(dayObj => ({
           ...dayObj,
           scheduleInDay: dayObj.scheduleInDay.map(item =>
@@ -152,6 +191,8 @@ export function useChat() {
 
       if (targetDay !== undefined && targetDay !== -1) {
         dayToAdd = targetDay;
+      } else if (typeof scheduleItemSelected === "number") {
+        dayToAdd = scheduleItemSelected;
       } else {
         dayToAdd = prev.length > 0 ? prev[prev.length - 1].day : 1;
       }
@@ -183,7 +224,7 @@ export function useChat() {
   const handleRemoveFromSchedule = (idToRemove: string) => {
     if (!idToRemove) return;
     
-    setSchedule((prevSchedule) => {
+    updateSchedule((prevSchedule) => {
       return prevSchedule.map((day) => ({
         ...day,
         scheduleInDay: day.scheduleInDay.filter((item) => {
@@ -216,7 +257,8 @@ export function useChat() {
         {
           id: "",
           title: `Conversation ${prev.length}`,
-          messages: []
+          messages: [],
+          schedule: defaultSchedule
         }
       ];
 
@@ -290,7 +332,7 @@ export function useChat() {
   };
 
   const handleRemoveDay = (dayToRemove: number) => {
-    setSchedule((prev) => {
+    updateSchedule((prev) => {
       const filteredSchedule = prev.filter((d) => d.day !== dayToRemove);
 
       const reindexedSchedule = filteredSchedule.map((day, index) => ({
@@ -307,7 +349,7 @@ export function useChat() {
   };
 
   const handleSwapScheduleItems = (item1: ScheduleItem, item2: ScheduleItem) => {
-    setSchedule((prev) => {
+    updateSchedule((prev) => {
       let item1Day = -1, item1Idx = -1;
       let item2Day = -1, item2Idx = -1;
 
@@ -388,7 +430,8 @@ export function useChat() {
           setChatStore([{
               id: "",
               title: "New Conversation",
-              messages: []
+              messages: [],
+              schedule: defaultSchedule
             }]);
             setCurrentIdChat(0);
         } else {

@@ -1,14 +1,41 @@
-import React from 'react';
-import type { DishData } from '../index';
-import { MapPin, X } from 'lucide-react';
+import React, { useState } from 'react';
+import type { DishData, SuggestedRestaurant } from '../index';
+import { MapPin, X, Plus, Check } from 'lucide-react';
+import { useChatContext } from '@/context/chat-context';
+import type { FoodItem } from '@/modules/chat/types';
 
 interface DishDetailModalProps {
   dish: DishData | null;
   onClose: () => void;
+  onAddRestaurant?: (restaurant: SuggestedRestaurant, conversationIndex: number) => void;
 }
 
-export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose }) => {
+export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose, onAddRestaurant }) => {
+  const { chatStore } = useChatContext();
+  const [selectedRestaurant, setSelectedRestaurant] = useState<SuggestedRestaurant | null>(null);
+  const [addedRestaurant, setAddedRestaurant] = useState<string | null>(null);
+
   if (!dish) return null;
+
+  const handleAddRestaurant = async (restaurant: SuggestedRestaurant, conversationIndex: number) => {
+    const conversation = chatStore[conversationIndex];
+    if (!conversation) return;
+
+    // Call the callback if provided (parent handles everything: switch conversation, load messages, add to schedule)
+    if (onAddRestaurant) {
+      await onAddRestaurant(restaurant, conversationIndex);
+    }
+    
+    // Show success feedback
+    setAddedRestaurant(restaurant.restaurantName);
+    setSelectedRestaurant(null);
+    
+    // Close modal after brief delay
+    setTimeout(() => {
+      onClose();
+      setAddedRestaurant(null);
+    }, 800);
+  };
 
   return (
     <div 
@@ -83,6 +110,97 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose 
                   "{dish.servingStyle}"
               </div>
             </div>
+
+            {dish.suggestedRestaurants && dish.suggestedRestaurants.length > 0 && (
+              <div className="space-y-3 pb-4">
+                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    🏪 Suggested Restaurants
+                </h3>
+                <div className="space-y-4">
+                  {dish.suggestedRestaurants.map((restaurant, index) => (
+                    <div key={index}>
+                      <div 
+                        className="bg-gradient-to-br from-white to-orange-50 border border-orange-200 rounded-2xl p-4 hover:border-orange-400 hover:shadow-lg transition-all cursor-pointer"
+                        onClick={() => setSelectedRestaurant(selectedRestaurant?.restaurantName === restaurant.restaurantName ? null : restaurant)}
+                      >
+                        <div className="flex gap-4 items-start justify-between">
+                          <div className="flex gap-4 flex-1">
+                            <img 
+                              src={restaurant.image} 
+                              alt={restaurant.dishName}
+                              className="w-24 h-24 rounded-xl object-cover shrink-0 shadow-md"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-gray-900 text-base mb-1">{restaurant.dishName}</h4>
+                              <p className="text-sm text-orange-600 font-semibold mb-1">{restaurant.restaurantName}</p>
+                              <p className="text-xs text-gray-600 mb-2 flex items-center gap-1">
+                                <MapPin className="w-3 h-3" />
+                                <span className="line-clamp-1">{restaurant.address}</span>
+                              </p>
+                              <div className="flex items-center gap-3">
+                                <span className="text-base font-bold text-orange-600">
+                                  {restaurant.price.toLocaleString('vi-VN')} ₫
+                                </span>
+                                {restaurant.rating > 0 && (
+                                  <span className="text-sm text-amber-500 font-medium">
+                                    ⭐ {restaurant.rating.toFixed(1)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Add Button */}
+                          <button
+                            onClick={() => setSelectedRestaurant(selectedRestaurant?.restaurantName === restaurant.restaurantName ? null : restaurant)}
+                            className={`rounded-full p-3 transition-all shadow-lg hover:shadow-xl hover:scale-110 shrink-0 text-white font-bold ${
+                              addedRestaurant === restaurant.restaurantName
+                                ? 'bg-green-500'
+                                : 'bg-orange-500 hover:bg-orange-600'
+                            }`}
+                            title="Add to schedule"
+                          >
+                            {addedRestaurant === restaurant.restaurantName ? (
+                              <Check className="w-5 h-5" />
+                            ) : (
+                              <Plus className="w-5 h-5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Dropdown Menu - Below Card */}
+                      {selectedRestaurant?.restaurantName === restaurant.restaurantName && (
+                        <div className="mt-2 bg-white border border-orange-200 rounded-xl shadow-lg overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                          <div className="bg-gradient-to-r from-orange-50 to-orange-100 px-4 py-3 border-b border-orange-200">
+                            <p className="text-sm font-bold text-orange-900">📍 Select conversation to add</p>
+                          </div>
+                          {chatStore.length === 0 ? (
+                            <p className="px-4 py-3 text-sm text-gray-500">No conversations available</p>
+                          ) : (
+                            <div className="divide-y divide-orange-100">
+                              {chatStore.map((conversation, convIdx) => (
+                                <button
+                                  key={convIdx}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAddRestaurant(restaurant, convIdx);
+                                  }}
+                                  className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-orange-100 hover:text-orange-700 transition-colors font-medium flex items-center gap-2"
+                                >
+                                  <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                                  {conversation.title || `Conversation ${convIdx + 1}`}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
         
