@@ -8,8 +8,8 @@ from service.embedding_service import EmbeddingService
 
 class Ingestor:
     
-    def __init__(self):
-        self.vector_store = VectorStore()
+    def __init__(self, table_name):
+        self.vector_store = VectorStore(table_name = table_name)
         self.embedder = EmbeddingService()
         # URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
         # self.embed_model = OllamaEmb(base_url = URL)
@@ -36,7 +36,23 @@ class Ingestor:
             
         except Exception as e:
             print(f"Ingestor save error: {e}")
-        
+    
+    def _check_restaurant_exists(self, db_client: Client, name: str, url: str = "") -> bool:
+        query = (
+            db_client
+            .table(self.vector_store.table_name)
+            .select("id")
+            .eq("metadata->>type", "restaurant")
+            .eq("metadata->>name", name)
+            .limit(1)
+        )
+
+        if url:
+            query = query.eq("metadata->>url", url)
+
+        res = query.execute()
+        return bool(res.data)
+
     def process(self, restaurants):
         if not restaurants:
             print("No data received in process()")
@@ -50,7 +66,12 @@ class Ingestor:
             name = res.get('name', "Unknown")
             address = res.get('address', "Unknown")
             rating = res.get('ratings', "N/A")
+            url = res.get('url', "")
             
+            if self._check_restaurant_exists(db_client, name, url):
+                print(f"SKIP {name} (already exists)\n")
+                continue
+        
             text = (
                 f"Restaurant: {name}. "
                 f"Address: {address}. "
@@ -62,6 +83,7 @@ class Ingestor:
                 "name": name,
                 "address": address,
                 "img_src": res.get("img_src", ""),
+                "url" : url,
                 "source": "json_upload"
             })
             print(f"ADD {name}\n")

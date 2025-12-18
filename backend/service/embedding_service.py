@@ -9,7 +9,7 @@ class EmbeddingService:
     
     def __init__(self):
         URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
-        self.embed_model = OllamaEmb(base_url = URL)
+        self.model = OllamaEmb(base_url = URL)
     
     def embed_text(self, text):
         vector = self.model.embed(prompt=text)

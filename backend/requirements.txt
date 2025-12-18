@@ -5,12 +5,12 @@ flask_cors
 gunicorn
 google
 google.genai
-
 selenium
 supabase
 vecs
 postgrest
 gotrue
+sqlite3
 
 # Library from AI Developer
 openai

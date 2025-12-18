@@ -16,6 +16,7 @@ def UniqueCsv(csv_path):
 
 def GeminiCrawl(Message: str, loopCount = 5) -> dict:
     try:
+        print("Called\n")
         final_result = {
                 "message": (
                     ""
@@ -70,7 +71,9 @@ def GeminiCrawl(Message: str, loopCount = 5) -> dict:
         return {"output" :final_result}
     except:
         return {
+                "error" : "API key dead",
                 "output":{
+                    
                     "message": (
                         f"API key dead : {api_key}"
                     )

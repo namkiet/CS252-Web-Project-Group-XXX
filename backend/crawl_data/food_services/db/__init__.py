@@ -2,6 +2,9 @@ import sqlite3
 
 def init_db(db_path, timeout=10):
     conn = sqlite3.connect(db_path, timeout=timeout)
+    # cur.execute("DROP TABLE IF EXISTS restaurants")
+    # conn.commit()
+    
     conn.execute("PRAGMA foreign_keys = ON")
 
     cur = conn.cursor()
@@ -12,7 +15,8 @@ def init_db(db_path, timeout=10):
             name TEXT NOT NULL,
             address TEXT NOT NULL,
             img_src TEXT,
-            ratings REAL
+            ratings REAL,
+            url TEXT
         )
     """)
 

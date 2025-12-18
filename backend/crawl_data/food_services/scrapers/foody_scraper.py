@@ -3,13 +3,14 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.options import Options
 from .utils import encode_name
 
 def init_driver(headless=False):
     options = Options()
     if headless:
         options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Firefox(options=options)
     return driver
 
 def get_link_from_keyword(driver, name):
@@ -23,11 +24,12 @@ def get_link_from_keyword(driver, name):
     )
     return item.get_attribute("href"), item.text
 
-def get_info_from_url(driver, url, restaurant_name):
+def get_info_from_url(driver, url, restaurant_name, source_url):
     driver.get(url)
     
     items = []
-
+    
+    r_info = None
     wait = WebDriverWait(driver, 10)
     
     try:
@@ -40,7 +42,8 @@ def get_info_from_url(driver, url, restaurant_name):
             "name": restaurant_name,
             "address": address,
             "img_src": img_src,
-            "ratings": ratings
+            "ratings": ratings,
+            "url" : source_url
         }
 
         items = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "delivery-dishes-item")))
@@ -62,7 +65,7 @@ def get_info_from_url(driver, url, restaurant_name):
             continue
     return r_info, dishes
 
-def scrape_info_from_keyword(driver, keyword):
+def scrape_info_from_keyword(driver, keyword, source_url):
     link, r_name = get_link_from_keyword(driver, keyword)
-    r_info, dishes_info = get_info_from_url(driver, link, r_name)
+    r_info, dishes_info = get_info_from_url(driver, link, r_name, source_url)
     return r_info, dishes_info

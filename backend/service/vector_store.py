@@ -4,8 +4,9 @@ from typing import List
 
 class VectorStore:
     
-    def __init__(self):
-        self.table_name = "documents"
+    def __init__(self, table_name):
+        self.table_name = table_name
+        # self.table_name = "documents"
         return
     
     def add_vector(self, db_client : Client, content, 
