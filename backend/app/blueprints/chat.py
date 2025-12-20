@@ -44,12 +44,16 @@ def handle_message():
         if not response:
             return jsonify({"error" : "No response"}), 500
         
+        
+        
         history_service.add_message(
             session_id,
             "assistant",
-            response.get('content', "") ,
-            metadata = response.get('metadata', {})
-        ) 
+            response.get('content', ""),
+            widget_type=response.get('type', 'chat'),
+            widget_payload=response.get('payload'),
+            schedule=response.get('schedule')
+        )
 
         return jsonify({
             "status" : "success",
@@ -61,7 +65,8 @@ def handle_message():
             "widget" : {
                 "type" : response.get("type", "chat"),
                 "payload" : response.get("payload")
-            }
+            },
+            "schedule": response.get('schedule')
         }), 200
         
     except Exception as e:

@@ -26,6 +26,8 @@ export type Conversation = {
   messages: Message[];
   title: string;
   schedule?: ScheduleDay[];
+  savedSchedule?: ScheduleDay[];
+  suggestedDish?: string[];
 };
 
 export type ScheduleItem = {

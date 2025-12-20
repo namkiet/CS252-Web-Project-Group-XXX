@@ -21,24 +21,30 @@ class ChatHistoryService:
         return response.data[0]
     
     def add_message(self, session_id, role : str, user_message : str, 
-                    type = 'chat', data = None, metadata = None):
+                    widget_type = 'chat', widget_payload = None, schedule = None):
         import html
         user_message = html.escape(user_message)
 
         supabase = get_auth_db()
-        data = {
+        
+        # Build widget object
+        widget = {
+            "type": widget_type,
+            "payload": widget_payload
+        }
+        
+        message_data = {
             "session_id" : session_id,
             "role" : role,
             "content" : user_message,
-            "metadata" : {
-                "type" : type,
-                "data" : data,
-                "info" : metadata
-            }
+            "widget" : widget,
+            "schedule": schedule,
+            # Ensure legacy metadata column is explicitly null when unused
+            "metadata": None
         }
         
-        supabase.table('chat_messages').insert(data).execute()
-        return 
+        supabase.table('chat_messages').insert(message_data).execute()
+        return
     
     # for sidebar history
     def get_user_sessions(self, user_id):
@@ -127,4 +133,43 @@ class ChatHistoryService:
             
         except Exception as e:
             print(f"error updating session title: {e}")
+            raise e
+        
+    def update_session_schedule(self, user_id, session_id, new_schedule):
+        try:
+            supabase = get_auth_db()
+            response = (
+                supabase.table('chat_sessions')
+                .update({'schedule': new_schedule})
+                .eq('id', session_id)
+                .eq('user_id', user_id)
+                .execute()
+            )
+            
+            if response.data and len(response.data) > 0:
+                return response.data[0]
+            return None
+            
+        except Exception as e:
+            print(f"error updating session schedule: {e}")
+            raise e
+    
+    def get_session_schedule(self, user_id, session_id):
+        try:
+            supabase = get_auth_db()
+            response = (
+                supabase.table('chat_sessions')
+                .select('schedule')
+                .eq('id', session_id)
+                .eq('user_id', user_id)
+                .single()
+                .execute()
+            )
+            
+            if response.data:
+                return response.data.get('schedule')
+            return None
+            
+        except Exception as e:
+            print(f"error getting session schedule: {e}")
             raise e

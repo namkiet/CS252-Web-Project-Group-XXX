@@ -45,6 +45,19 @@ export function useChat() {
     }
   }, [chatStore, currentIdChat, defaultSchedule]);
 
+  // Prefill input from sessionStorage draft when switching conversations
+  useEffect(() => {
+    const activeSession = chatStore[currentIdChat];
+    if (activeSession && activeSession.id) {
+      const key = `chat_draft_${activeSession.id}`;
+      const draft = sessionStorage.getItem(key);
+      if (draft !== null) {
+        setInputValue(draft);
+        // Don't remove the draft here - keep it persisted until message is sent
+      }
+    }
+  }, [chatStore, currentIdChat]);
+
   // helper to update schedule and persist into chatStore for the current conversation
   const updateSchedule = (updater: (prev: ScheduleDay[]) => ScheduleDay[]) => {
     setSchedule(prev => {
@@ -250,32 +263,38 @@ export function useChat() {
   };
 
 
-  const addConversation = () => {
+  const addConversation = async () => {
+    const created = await hisService.addSession('New Conversation');
+    const newSession = created?.data;
+
     setChatStore(prev => {
-      const newState = [
-        ...prev,
-        {
-          id: "",
-          title: `Conversation ${prev.length}`,
-          messages: [],
-          schedule: defaultSchedule
-        }
-      ];
-
-      newState.forEach((conv, i) => {
-        console.log(`Conversation ${i} messages:`, conv.messages);
-      });
-
-      return newState;
+      const next = [...prev];
+      const newConv = {
+        id: newSession?.id || "",
+        title: newSession?.title || `Conversation ${prev.length + 1}`,
+        messages: [],
+        schedule: defaultSchedule,
+        savedSchedule: [...defaultSchedule],
+        suggestedDish: []
+      } as any;
+      next.push(newConv);
+      return next;
     });
+    setCurrentIdChat(chatStore.length);
   };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
-    const userMessageContent = inputValue.trim();
+    // Build message with suggested dishes at the top
+    const activeSession = chatStore[currentIdChat];
+    const suggested = activeSession?.suggestedDish || [];
+    let userMessageContent = inputValue.trim();
+    
+    if (suggested.length > 0) {
+      userMessageContent = `i want to eat and experience the taste of ${suggested.join(', ')} . ${inputValue.trim()}`;
+    }
 
-    // 1. Show user message instantly
     const userMsg: Message = {
       role: 'user',
       type: 'chat',
@@ -283,6 +302,25 @@ export function useChat() {
       data: undefined,
     };
     addMessageToCurrentChat(userMsg);
+
+    // Clear the draft from sessionStorage and suggestedDish when sending
+    if (activeSession && activeSession.id) {
+      sessionStorage.removeItem(`chat_draft_${activeSession.id}`);
+    }
+
+    // Clear suggestedDish after sending
+    if (suggested.length > 0) {
+      setChatStore(prev => {
+        const newStore = [...prev];
+        if (newStore[currentIdChat]) {
+          newStore[currentIdChat] = {
+            ...newStore[currentIdChat],
+            suggestedDish: []
+          } as any;
+        }
+        return newStore;
+      });
+    }
 
     setInputValue('');
     setIsLoading(true);
@@ -467,6 +505,91 @@ export function useChat() {
     }
   }
 
+  const handleSaveSchedule = async () => {
+    const activeSession = chatStore[currentIdChat];
+    if (!activeSession || !activeSession.id) {
+      console.warn('No active session');
+      return;
+    }
+
+    // Format schedule as JSON
+    const scheduleJSON = saveScheduleAsJSON();
+    if (!scheduleJSON) {
+      console.warn('Failed to format schedule');
+      return;
+    }
+
+    // Save to backend
+    try {
+      const isSuccess = await hisService.updateSchedule(activeSession.id, scheduleJSON);
+      
+      if (isSuccess) {
+        // Update savedSchedule in state
+        setChatStore(prev => {
+          const newStore = [...prev];
+          const conv = newStore[currentIdChat];
+          if (conv && conv.schedule) {
+            newStore[currentIdChat] = {
+              ...conv,
+              savedSchedule: JSON.parse(JSON.stringify(conv.schedule))
+            } as any;
+          }
+          return newStore;
+        });
+      } else {
+        console.error("Failed to save schedule on server");
+      }
+    } catch (error) {
+      console.error("Error saving schedule:", error);
+    }
+  };
+
+  const handleUndoSchedule = () => {
+    setChatStore(prev => {
+      const newStore = [...prev];
+      const conv = newStore[currentIdChat];
+      if (conv && conv.savedSchedule) {
+        newStore[currentIdChat] = {
+          ...conv,
+          schedule: JSON.parse(JSON.stringify(conv.savedSchedule))
+        } as any;
+      }
+      return newStore;
+    });
+  };
+
+  const saveScheduleAsJSON = () => {
+    const activeSession = chatStore[currentIdChat];
+    if (!activeSession || !activeSession.schedule) {
+      console.warn('No schedule to save');
+      return null;
+    }
+
+    const scheduleData = activeSession.schedule;
+    
+    const formattedSchedule = {
+      cntDay: scheduleData.length.toString(),
+      dayList: scheduleData.map((day) => ({
+        day: day.day.toString(),
+        'dish-list': day.scheduleInDay.map((item) => ({
+          activity: item.activity || '',
+          restaurant_name: item.food?.restaurant_name || '',
+          dish_name: item.food?.dish_name || '',
+          address: item.food?.address || '',
+          lat: item.food?.coordinates?.lat?.toString() || '',
+          lon: item.food?.coordinates?.lng?.toString() || '',
+          desc: item.food?.desc || '',
+          star: item.food?.star?.toString() || '',
+          price: item.food?.priceRange || '',
+          img: item.food?.image || '',
+          openTime: item.food?.openTime || ''
+        }))
+      }))
+    };
+
+    return formattedSchedule;
+  };
+
   return {
     inputValue,
     setInputValue,
@@ -492,6 +615,9 @@ export function useChat() {
     handleDeleteSession,
     handleRenameSession,
     handleSwapScheduleItems,
-    swappedItemIds
+    swappedItemIds,
+    handleSaveSchedule,
+    handleUndoSchedule,
+    saveScheduleAsJSON
   }
 }

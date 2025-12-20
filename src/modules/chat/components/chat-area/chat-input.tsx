@@ -7,11 +7,32 @@ interface ChatInputProps {
   onChange: (val: string) => void;
   onSubmit: () => void;
   isLoading: boolean;
+  suggestedDish?: string[];
 }
 
-export function ChatInput({ value, onChange, onSubmit, isLoading }: ChatInputProps) {
+export function ChatInput({ value, onChange, onSubmit, isLoading, suggestedDish = [] }: ChatInputProps) {
+  const hasSuggestions = suggestedDish.length > 0;
+
   return (
     <div className="p-3 md:p-4 bg-white border-t shrink-0 z-20">
+      {hasSuggestions && (
+        <div className="mx-auto max-w-3xl mb-3">
+          <div className="flex items-start gap-2 rounded-2xl border bg-white shadow-sm px-3 py-2.5">
+            <span className="text-xs font-semibold text-gray-700 mt-0.5">Suggested</span>
+            <div className="flex flex-wrap gap-2">
+              {suggestedDish.map((dish, idx) => (
+                <span
+                  key={`${dish}-${idx}`}
+                  className="text-xs bg-orange-50 text-orange-700 border border-orange-100 rounded-full px-3 py-1"
+                >
+                  {dish}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-3xl relative rounded-2xl border bg-gray-50 focus-within:ring-1 focus-within:ring-[var(--color-brand)] shadow-sm transition-all">
         <Textarea
           placeholder="Type your recommendation (Example: Suggest for me a nice restaurant)..."

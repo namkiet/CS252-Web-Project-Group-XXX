@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { 
   Calendar, 
-  Menu
 } from 'lucide-react';
 
 import { SidebarLeft } from '../components/left-sidebar/user-sidebar'
@@ -52,7 +51,9 @@ export default function ChatPage() {
     handleDeleteSession,
     handleRenameSession,
     handleSwapScheduleItems,
-    swappedItemIds
+    swappedItemIds,
+    handleSaveSchedule,
+    handleUndoSchedule
   } = useChat();
 
   const mapModal = useMapModal();
@@ -60,7 +61,7 @@ export default function ChatPage() {
 
   const activeConversation: Conversation = chatStore && chatStore[currentIdChat] 
     ? chatStore[currentIdChat] 
-    : { id: "", title: "New Conversation...", messages: [] };
+    : { id: "", title: "New Conversation...", messages: [], suggestedDish: [] } as any;
 
   return (
     <SidebarProvider
@@ -119,6 +120,7 @@ export default function ChatPage() {
             onChange={setInputValue}
             onSubmit={handleSendMessage}
             isLoading={isLoading}
+            suggestedDish={activeConversation.suggestedDish || []}
           />
         </div>
       </SidebarInset>
@@ -132,6 +134,7 @@ export default function ChatPage() {
         <ScheduleSidebar
           className="h-full border-l w-80 bg-white shrink-0"
           schedule={schedule} 
+          savedSchedule={activeConversation.savedSchedule || schedule}
           onRemoveItem={handleRemoveFromSchedule}
           onAddDay={onAddDay}
           onAddInDay={onAddInDay}
@@ -144,6 +147,8 @@ export default function ChatPage() {
           onShowDayMap={mapModal.openDayMap}
           onSwapItems={handleSwapScheduleItems}
           swappedItemIds={swappedItemIds}
+          onSaveSchedule={handleSaveSchedule}
+          onUndoSchedule={handleUndoSchedule}
         />
       </div>
 
@@ -159,6 +164,7 @@ export default function ChatPage() {
             <ScheduleSidebar
               className="flex-1 w-full border-none"
               schedule={schedule} 
+              savedSchedule={activeConversation.savedSchedule || schedule}
               onRemoveItem={handleRemoveFromSchedule}
               onAddDay={onAddDay}
               onAddInDay={onAddInDay}
@@ -171,6 +177,8 @@ export default function ChatPage() {
               onShowDayMap={mapModal.openDayMap}
               onSwapItems={handleSwapScheduleItems}
               swappedItemIds={swappedItemIds}
+              onSaveSchedule={handleSaveSchedule}
+              onUndoSchedule={handleUndoSchedule}
             />
           </div>
         </SheetContent>

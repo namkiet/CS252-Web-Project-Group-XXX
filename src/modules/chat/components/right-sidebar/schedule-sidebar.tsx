@@ -17,6 +17,7 @@ import {ScheduleFoodCard} from './schedule-food-card'
 
 interface ScheduleSidebarProps extends React.ComponentProps<typeof Sidebar> {
   schedule: ScheduleDay[];
+  savedSchedule?: ScheduleDay[];
   onRemoveItem: (id: string) => void;
   onAddDay: (day:number) => void;
   onAddInDay: (daynumber: number, position: number |ScheduleItem, activity: string, food: FoodItem | null) => void ;
@@ -29,10 +30,13 @@ interface ScheduleSidebarProps extends React.ComponentProps<typeof Sidebar> {
   onShowDayMap?: (daySchedule: ScheduleDay) => void;
   onSwapItems?: (item1: ScheduleItem, item2: ScheduleItem) => void;
   swappedItemIds?: string[];
+  onSaveSchedule?: () => void;
+  onUndoSchedule?: () => void;
 }
 
 export function ScheduleSidebar({
   schedule = [],
+  savedSchedule = [],
   onRemoveItem,
   onAddDay,
   onAddInDay,
@@ -45,6 +49,8 @@ export function ScheduleSidebar({
   onShowDayMap,
   onSwapItems,
   swappedItemIds = [],
+  onSaveSchedule,
+  onUndoSchedule,
   className,
   ...props
 }: ScheduleSidebarProps) {
@@ -68,6 +74,9 @@ export function ScheduleSidebar({
       onAddInDay(scheduleItemSelected.day,scheduleItemSelected, "Activity", null);
     }
   };
+
+  // Detect if schedule has changed from saved version
+  const hasScheduleChanges = JSON.stringify(schedule) !== JSON.stringify(savedSchedule);
 
   const handleDrop = (e: React.DragEvent, dayNumber: number) => {
     e.preventDefault();
@@ -109,9 +118,27 @@ export function ScheduleSidebar({
       <SidebarHeader className="p-0">  
         {/* Header here */}
         <div className="border-sidebar-border border-b p-4 md:p-6 bg-white">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-orange-600" />
-            <h2 className="font-semibold text-lg text-gray-800">Your Schedule</h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-orange-600" />
+              <h2 className="font-semibold text-lg text-gray-800">Your Schedule</h2>
+            </div>
+            {hasScheduleChanges && (
+              <div className="flex gap-2">
+                <button
+                  onClick={onUndoSchedule}
+                  className="h-7 px-2.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                >
+                  Undo
+                </button>
+                <button
+                  onClick={onSaveSchedule}
+                  className="h-7 px-2.5 text-xs font-medium text-white bg-orange-500 hover:bg-orange-600 rounded transition-colors"
+                >
+                  Save
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </SidebarHeader>
@@ -253,8 +280,7 @@ export function ScheduleSidebar({
       </SidebarContent>
 
       <SidebarFooter>
-        <ScheduleFooter AddDay={AddDay} AddInDay={AddInDay}>
-        </ScheduleFooter>
+        <ScheduleFooter AddDay={AddDay} />
       </SidebarFooter>
     </Sidebar>
   )

@@ -25,6 +25,26 @@ def get_sessions_sidebar():
         return jsonify({"Error" : "Internal server error"}), 500
 
 
+@history_bp.route('/sessions', methods=['POST'])
+@token_required
+def create_new_sessions():
+    user = request.current_user
+    data = request.get_json() or {}
+
+    title = data.get('title')
+    first_message = data.get('first_message') or data.get('firstMessage')
+
+    try:
+        new_session = history_service.create_session(user.id, title=title, first_message=first_message)
+        return jsonify({
+            "status": "success",
+            "data": new_session
+        }), 201
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
 @history_bp.route('/<session_id>', methods = ['GET'])
 @token_required
 def get_history_messages(session_id):
@@ -43,6 +63,10 @@ def get_history_messages(session_id):
         messages = []
         
         for msg in history:
+            # Read widget and schedule directly from DB columns
+            widget = msg.get('widget') or {"type": "chat", "payload": None}
+            schedule = msg.get('schedule')
+            
             msg_obj = {
                 "id" : msg.get('id'),
                 "message" : {
@@ -50,21 +74,10 @@ def get_history_messages(session_id):
                     "content" : msg.get('content'),
                     "created_at": msg.get('created_at')
                 },
-                "widget" : {
-                    "type" : "chat",
-                    "payload" : None
-                }
+                "widget" : widget,
+                "schedule": schedule
             }
             
-            meta = msg.get('metadata') or {}
-            mtype = meta.get('type')
-            mdata = meta.get('data')
-            
-            if mtype == 'recommendation' and mdata:
-                msg_obj['widget']['payload'] = mdata
-                msg_obj['widget']['type'] = mtype
-            # elif
-                
             messages.append(msg_obj)
         response = {
             "status" : "success",
@@ -126,6 +139,62 @@ def update_chat_session(session_id):
             return jsonify({
                 "status": "error",
                 "message": "Session not found or access denied"
+            }), 404
+            
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@history_bp.route('/<session_id>/schedule', methods=['PUT'])
+@token_required
+def update_chat_session_schedule(session_id):
+    user = request.current_user
+    data = request.get_json()
+    schedule = data.get('schedule')
+
+    if not session_id or schedule is None:
+        return jsonify({"error": "Missing session ID or schedule"}), 400
+
+    try:
+        updated_session = history_service.update_session_schedule(user.id, session_id, schedule)
+        
+        if updated_session:
+            return jsonify({
+                "status": "success",
+                "message": "Schedule updated successfully",
+                "data": updated_session
+            }), 200
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "Session not found or access denied"
+            }), 404
+            
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+    
+@history_bp.route('/<session_id>/schedule', methods=['GET'])
+@token_required
+def get_chat_session_schedule(session_id):
+    user = request.current_user
+
+    if not session_id:
+        return jsonify({"error": "Invalid session ID"}), 400
+
+    try:
+        schedule = history_service.get_session_schedule(user.id, session_id)
+        
+        if schedule is not None:
+            return jsonify({
+                "status": "success",
+                "session_id": session_id,
+                "schedule": schedule
+            }), 200
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "Session not found or no schedule data"
             }), 404
             
     except Exception as e:

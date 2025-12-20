@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { locations } from '../data/location-data';
 import { dishes } from '../data/dish-data';
-import type { DishData, SuggestedRestaurant } from '../index';
+import type { DishData } from '../index';
 import { Map } from 'lucide-react';
 import { useChatContext } from '@/context/chat-context';
+import { hisService } from '@/services/history.service';
 
 import { MainHeader } from '../components/main-header';
 import { CategoryTabs } from '../components/category-tabs';
@@ -23,7 +24,7 @@ import {
 
 export default function FoodGuidePage() {
   // --- HOOKS ---
-  const { chatStore, setChatStore, setCurrentIdChat, fetchInitialMessages } = useChatContext();
+  const { chatStore, setCurrentIdChat, setChatStore } = useChatContext();
 
   // --- STATE ---
   const [activeTab, setActiveTab] = useState<'vietnam' | 'international'>('vietnam');
@@ -35,72 +36,41 @@ export default function FoodGuidePage() {
   const isManualScrolling = useRef(false);
   const filteredLocations = locations.filter(loc => loc.category === activeTab);
 
-  const handleAddRestaurantToSchedule = async (restaurant: SuggestedRestaurant, conversationIndex: number) => {
+  const handlePrefillDishToChat = async (dish: DishData, conversationIndex: number) => {
+    if (conversationIndex === -1) {
+      const defaultSchedule = [{ day: 1, scheduleInDay: [] }];
+      const created = await hisService.addSession(`Conversation ${chatStore.length + 1}`);
+      const newSession = created?.data;
+
+      const newConversation = {
+        id: newSession?.id || "",
+        title: newSession?.title || `Conversation ${chatStore.length + 1}`,
+        messages: [],
+        schedule: defaultSchedule,
+        savedSchedule: [...defaultSchedule],
+        suggestedDish: [dish.name]
+      } as any;
+
+      setChatStore(prev => [...prev, newConversation]);
+      setCurrentIdChat(chatStore.length);
+      return;
+    }
+
     const conversation = chatStore[conversationIndex];
     if (!conversation) return;
 
-    // Check if conversation has loaded messages, if not, fetch them first
-    if (!conversation.messages || conversation.messages.length === 0) {
-      console.log(`Loading messages for conversation: ${conversation.title}`);
-      await fetchInitialMessages(conversationIndex);
-    }
-
-    // Switch to the target conversation
     setCurrentIdChat(conversationIndex);
 
-    // Convert restaurant to FoodItem format
-    const foodItem = {
-      id: restaurant.restaurantName,
-      restaurant_name: restaurant.restaurantName,
-      image: restaurant.image,
-      desc: restaurant.dishName,
-      address: restaurant.address,
-      star: restaurant.rating,
-      dish_name: restaurant.dishName,
-      priceRange: restaurant.price.toString(),
-      openTime: '',
-      coordinates: undefined
-    };
-
-    // Directly update chatStore to add to the last day of the target conversation's schedule
+    // Also push into suggestedDish array for that conversation
     setChatStore(prev => {
-      const newStore = [...prev];
-      const targetConv = newStore[conversationIndex];
-      
-      if (!targetConv) return prev;
-
-      const schedule = targetConv.schedule || [{ day: 1, scheduleInDay: [] }];
-      const lastDay = schedule[schedule.length - 1];
-
-      // Check if food already exists
-      const foodExists = schedule.some(dayObj =>
-        dayObj.scheduleInDay.some(item => item.food?.id === foodItem.id)
-      );
-      if (foodExists) {
-        console.warn(`Food "${foodItem.restaurant_name}" already exists in schedule`);
-        return prev;
+      const next = [...prev];
+      const conv = next[conversationIndex];
+      if (!conv) return prev;
+      const list = conv.suggestedDish || [];
+      if (!list.includes(dish.name)) {
+        next[conversationIndex] = { ...conv, suggestedDish: [...list, dish.name] } as any;
       }
-
-      // Add to last day
-      const newSchedule = schedule.map(dayObj => {
-        if (dayObj.day === lastDay.day) {
-          return {
-            ...dayObj,
-            scheduleInDay: [
-              ...dayObj.scheduleInDay,
-              { activity: '', day: lastDay.day, food: foodItem }
-            ]
-          };
-        }
-        return dayObj;
-      });
-
-      newStore[conversationIndex] = {
-        ...targetConv,
-        schedule: newSchedule
-      } as any;
-
-      return newStore;
+      return next;
     });
   };
 
@@ -219,7 +189,7 @@ export default function FoodGuidePage() {
       <DishDetailModal 
         dish={selectedDish} 
         onClose={() => setSelectedDish(null)}
-        onAddRestaurant={handleAddRestaurantToSchedule}
+        onPrefillDishToChat={handlePrefillDishToChat}
       />
 
       <footer className="bg-white border-t border-orange-100 mt-16 pb-20 lg:pb-8">
