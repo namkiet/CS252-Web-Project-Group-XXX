@@ -57,8 +57,8 @@ def crawl_data_task(topic):
             print("Crawl Data Task error:", error)
             return
         
-        print("[CRAWL SELE]\n")
         
+        print("[CRAWL SELE]\n")
         crawl_sele(csv_path)
         print("[DONE SELE]\n")
         
@@ -69,12 +69,6 @@ def crawl_data_task(topic):
         
         # data = []
         # #emb & db
-        
-        # from service.ingestor import Ingestor
-        # ing = Ingestor(table_name = "testing")
-        # # ing = Ingestor(table_name = "documents")
-        # print("[INGEST]\n")
-        # ing.process(data)
 
         print("[FINISH!]\n")
     except Exception as e:
@@ -155,7 +149,7 @@ def upload_supabase():
     #emb & db
     
     from service.ingestor import Ingestor
-    ing = Ingestor(table_name = "testing")
+    ing = Ingestor(table_name = "test")
     # ing = Ingestor(table_name = "documents")
     print("[INGEST]\n")
     ing.process(data)

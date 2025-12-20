@@ -4,13 +4,14 @@ from service.supabase import get_admin_db
 from service.vector_store import VectorStore
 from service.ollama_emb import OllamaEmb
 from service.embedding_service import EmbeddingService
-
+from service.summary import Summary
 
 class Ingestor:
     
     def __init__(self, table_name):
         self.vector_store = VectorStore(table_name = table_name)
         self.embedder = EmbeddingService()
+        self.summarizer = Summary()
         # URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
         # self.embed_model = OllamaEmb(base_url = URL)
         
@@ -67,15 +68,21 @@ class Ingestor:
             address = res.get('address', "Unknown")
             rating = res.get('ratings', "N/A")
             url = res.get('url', "")
+            dishes = res.get('dishes', [])
             
             if self._check_restaurant_exists(db_client, name, url):
                 print(f"SKIP {name} (already exists)\n")
                 continue
-        
+                
+            print(f"Generating AI Summary for: {name}...")
+            ai_description = self.summarizer.generate_restaurant_summary(res)
+            print(f" > Summary: {ai_description[:100]}...")
+            
             text = (
                 f"Restaurant: {name}. "
-                f"Address: {address}. "
-                f"Rating: {rating}. "
+                # f"Address: {address}. "
+                # f"Rating: {rating}. "
+                f"Description: {ai_description}"
             )
             
             self._save(db_client, text, {
@@ -84,20 +91,26 @@ class Ingestor:
                 "address": address,
                 "img_src": res.get("img_src", ""),
                 "url" : url,
+                "description": ai_description,
                 "source": "json_upload"
             })
             print(f"ADD {name}\n")
-            dishes = res.get('dishes', [])
+            
             
             for dish in dishes:
                 dish_name = dish.get('name', "")
                 dish_price = dish.get('price', "")
                 
+                print(f"Generating AI Summary for (DISH): {name}...")
+                ai_description_dish = self.summarizer.generate_dish_summary(dish, res)
+                print(f" > Summary: {ai_description_dish[:100]}...")
+            
                 dish_text = (
                     f"Dish: {dish_name}. "
-                    f"Price: {dish_price}. "
-                    f"Served at: {name} ({address}). "
-                    f"Restaurant's rating: {rating}."
+                    # f"Price: {dish_price}. "
+                    # f"Served at: {name} ({address}). "
+                    # f"Restaurant's rating: {rating}."
+                    f"Description: {ai_description_dish}"
                 )
                 
                 self._save(db_client, dish_text, {
@@ -105,6 +118,7 @@ class Ingestor:
                     "dish_name": dish_name,
                     "restaurant": name,
                     "price": dish_price,
+                    "description": ai_description_dish,
                     "img_src": dish.get("img_src"),
                     "source": "json_upload"
                 })
