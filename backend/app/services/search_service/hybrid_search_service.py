@@ -4,9 +4,10 @@ from app.services.search_service.fuzzy_search_service import FuzzySearchService
 from service.ollama_emb import OllamaEmb
 
 class HybridSearchService:
-    def __init__(self):
-        self.semantic = SemanticSearchService()
-        self.fuzzy = FuzzySearchService()
+    def __init__(self, table_name):
+        self.table_name = table_name
+        self.semantic = SemanticSearchService(table_name)
+        self.fuzzy = FuzzySearchService(table_name)
         
         import os
         url = os.environ.get("OLLAMA_URL", "https://your-ngrok-url.ngrok-free.app")

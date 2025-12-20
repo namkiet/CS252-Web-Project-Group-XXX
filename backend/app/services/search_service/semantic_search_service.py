@@ -12,8 +12,8 @@ class SemanticSearchService:
         - Fall back search
     """
     
-    def __init__(self):
-        self.store = VectorStore()
+    def __init__(self, table_name):
+        self.store = VectorStore(table_name)
         self.embedder = EmbeddingService()
 
     def _semantic_search(self, query: str, threshold: float, limit: int = 8):

@@ -14,7 +14,9 @@ class FuzzySearchService:
         - Restaurant / Dish / Address / Rating / Price
         - Fall back 
     """
-    
+    def __init__(self, table_name):
+        self.table_name = table_name
+        
     def normalize_text(self, text: str) -> str:
         if not text:
             return ""
@@ -32,7 +34,7 @@ class FuzzySearchService:
         db = get_admin_db()
         
         res = (
-            db.table("documents")
+            db.table(self.table_name)
             .select("*")
             .eq("metadata->>type", "restaurant")
             .or_(
@@ -50,7 +52,7 @@ class FuzzySearchService:
         db = get_admin_db()
         
         res = (
-            db.table("documents")
+            db.table(self.table_name)
             .select("*")
             .eq("metadata->>type", "dish")
             .or_(
@@ -68,7 +70,7 @@ class FuzzySearchService:
         db = get_admin_db()
         
         res = (
-            db.table("documents")
+            db.table(self.table_name)
             .select("*")
             .eq("metadata->>type", "restaurant")
             .ilike("metadata->>address", f"%{key}%")
