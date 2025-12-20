@@ -2,7 +2,9 @@ from flask import Blueprint, request, jsonify
 
 from app.utils.decorators import token_required
 from app.services.history_service import ChatHistoryService
+from app.services.audio_service import StorageService
 
+storage_service = StorageService()
 history_bp = Blueprint('history', __name__)
 
 history_service = ChatHistoryService()
@@ -15,10 +17,9 @@ def get_sessions_sidebar():
     try:
         sessions = history_service.get_user_sessions(user.id)
         response = {
-            "status" : "success",
-            "data" : sessions
+            "status": "success",
+            "data": sessions
         }
-        
         return jsonify(response), 200
     except Exception as e:
         print(f"Error: {e}")
@@ -30,7 +31,7 @@ def get_sessions_sidebar():
 def get_history_messages(session_id):
     if not session_id:
         return jsonify({"error": "Invalid session ID"}), 400
-    
+    user = request.current_user
     try:
         try:
             limit = int(request.args.get('limit', 20))
@@ -43,6 +44,10 @@ def get_history_messages(session_id):
         messages = []
         
         for msg in history:
+            audio_url = None
+            if msg.get("audio_path"):
+                audio_url = storage_service.get_signed_url(msg["audio_path"])
+                
             msg_obj = {
                 "id" : msg.get('id'),
                 "message" : {
@@ -50,27 +55,37 @@ def get_history_messages(session_id):
                     "content" : msg.get('content'),
                     "created_at": msg.get('created_at')
                 },
-                "widget" : {
-                    "type" : "chat",
-                    "payload" : None
-                }
+                "widget" : msg.get('widget'),
+                "audio_url": audio_url
             }
             
-            meta = msg.get('metadata') or {}
-            mtype = meta.get('type')
-            mdata = meta.get('data')
+            # meta = msg.get('metadata') or {}
+            # mtype = meta.get('type')
+            # mdata = meta.get('data')
             
-            if mtype == 'recommendation' and mdata:
-                msg_obj['widget']['payload'] = mdata
-                msg_obj['widget']['type'] = mtype
+            
+            # if mtype == 'recommendation' and mdata:
+            #     msg_obj['widget']['payload'] = mdata
+            #     msg_obj['widget']['type'] = mtype
             # elif
                 
             messages.append(msg_obj)
+            
+        session = history_service.get_session(session_id)
+        
+        if not session or session.get("user_id", "") != user.id:
+            return jsonify({"error": "Access denied"}), 403
+   
         response = {
             "status" : "success",
             "session_id" : session_id,
+            "schedule": session.get("schedule"),
             "messages" : messages
         }
+        print("-----------------")
+        
+        print(response)
+        print("-----------------")
         return jsonify(response), 200
     except Exception as e:
         print(f"Error: {e}")

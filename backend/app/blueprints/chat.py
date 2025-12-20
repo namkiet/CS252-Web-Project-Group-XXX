@@ -1,4 +1,5 @@
 import html
+import json
 from flask import Blueprint, request, jsonify
 
 from app.utils.decorators import token_required
@@ -36,21 +37,46 @@ def handle_message():
         session_id = new_session['id']
     
     try:
-        history_service.add_message(session_id, "user", user_message)
+        history_service.add_message(
+            session_id=session_id,
+            role="user",
+            user_message=user_message,
+            widget={"type": "chat", "payload": None},
+            audio_path=None,
+        )
+        
+        # schedule_raw = request.form.get("schedule")
+        current_schedule = data.get('schedule', {})
+        
         chat_history = history_service.get_history(session_id)
         
-        response = chat_service.generate_response(user_message, chat_history)
+        print("------------------------------------------------")
+        print(chat_history)
+        print("------------------------------------------------")
+        
+        response = chat_service.generate_response(user_message, chat_history, current_schedule)
         # response = chat_mock.process_message(user_message, chat_history)
         if not response:
             return jsonify({"error" : "No response"}), 500
         
         history_service.add_message(
-            session_id,
-            "assistant",
-            response.get('content', "") ,
-            metadata = response.get('metadata', {})
+            session_id=session_id,
+            role="assistant",
+            user_message=response.get('content', ""),
+            widget={
+                "type": response.get("type", "chat"),
+                "payload": response.get("payload")
+            },
+            metadata = response.get('metadata', {}),
+            audio_path=None
         ) 
 
+        if response.get("schedule"):
+            history_service.add_schedule(
+                session_id=session_id,
+                schedule=response.get("schedule", {})
+            )
+    
         return jsonify({
             "status" : "success",
             "session_id": session_id,
@@ -61,7 +87,8 @@ def handle_message():
             "widget" : {
                 "type" : response.get("type", "chat"),
                 "payload" : response.get("payload")
-            }
+            },
+            "schedule": response.get("schedule", {})
         }), 200
         
     except Exception as e:

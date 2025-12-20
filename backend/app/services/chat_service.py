@@ -85,7 +85,7 @@ class ChatService:
                 print(f"WARNING: Classification failed ({e})")
         return True
         
-    def generate_response(self, user_message, chat_history):
+    def generate_response(self, user_message, chat_history, current_schedule):
 
         if not self.root:
             return {
@@ -115,14 +115,14 @@ class ChatService:
                 }
 
             history_context = self._format_history(chat_history)
-            print("---------------")
-            print(history_context)
-            print("--------------")
+            
+            
             prompt = f"{history_context}\nUser's current input: {user_message}"
             payload = {
                 "message" : prompt,
                 "raw_input" : user_message,
-                "chat_history" : chat_history
+                "chat_history" : chat_history,
+                "current_schedule" : current_schedule
             }
 
             agent_output = self.root.handle(payload)["output"]
