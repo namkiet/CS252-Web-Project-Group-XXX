@@ -11,7 +11,7 @@ vecs
 postgrest
 gotrue
 sqlite3
-
+unicodedata
 # Library from AI Developer
 openai
 pandas

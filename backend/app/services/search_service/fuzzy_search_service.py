@@ -1,4 +1,6 @@
 from typing import List, Dict
+import unicodedata
+import re
 
 from service.vector_store import VectorStore
 from service.embedding_service import EmbeddingService
@@ -17,8 +19,13 @@ class FuzzySearchService:
         if not text:
             return ""
 
-        text = text.lower().strip()
-        return text
+        text = text.lower()
+        
+        text = unicodedata.normalize('NFD', text)
+        text = re.sub(r'[\u0300-\u036f]', '', text)
+        text = unicodedata.normalize('NFC', text)
+        
+        return text.strip()
     
     def search_restaurant_by_name(self, name: str, limit: int = 10):
         key = self.normalize_text(name)

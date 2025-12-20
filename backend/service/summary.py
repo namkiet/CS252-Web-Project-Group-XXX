@@ -17,7 +17,7 @@ class Summary():
         menu_context = menu_items[:150]
         
         prompt = f"""
-            ROLE: Food Data Enrichment Specialist.
+            ROLE: Multilingual Food Data Enrichment Specialist.
             TASK: Write a dense, keyword-rich description of a specific dish for a vector search engine.
             
             --- INPUT DATA ---
@@ -34,8 +34,12 @@ class Summary():
             2. DESCRIBE: Focus on TASTE (Spicy, Sweet, Umami), TEXTURE (Crispy, Soft), and TEMPERATURE.
             3. VERIFY: If the restaurant rating is high, mention "Highly rated". If the price is low, mention "Affordable".
             4. SAFETY ALERT: Explicitly list likely allergens. Use format: [Contains: Peanuts, Shellfish, etc.]. If unsure, do not guess.
+            5. TRANSLATION: If the name is Vietnamese, provide the closest English translation (e.g., "Bun Bo" -> "Beef Noodle Soup").
             
-            CONSTRAINT: Keep it under 50 words. No flowery language. Focus on search keywords.
+            OUTPUT FORMAT: 
+            "[English Description]. [Allergen Warnings]. Keywords: [Vietnamese Keywords]"
+            
+            CONSTRAINT: Keep it under 70 words. No flowery language. Focus on search keywords.
         """
 
         try:
@@ -70,8 +74,12 @@ class Summary():
             2. FLAVOR PROFILE: Explicitly list the dominant notes (e.g., "Heavy use of fish sauce," "Spicy Szechuan peppercorns," "Sweet desserts").
             3. VIBE & VALUE: Infer from the prices and address (e.g., "Budget-friendly street food," "Upscale fine dining").
             4. DIETARY NOTS: Mention if the menu seems to have many Veggie or Meat options.
+            5. RATING: Start the description with the rating (e.g., "Rated 4.6/5 stars...).
             
-            CONSTRAINT: Keep it under 60 words. Prioritize factual descriptors over marketing fluff.
+            OUTPUT FORMAT:
+            "[Rating]. [English Description]. Keywords: [Vietnamese Keywords]"
+        
+            CONSTRAINT: Keep it under 100 words. Prioritize factual descriptors over marketing fluff.
         """
 
         try:
