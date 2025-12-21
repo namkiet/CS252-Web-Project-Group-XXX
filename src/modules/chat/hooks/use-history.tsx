@@ -24,7 +24,8 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
         is_pinned: false,
         schedule: defaultSchedule,
         savedSchedule: [...defaultSchedule],
-        suggestedDish: []
+        suggestedDish: [],
+        isLoaded: true
       } as any;
       next.push(newConv);
       return next;
@@ -45,7 +46,8 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
             is_pinned: false,
             title: "New Conversation",
             messages: [],
-            schedule: defaultSchedule
+            schedule: defaultSchedule,
+            isLoaded: true
           }]);
           setCurrentIdChat(0);
         } else {
@@ -114,7 +116,7 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
 
   const handleSaveSchedule = async () => {
     const activeSession = chatStore[currentIdChat];
-    if (!activeSession?.id) return;
+    if (!activeSession?.id || !activeSession.isLoaded) return;
 
     const scheduleJSON = saveScheduleAsJSON();
     if (!scheduleJSON) return;

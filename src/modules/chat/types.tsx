@@ -29,6 +29,7 @@ export type Conversation = {
   schedule?: ScheduleDay[];
   savedSchedule?: ScheduleDay[];
   suggestedDish?: string[];
+  isLoaded?: boolean;
 };
 
 export type ScheduleItem = {

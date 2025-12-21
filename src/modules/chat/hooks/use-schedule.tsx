@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 import type { FoodItem, ScheduleDay, ScheduleItem } from '../types'
 import { useChatContext } from '@/context/chat-context';
 import { useHistory } from './use-history';
@@ -11,44 +11,51 @@ export function useSchedule() {
   } = useChatContext();
 
   const defaultSchedule = useMemo<ScheduleDay[]>(() => ([{ day: 1, scheduleInDay: [] }]), []);
-  const [schedule, setSchedule] = useState<ScheduleDay[]>(defaultSchedule);
   
+  const schedule = chatStore[currentIdChat]?.schedule || defaultSchedule;
+  const isLoaded = chatStore[currentIdChat]?.isLoaded || false;
+
   const [scheduleItemSelected, setScheduleItemSelected] = useState<ScheduleItem | number | null>(null)
   const [foodCardSelected, setFoodCardSelected] = useState<FoodItem | null>(null);
   const [isScheduleSidebarOpen, setIsScheduleSidebarOpen] = useState<boolean>(true)
   const [swappedItemIds, setSwappedItemIds] = useState<string[]>([])
   
   const history = useHistory(defaultSchedule);
+  const isInitialMount = useRef(true);
 
-  // ---------------------------------------SYNC SCHEDULE----------------------------------
+  // ------------------------- AUTO SAVE LOGIC-------------------------
   useEffect(() => {
-    const activeSession = chatStore[currentIdChat];
-    if (activeSession && activeSession.schedule && activeSession.schedule.length > 0) {
-      setSchedule(activeSession.schedule);
-    } else {
-      setSchedule(defaultSchedule);
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
     }
-  }, [chatStore, currentIdChat, defaultSchedule]);
 
-  // ---------------------------------------UPDATE SCHEDULE--------------------------------
+    if (!chatStore[currentIdChat]?.id || !isLoaded) return;
+
+    const timer = setTimeout(() => {
+      history.handleSaveSchedule();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [schedule, currentIdChat, isLoaded]);
+
+  // ------------------------- UPDATE SCHEDULE -------------------------
   const updateSchedule = (updater: (prev: ScheduleDay[]) => ScheduleDay[]) => {
-    setSchedule(prev => {
-      const next = updater(prev);
-      setChatStore(prevStore => {
-        const newStore = [...prevStore];
-        if (newStore[currentIdChat]) {
-          newStore[currentIdChat] = {
-            ...newStore[currentIdChat],
-            schedule: next,
-          } as any;
-        }
-        return newStore;
-      });
-      return next;
+    const next = updater(schedule);
+
+    setChatStore(prevStore => {
+      const newStore = [...prevStore];
+      if (newStore[currentIdChat]) {
+        newStore[currentIdChat] = {
+          ...newStore[currentIdChat],
+          schedule: next,
+        } as any;
+      }
+      return newStore;
     });
   };
 
-  // --------------------------------------ADD DAY----------------------------------------
+  // -------------------------------------- ADD DAY ----------------------------------------
   const onAddDay = (insertAtIndex: number = -1) => {
     updateSchedule(prev => {
       const insertPos = insertAtIndex === -1 || insertAtIndex >= prev.length ? prev.length : insertAtIndex < 0 ? 0 : insertAtIndex;
@@ -73,7 +80,7 @@ export function useSchedule() {
     });
   };
 
-  // -------------------------------------ADD ACTIVITY IN DAY-------------------------------
+  // ------------------------------------- ADD ACTIVITY IN DAY -------------------------------
   const onAddInDay = (dayNumber: number = -1, position: number | ScheduleItem = -1, activity: string = "", food: FoodItem | null = null) => {
     updateSchedule(prev => {
       if (prev.length === 0) return prev;
@@ -94,7 +101,12 @@ export function useSchedule() {
         insertPos = position as number;
       }
 
-      const newItem: ScheduleItem = { activity, day: targetDay, food: food ?? undefined };
+      const newItem: ScheduleItem = { 
+        id: crypto.randomUUID(), 
+        activity, 
+        day: targetDay, 
+        food: food ?? undefined 
+      };
 
       return prev.map(dayObj => {
         if (dayObj.day !== targetDay) return dayObj;
@@ -106,7 +118,7 @@ export function useSchedule() {
     });
   };
 
-  // ------------------------------------ADD RESTAURANT TO SCHEDULE--------------------------------
+  // ------------------------------------ ADD RESTAURANT TO SCHEDULE --------------------------------
   const handleAddToSchedule = (foodItem: FoodItem, targetDay?: number) => {
     updateSchedule(prev => {
       if (scheduleItemSelected && typeof scheduleItemSelected !== "number") {
@@ -120,7 +132,13 @@ export function useSchedule() {
 
       return prev.map(dayObj => {
         if (dayObj.day === dayToAdd) {
-          return { ...dayObj, scheduleInDay: [...dayObj.scheduleInDay, { activity: "", day: dayToAdd, food: foodItem }] };
+          return { 
+            ...dayObj, 
+            scheduleInDay: [
+              ...dayObj.scheduleInDay, 
+              { id: crypto.randomUUID(), activity: "", day: dayToAdd, food: foodItem }
+            ] 
+          };
         }
         return dayObj;
       });
@@ -128,7 +146,7 @@ export function useSchedule() {
     setScheduleItemSelected(null);
   };
 
-  // ---------------------------------REMOVE RESTAURANT----------------------------------
+  // --------------------------------- REMOVE RESTAURANT ----------------------------------
   const handleRemoveFromSchedule = (idToRemove: string) => {
     if (!idToRemove) return;
     updateSchedule(prev => prev.map(day => ({
@@ -137,7 +155,7 @@ export function useSchedule() {
     })));
   }
 
-  // --------------------------------------REMOVE DAY-------------------------------------
+  // -------------------------------------- REMOVE DAY -------------------------------------
   const handleRemoveDay = (dayToRemove: number) => {
     updateSchedule(prev => {
       const filtered = prev.filter(d => d.day !== dayToRemove);
@@ -149,7 +167,7 @@ export function useSchedule() {
     });
   };
 
-  // --------------------------------------SWAP ITEM--------------------------------------
+  // -------------------------------------- SWAP ITEM --------------------------------------
   const handleSwapScheduleItems = (item1: ScheduleItem, item2: ScheduleItem) => {
     updateSchedule(prev => {
       let i1 = { d: -1, idx: -1 }, i2 = { d: -1, idx: -1 };
@@ -190,7 +208,6 @@ export function useSchedule() {
     setScheduleItemSelected(null);
   };
 
-  // -----------------------------TOGGLE OPEN/CLOSE------------------------------
   const toggleScheduleSidebar = () => setIsScheduleSidebarOpen(prev => !prev);
 
   return {

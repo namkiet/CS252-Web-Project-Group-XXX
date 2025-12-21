@@ -18,11 +18,9 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-// Convert backend schedule JSON to frontend ScheduleDay[] shape
 const parseBackendSchedule = (raw: any): any[] => {
   if (!raw) return [];
 
-  // If already in expected array shape, return as-is
   if (Array.isArray(raw)) return raw;
 
   const dayList = Array.isArray(raw.dayList) ? raw.dayList : [];
@@ -93,17 +91,26 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
           return {
               ...baseMessage,
               type: "recommendation",
-              data: rawPayload.map((item: any) => ({
-                  id: crypto.randomUUID(),
-                  restaurant_name: item.restaurant_name || "Nhà hàng",
-                  image: item.image || "", 
+              data: rawPayload.map((item: any) => {
+                const lat = item.coordinates?.lat ?? item.lat;
+                const lng = item.coordinates?.lng ?? item.lon;
+
+                return {
+                  ...item,
+                  id: item.id || crypto.randomUUID(),
+                  restaurant_name: item.restaurant_name || "Restaurant",
+                  image: item.image || item.img || "", 
                   desc: item.desc || item.description || "",
                   address: item.address || "",
                   star: Number(item.star || 0),
                   dish_name: item.dish_name || "",
                   priceRange: item.priceRange || "",
-                  openTime: "",
-              }))
+                  openTime: item.openTime || "",
+                  coordinates: lat !== undefined && lng !== undefined 
+                    ? { lat: Number(lat), lng: Number(lng) } 
+                    : undefined,
+                };
+              })
           };
       }
       return baseMessage;
