@@ -1,9 +1,12 @@
 import requests
 import json
-
+import os
 class OllamaLocalModel:
-    def __init__(self, base_url, model="deepseek-r1:1.5b", MaxToken = 100):
-        self.base_url = base_url
+    def __init__(self, base_url = None, model="deepseek-r1:1.5b", MaxToken = 100):
+        if base_url is None:
+            self.base_url = os.environ.get("OLLAMA_URL", "https://your-ngrok-url.ngrok-free.app")
+        else:
+            self.base_url = base_url
         self.model = model
         self.MaxToken = MaxToken
     

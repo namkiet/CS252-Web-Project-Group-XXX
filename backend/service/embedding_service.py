@@ -3,12 +3,12 @@ from supabase import Client
 from service.supabase import get_admin_db
 from service.vector_store import VectorStore
 from service.ollama_emb import OllamaEmb
-
+import os
 
 class EmbeddingService:
     
     def __init__(self):
-        URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
+        URL = os.environ.get("OLLAMA_URL", "https://your-ngrok-url.ngrok-free.app")
         self.model = OllamaEmb(base_url = URL)
     
     def embed_text(self, text):

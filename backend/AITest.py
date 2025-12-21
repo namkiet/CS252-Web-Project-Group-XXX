@@ -5,13 +5,21 @@ from app.agents.sub_agents.GeminiFoodFinder import GeminiFoodFinder
 from app.agents.sub_agents.LocationFinder import LocationFinder
 from app.agents.tools.sub_tools.Router.openRouter import novaLite
 from app.agents.tools.PromptCreater import json_to_prompt
-# payload = {
-#     "message": "Hello bạn?"
-# }
+from app.agents.sub_agents.SearchRAGAgent import Hybrid_RAG_agent
+from app.agents.sub_agents.NotifyAgent import NotifyAgent
+payload = {
+    "message": "Chào bạn, tôi muốn một tô Bún bò, có gà nhưng không có hành. Càng cay càng tốt"
+}
 
-# router = OllamaLocalModel("qwen2.5:14b")
-# router2 = novaLite()
-# root = RootControllerAgent(router)
+router = OllamaLocalModel(model = "qwen2.5:14b")
+router2 = novaLite()
+root = RootControllerAgent(router)
+
+HybridSearch = Hybrid_RAG_agent(router)
+notify_agent = NotifyAgent(router)
+data = HybridSearch.run(payload)
+
+print(data)
 
 # DeepseekF = DeepseekFinder()
 # FoodFounder = GeminiFoodFinder()
@@ -63,21 +71,21 @@ from app.agents.tools.PromptCreater import json_to_prompt
 #     for chunk in grounding.grounding_chunks:
 #       print(f'- [{chunk.maps.title}]({chunk.maps.uri})')
 
-from GeminiCrawl.utilities import GeminiCrawl, UniqueCsv
-import pandas as pd
-import os
-# result = GeminiCrawl("Những Món ăn đặc sản của Việt Nam", 50)
-# for food in result["output"]["payload"]:
-#     print(food["restaurant_name"])
-# payload = result["output"]["payload"]
-# new_df = pd.DataFrame(payload)
-csv_path = "data/geminiCrawlTest.csv"
-# if os.path.exists(csv_path):
-#     old_df = pd.read_csv(csv_path)
-#     df = pd.concat([old_df, new_df], ignore_index=True)
-# else:
-#     df = new_df
+# from GeminiCrawl.utilities import GeminiCrawl, UniqueCsv
+# import pandas as pd
+# import os
+# # result = GeminiCrawl("Những Món ăn đặc sản của Việt Nam", 50)
+# # for food in result["output"]["payload"]:
+# #     print(food["restaurant_name"])
+# # payload = result["output"]["payload"]
+# # new_df = pd.DataFrame(payload)
+# csv_path = "data/geminiCrawlTest.csv"
+# # if os.path.exists(csv_path):
+# #     old_df = pd.read_csv(csv_path)
+# #     df = pd.concat([old_df, new_df], ignore_index=True)
+# # else:
+# #     df = new_df
 
-# df.to_csv(csv_path, index=False, encoding="utf-8-sig")
-UniqueCsv(csv_path)
-print("saved")
+# # df.to_csv(csv_path, index=False, encoding="utf-8-sig")
+# UniqueCsv(csv_path)
+# print("saved")

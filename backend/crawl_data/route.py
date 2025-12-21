@@ -48,7 +48,7 @@ def crawl_data_task(topic):
         # topic = "Restaurants in District 5, Ho Chi Minh City, Vietnam"
         
         
-        csv_path = "backend/data/geminiCrawlTest.csv"
+        csv_path = "data/geminiCrawlTest.csv"
         print("[CALL GEMINI]\n")
         response = call_gemini(csv_path, topic)
         

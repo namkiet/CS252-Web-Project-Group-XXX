@@ -40,10 +40,13 @@ class HybridSearchService:
         print(f" > Running Semantic Search for: {user_query}")
         semantic_docs = self.semantic.search_restaurant_by_name(user_query)
         
+        try:
         # B. Run Fuzzy Search (Good for specific names/locations)
-        print(f" > Running Fuzzy Search for: {user_query}")
-        fuzzy_docs = self.fuzzy.search_restaurant_by_name(user_query, limit=5)
-        
+            print(f" > Running Fuzzy Search for: {user_query}")
+            fuzzy_docs = self.fuzzy.search_restaurant_by_name(user_query, limit=5)
+        except:
+            fuzzy_docs = []
+            print("WARNING: THERE IS SOMETHING WRONG WITH FUZZY SEARCH")
         # C. Merge Results
         raw_candidates = self._deduplicate(semantic_docs + fuzzy_docs)
         print(f" > Found {len(raw_candidates)} unique candidates.")
@@ -54,7 +57,7 @@ class HybridSearchService:
         """
         # Only trigger heavy LLM verification if query implies a constraint
         # Simple heuristic: longer queries or keywords like "no", "not", "allergy"
-        needs_verification = any(w in user_query.lower() for w in ["no ", "not ", "free", "avoid", "allergy"])
+        needs_verification = any(w in user_query.lower() for w in ["no ", "not ", "free", "avoid", "allergy", "dị ứng", "không", "đừng"])
         
         if needs_verification:
             return self._verify_results(user_query, raw_candidates)

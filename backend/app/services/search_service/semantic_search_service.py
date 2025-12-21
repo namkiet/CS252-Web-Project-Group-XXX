@@ -45,7 +45,7 @@ class SemanticSearchService:
     def search_restaurant_by_name(self, name: str):
         docs = self._semantic_search(
             query=f"restaurant {name}",
-            threshold=0.6
+            threshold=0.1
         )
         return self._filter_by_type(docs, "restaurant")
     

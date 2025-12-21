@@ -5,7 +5,7 @@ import re
 class GeminiFoodFinder(BaseAgent):
     def __init__(self) -> None:
         super().__init__(
-            "FoodFinder",
+            "GeminiFoodFinder",
             "This is food finder agent, If there is no longitude and latitude, please call LocationFinder first."
         )
 

@@ -4,7 +4,6 @@ import re
 
 from service.vector_store import VectorStore
 from service.embedding_service import EmbeddingService
-from service.ingestor import _embed_text
 from service.supabase import get_admin_db
 
 
