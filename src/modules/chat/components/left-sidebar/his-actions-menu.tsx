@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import {
   MoreHorizontal,
-  Star,
+  Pin,
   Trash2,
-  Link as LinkIcon,
   Pencil
 } from 'lucide-react'
 
@@ -32,12 +31,14 @@ import { SidebarMenuAction } from "@/shared/components/ui/sidebar"
 interface HistoryActionsMenuProps {
   isMobile: boolean;
   sessionId: string;
+  is_pinned: boolean;
   currentTitle: string;
   onDelete: (id: string) => void;
   onRename: (id: string, newTitle: string) => void;
+  onTogglePin: (id: string, is_pinned: boolean) => void;
 }
 
-export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle, onRename }: HistoryActionsMenuProps) {
+export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle, onRename, is_pinned, onTogglePin }: HistoryActionsMenuProps) {
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [newName, setNewName] = useState(currentTitle);
 
@@ -67,10 +68,32 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
         side={isMobile ? "bottom" : "right"}
         align={isMobile ? "end" : "start"}
       >
-        <DropdownMenuItem>
-          <Star className="text-muted-foreground" />
-          <span>Favorites</span>
-        </DropdownMenuItem>
+        <DropdownMenuItem 
+          className="
+            cursor-pointer 
+            text-orange-500
+            transition-all duration-200 ease-in-out
+
+            focus:bg-orange-100
+            focus:text-orange-600
+            focus:font-bold
+            focus:scale-105
+            focus:shadow-md
+          "
+          onClick={(e) => {
+            e.stopPropagation();
+            onTogglePin(sessionId, !is_pinned);
+          }}
+          >
+          <Pin 
+            className={`mr-2 h-4 w-4 transition-all duration-300 ${
+              is_pinned 
+                ? "fill-orange-500 text-orange-500 rotate-45" 
+                : "text-orange-500"
+            }`} 
+          />
+          <span>{is_pinned ? "Bỏ ghim" : "Ghim"}</span>
+          </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
@@ -123,26 +146,36 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
 
     <Dialog open={isRenameOpen} onOpenChange={setIsRenameOpen}>
       <DialogContent
-        className="sm:max-w-[425px] to-white border-orange-150 shadow-lg"
+        className="sm:max-w-[400px] rounded-xl border-none shadow-2xl p-0 overflow-hidden bg-white"
         onClick={(e) => e.stopPropagation()}
       >
-        <DialogHeader>
-          <DialogTitle className="text-orange-700">Rename Chat</DialogTitle>
-          <DialogDescription className="text-orange-400">
-            Enter a new name for this conversation.
-          </DialogDescription>
-        </DialogHeader>
+        <div className="bg-orange-50/30 px-6 py-4 border-b border-orange-100/50">
+          <DialogHeader className="gap-0">
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 bg-orange-100/80 rounded-lg">
+                <Pencil className="h-4 w-4 text-orange-600" />
+              </div>
+              <DialogTitle className="text-lg font-bold text-orange-800 tracking-tight">
+                Rename Chat
+              </DialogTitle>
+            </div>
+            <DialogDescription className="text-orange-600/70 text-[13px] ml-[40px] leading-tight font-medium">
+              Give this conversation a memorable name.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
         
-        <div className="grid gap-4 py-4">
+        <div className="px-6 py-5">
           <Input
             id="name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
+            placeholder="e.g. Food Tour Planning..."
             className="
-              col-span-3 bg-white border-orange-200
-              focus-visible:ring-orange-200
-              placeholder:text-orange-300
-              selection:bg-blue-500 selection:text-white
+              h-11 px-4 bg-zinc-50 border-zinc-200 text-orange-800 rounded-lg
+              focus-visible:ring-orange-200 focus-visible:border-orange-300
+              transition-all duration-200 shadow-sm text-sm
+              selection:bg-orange-200 selection:text-orange-900
             "
             autoFocus
             onKeyDown={(e) => {
@@ -154,26 +187,27 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
           />
         </div>
         
-        <DialogFooter>
+        <DialogFooter className="px-6 py-3 bg-zinc-50/50 gap-2 sm:gap-2">
           <Button 
             variant="ghost" 
             onClick={() => setIsRenameOpen(false)}
-            className="text-orange-700 hover:text-orange-900 hover:bg-orange-100"
+            className="
+              h-9 rounded-lg px-4
+              text-zinc-500 hover:text-orange-700 
+              hover:bg-orange-50 
+              font-medium text-sm transition-all duration-200
+            "
           >
             Cancel
           </Button>
           <Button 
             onClick={handleSaveRename}
             className="
-              bg-orange-100 
-              border border-orange-500 
-              text-orange-700 
-              hover:bg-orange-200 
-              hover:text-orange-900
-              transition-colors
+              h-9 bg-orange-500 hover:bg-orange-600 text-white rounded-lg px-6
+              font-semibold shadow-sm active:scale-95 transition-all text-sm
             "
           >
-            Save changes
+            Save Changes
           </Button>
         </DialogFooter>
       </DialogContent>

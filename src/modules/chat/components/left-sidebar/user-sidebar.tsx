@@ -49,9 +49,10 @@ type SidebarLeftProps = {
   addConversation: () => void;
   onDeleteSession: (id: string) => void;
   onRenameSession: (id: string, newTitle: string) => void;
+  onTogglePin: (id: string, is_pinned: boolean) => void;
 } & React.ComponentProps<typeof Sidebar>;
 
-export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDeleteSession, onRenameSession }: SidebarLeftProps) {
+export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDeleteSession, onRenameSession, onTogglePin }: SidebarLeftProps) {
   const { toggleSidebar } = useSidebar()
 
   const historyItems = chatStore.map((c, index) => ({
@@ -60,7 +61,9 @@ export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDe
     sessionId: c.id,
     url: "#",
     emoji: "💬",
+    is_pinned: c.is_pinned
   }));
+
   return (
     <Sidebar collapsible="icon" className="border-r-0" >
       <SidebarHeader className="pt-20">
@@ -83,6 +86,7 @@ export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDe
           setCurrentIdChat={setCurrentIdChat}
           onDeleteSession={onDeleteSession}
           onRenameSession={onRenameSession}
+          onTogglePin={onTogglePin}
         />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>

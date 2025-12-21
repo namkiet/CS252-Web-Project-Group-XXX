@@ -21,6 +21,7 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
         id: newSession?.id || "",
         title: newSession?.title || `Conversation ${prev.length + 1}`,
         messages: [],
+        is_pinned: false,
         schedule: defaultSchedule,
         savedSchedule: [...defaultSchedule],
         suggestedDish: []
@@ -41,6 +42,7 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
         if (newChatStore.length === 0) {
           setChatStore([{
             id: "",
+            is_pinned: false,
             title: "New Conversation",
             messages: [],
             schedule: defaultSchedule
@@ -69,6 +71,20 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
       console.error("Error renaming:", error);
     }
   };
+
+  // ---------------------------------------TOGGLE PIN------------------------------------------
+  const handleTogglePin = async (sessionId: string, is_pinned: boolean) => {
+    setChatStore(prev => prev.map(chat =>
+      chat.id === sessionId ? { ...chat, is_pinned: is_pinned } : chat
+    ));
+
+    try {
+      await hisService.updateSession(sessionId, { is_pinned: is_pinned });
+    } catch (error) {
+      console.error("Error toggling pin:", error);
+    }
+  };
+
   // ----------------------------------------SAVE SCHEDULE-----------------------------------------
   const saveScheduleAsJSON = () => {
     const activeSession = chatStore[currentIdChat];
@@ -141,6 +157,7 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
     addConversation,
     handleDeleteSession,
     handleRenameSession,
+    handleTogglePin,
     handleSaveSchedule,
     handleUndoSchedule,
     saveScheduleAsJSON

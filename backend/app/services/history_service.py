@@ -54,6 +54,7 @@ class ChatHistoryService:
                 supabase.table('chat_sessions')
                 .select('*')
                 .eq('user_id', user_id)
+                .order('is_pinned', desc=True)
                 .order('created_at', desc = True)
                 .execute()
             )
@@ -116,12 +117,12 @@ class ChatHistoryService:
             print(f"error deleting session: {e}")
             raise e
         
-    def update_session_title(self, user_id, session_id, new_title):
+    def update_session(self, user_id, session_id, updates):
         try:
             supabase = get_auth_db()
             response = (
                 supabase.table('chat_sessions')
-                .update({'title': new_title})
+                .update(updates)
                 .eq('id', session_id)
                 .eq('user_id', user_id)
                 .execute()
@@ -132,7 +133,7 @@ class ChatHistoryService:
             return None
             
         except Exception as e:
-            print(f"error updating session title: {e}")
+            print(f"error updating session: {e}")
             raise e
         
     def update_session_schedule(self, user_id, session_id, new_schedule):

@@ -184,6 +184,57 @@ export const hisService = {
     }
   },
 
+  togglePin: async (session_id: string, is_pinned: boolean) => {
+    const token = sessionStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      const response = await fetch(`${API_URL}/${session_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ is_pinned: is_pinned })
+      });
+
+      if (response.ok) {
+        sessionStorage.removeItem('historySessions');
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Error when calling API togglePin:", error);
+      return false;
+    }
+  },
+
+  updateSession: async (session_id: string, updates: { title?: string; is_pinned?: boolean }) => {
+    const token = sessionStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      const response = await fetch(`${API_URL}/${session_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updates)
+      });
+
+      if (response.ok) {
+        sessionStorage.removeItem('historySessions');
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error in updateSession:", error);
+      return false;
+    }
+  },
+
   updateSchedule: async (session_id: string, schedule: any) => {
     const token = sessionStorage.getItem('token');
     if (!token) return false;

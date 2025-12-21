@@ -50,6 +50,7 @@ export default function ChatPage() {
     handleRemoveDay,
     handleDeleteSession,
     handleRenameSession,
+    handleTogglePin,
     handleSwapScheduleItems,
     swappedItemIds,
     handleSaveSchedule,
@@ -74,7 +75,8 @@ export default function ChatPage() {
         setCurrentIdChat={setCurrentIdChat}
         addConversation={addConversation}
         onDeleteSession={handleDeleteSession}
-        onRenameSession={handleRenameSession} 
+        onRenameSession={handleRenameSession}
+        onTogglePin={handleTogglePin}
       />
       
       {/* Main Chat Area */}

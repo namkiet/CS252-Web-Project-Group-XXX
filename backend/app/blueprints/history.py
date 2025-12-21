@@ -121,13 +121,21 @@ def delete_chat_session(session_id):
 def update_chat_session(session_id):
     user = request.current_user
     data = request.get_json()
-    new_title = data.get('title')
 
-    if not session_id or not new_title:
-        return jsonify({"error": "Missing session ID or title"}), 400
+    new_title = data.get('title')
+    is_pinned = data.get('is_pinned')
+
+    update_data = {}
+    if new_title is not None:
+        update_data['title'] = new_title
+    if is_pinned is not None:
+        update_data['is_pinned'] = is_pinned
+
+    if not update_data:
+        return jsonify({"error": "No data provided to update"}), 400
 
     try:
-        updated_session = history_service.update_session_title(user.id, session_id, new_title)
+        updated_session = history_service.update_session(user.id, session_id, update_data)
         
         if updated_session:
             return jsonify({
@@ -179,24 +187,13 @@ def update_chat_session_schedule(session_id):
 def get_chat_session_schedule(session_id):
     user = request.current_user
 
-    if not session_id:
-        return jsonify({"error": "Invalid session ID"}), 400
-
     try:
         schedule = history_service.get_session_schedule(user.id, session_id)
         
-        if schedule is not None:
-            return jsonify({
-                "status": "success",
-                "session_id": session_id,
-                "schedule": schedule
-            }), 200
-        else:
-            return jsonify({
-                "status": "error",
-                "message": "Session not found or no schedule data"
-            }), 404
-            
+        return jsonify({
+            "status": "success",
+            "session_id": session_id,
+            "schedule": schedule if schedule is not None else []
+        }), 200
     except Exception as e:
-        print(f"Error: {e}")
         return jsonify({"error": "Internal server error"}), 500

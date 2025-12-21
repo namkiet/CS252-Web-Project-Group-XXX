@@ -122,6 +122,7 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
       const conversations: Conversation[] = sessionData.data.map((item: any) => ({
         id: item.id,
         title: item.title || "New Conversation",
+        is_pinned: item.is_pinned || false,
         messages: [],
         hasMore: true,
         offset: 0,
@@ -135,7 +136,7 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
       setIsLoadedSessions(true);
       
     } catch (error) {
-      console.error("Lỗi load session:", error);
+      console.error("Error load session:", error);
     } finally {
       setIsLoadingHistory(false);
     }

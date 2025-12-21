@@ -23,6 +23,7 @@ export type Message = {
 
 export type Conversation = {
   id: string;
+  is_pinned: boolean;
   messages: Message[];
   title: string;
   schedule?: ScheduleDay[];
