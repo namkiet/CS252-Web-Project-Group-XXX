@@ -280,7 +280,7 @@ export function ScheduleSidebar({
       </SidebarContent>
 
       <SidebarFooter>
-        <ScheduleFooter AddDay={AddDay} />
+        <ScheduleFooter AddDay={AddDay} AddInDay={AddInDay}/>
       </SidebarFooter>
     </Sidebar>
   )

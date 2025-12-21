@@ -1,4 +1,4 @@
-import { MessageSquare } from "lucide-react"
+import { MessageSquareText } from "lucide-react"
 import { HistoryActionsMenu } from "./his-actions-menu";
 
 type HistoryItem = {
@@ -39,7 +39,7 @@ function NavHistory({ history, setCurrentIdChat, onDeleteSession, onRenameSessio
           <SidebarMenuItem key={item.id}>
             <SidebarMenuButton onClick={() => setCurrentIdChat(item.id)} asChild>
               <a href={item.url} title={item.name}>
-                <span><MessageSquare className="w-5 h-5"/></span>
+                <span><MessageSquareText className="w-5 h-5"/></span>
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>

@@ -1,12 +1,14 @@
 import { Button } from "@/shared/components/ui/button";
-import { CalendarPlus } from "lucide-react";
+import { PlusCircle, CalendarPlus } from "lucide-react";
 
 interface ScheduleFooterProps {
   AddDay: () => void;
+  AddInDay: () => void;
 }
 
 export function ScheduleFooter ({
-  AddDay,
+  AddDay ,
+  AddInDay,
 }: ScheduleFooterProps) {
   return (
     <div className="p-4 border-t border-zinc-200 bg-white">
@@ -19,6 +21,16 @@ export function ScheduleFooter ({
           <CalendarPlus className="w-4 h-4 mr-2" />
           Add Day
         </Button>
+
+        <Button 
+          variant="outline" 
+          className="flex-1 bg-orange-500 hover:bg-orange-600 text-white shadow-sm"
+          onClick={AddInDay}
+        >
+          <PlusCircle className="w-4 h-4 mr-2" />
+          Add Meal
+        </Button>
+        
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { MapPin, Star, Trash2, Map as MapIcon, ArrowRightLeft } from 'lucide-react';
+import { MapPin, Star, Trash2, Map as MapIcon, Repeat } from 'lucide-react';
 import type { FoodItem } from '../../types';
 
 interface ScheduleFoodCardProps {
@@ -61,7 +61,7 @@ export const ScheduleFoodCard = ({
               className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white transition-colors"
               title="Swap with selected"
             >
-              <ArrowRightLeft className="w-3 h-3 md:w-3.5 md:h-3.5" />
+              <Repeat className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </button>
           )}
           

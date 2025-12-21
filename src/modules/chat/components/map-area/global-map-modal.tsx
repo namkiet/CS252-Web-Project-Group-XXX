@@ -20,7 +20,7 @@ export function GlobalMapModal({ isOpen, onClose, locations, title }: GlobalMapM
         bg-white rounded-2xl shadow-2xl 
         w-full h-[90vh] md:h-[85vh] max-w-6xl 
         flex flex-col overflow-hidden relative
-        animate-in slide-in-from-top-10 fade-in duration-300 ease-out
+        animate-in slide-in-from-top-40 fade-in duration-1400 ease-out
       ">
         
         {/* Header */}
