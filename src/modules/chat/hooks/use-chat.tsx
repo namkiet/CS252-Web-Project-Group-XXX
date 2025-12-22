@@ -54,12 +54,12 @@ export function useChat() {
   };
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
-
     const activeSession = chatStore[currentIdChat];
     const suggested = activeSession?.suggestedDish || [];
     let userMessageContent = inputValue.trim();
     
+    if (!inputValue.trim() && suggested.length === 0) return;
+
     if (suggested.length > 0) {
       userMessageContent = `I want to eat and experience the taste of ${suggested.join(', ')}. ${inputValue.trim()}`;
     }
@@ -123,7 +123,6 @@ export function useChat() {
 
     } catch (error: any) {
       console.error('Failed to send message:', error);
-
       const errorMsg: Message = {
         role: 'ai',
         type: 'chat',
@@ -136,6 +135,23 @@ export function useChat() {
     }
   };
 
+  // ------------------------------------ REMOVE SUGGESTION -----------------------------------
+  const handleRemoveSuggestedDish = (indexToRemove: number) => {
+    setChatStore(prev => {
+      const newStore = [...prev];
+      const activeSession = newStore[currentIdChat];
+      
+      if (activeSession && activeSession.suggestedDish) {
+        const newSuggestions = activeSession.suggestedDish.filter((_, idx) => idx !== indexToRemove);
+        
+        newStore[currentIdChat] = {
+          ...activeSession,
+          suggestedDish: newSuggestions
+        } as any;
+      }
+      return newStore;
+    });
+  };
 
   return {
     inputValue,
@@ -145,6 +161,7 @@ export function useChat() {
     chatStore,
     handleSendMessage,
     setCurrentIdChat,
+    handleRemoveSuggestedDish,
     ...scheduleData
   }
 }

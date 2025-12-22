@@ -37,6 +37,7 @@ export default function ChatPage() {
     handleAddToSchedule,
     handleRemoveFromSchedule,
     handleSendMessage,
+    handleRemoveSuggestedDish,
     addConversation,
     setCurrentIdChat,
     onAddDay,
@@ -121,6 +122,7 @@ export default function ChatPage() {
             value={inputValue}
             onChange={setInputValue}
             onSubmit={handleSendMessage}
+            onRemoveDish={handleRemoveSuggestedDish}
             isLoading={isLoading}
             suggestedDish={activeConversation.suggestedDish || []}
           />
