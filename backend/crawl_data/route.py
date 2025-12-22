@@ -149,7 +149,7 @@ def upload_supabase():
     #emb & db
     
     from service.ingestor import Ingestor
-    ing = Ingestor(table_name = "test")
+    ing = Ingestor(table_name = "abcd")
     # ing = Ingestor(table_name = "documents")
     print("[INGEST]\n")
     ing.process(data)

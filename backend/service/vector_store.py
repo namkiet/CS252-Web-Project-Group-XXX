@@ -6,6 +6,7 @@ class VectorStore:
     
     def __init__(self, table_name):
         self.table_name = table_name
+        self.match = f"match_{self.table_name}"
         # self.table_name = "documents"
         return
     
@@ -34,7 +35,7 @@ class VectorStore:
                 "match_count": limit
             }
             
-            response = db_client.rpc("match_documents", params).execute()
+            response = db_client.rpc(self.match, params).execute()
             return response.data
             
         except Exception as e:

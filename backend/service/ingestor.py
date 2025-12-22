@@ -1,4 +1,6 @@
 from supabase import Client
+import unicodedata
+import re
 
 from service.supabase import get_admin_db
 from service.vector_store import VectorStore
@@ -14,7 +16,19 @@ class Ingestor:
         self.summarizer = Summary()
         # URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
         # self.embed_model = OllamaEmb(base_url = URL)
+    
+    def normalize_text(self, text: str) -> str:
+        if not text:
+            return ""
+
+        text = text.lower()
         
+        text = unicodedata.normalize('NFD', text)
+        text = re.sub(r'[\u0300-\u036f]', '', text)
+        text = unicodedata.normalize('NFC', text)
+        
+        return text.strip()
+    
     def _embed_text(self, text):
         try:
             return self.embedder.embed_text(text)
@@ -39,17 +53,18 @@ class Ingestor:
             print(f"Ingestor save error: {e}")
     
     def _check_restaurant_exists(self, db_client: Client, name: str, url: str = "") -> bool:
+        nname = self.normalize_text(name)
         query = (
             db_client
             .table(self.vector_store.table_name)
             .select("id")
-            .eq("metadata->>type", "restaurant")
-            .eq("metadata->>name", name)
+            .filter("metadata->>type", "eq", "restaurant")
+            .filter("metadata->>name", "eq", nname)
             .limit(1)
         )
 
         if url:
-            query = query.eq("metadata->>url", url)
+            query = query.filter("metadata->>url", "eq", url)
 
         res = query.execute()
         return bool(res.data)
@@ -64,11 +79,13 @@ class Ingestor:
         count = 0
         print("----Processing---\n")
         for res in restaurants:
-            name = res.get('name', "Unknown")
+            raw_name = res.get('name', "Unknown")
             address = res.get('address', "Unknown")
             rating = res.get('ratings', "N/A")
             url = res.get('url', "")
             dishes = res.get('dishes', [])
+            
+            name = self.normalize_text(raw_name)
             
             if self._check_restaurant_exists(db_client, name, url):
                 print(f"SKIP {name} (already exists)\n")
@@ -80,12 +97,13 @@ class Ingestor:
             
             text = (
                 f"Restaurant: {name}. "
-                # f"Address: {address}. "
+                f"Address: {address}. "
                 # f"Rating: {rating}. "
                 f"Description: {ai_description}"
             )
             
             self._save(db_client, text, {
+                "raw_name" : raw_name,
                 "type": "restaurant",
                 "name": name,
                 "address": address,
@@ -98,8 +116,10 @@ class Ingestor:
             
             
             for dish in dishes:
-                dish_name = dish.get('name', "")
+                raw_dish_name = dish.get('name', "")
                 dish_price = dish.get('price', "")
+                
+                dish_name = self.normalize_text(raw_dish_name)
                 
                 print(f"Generating AI Summary for (DISH): {name}...")
                 ai_description_dish = self.summarizer.generate_dish_summary(dish, res)
@@ -114,6 +134,7 @@ class Ingestor:
                 )
                 
                 self._save(db_client, dish_text, {
+                    "raw_dish_name": raw_dish_name,
                     "type": "dish",
                     "dish_name": dish_name,
                     "restaurant": name,

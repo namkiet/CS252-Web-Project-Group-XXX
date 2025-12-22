@@ -8,7 +8,7 @@ class Hybrid_RAG_agent(BaseAgent):
             "RAG_Food_Search",
             "This is food Search model, which is most optimize one to use. Try this one first if location found"
         )
-        self.HybridSearch = HybridSearchService(table_name="testt")
+        self.HybridSearch = HybridSearchService(table_name="abcd")
         self.notify_agent = NotifyAgent(coreModel=coreModel)
     def run(self, payload: dict) -> dict:
         # try:

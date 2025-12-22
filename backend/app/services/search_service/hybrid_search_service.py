@@ -10,19 +10,14 @@ class HybridSearchService:
         self.fuzzy = FuzzySearchService(table_name)
         
         import os
-        url = os.environ.get("OLLAMA_URL", "https://your-ngrok-url.ngrok-free.app")
+        url = os.environ.get("OLLAMA_URL", "https://collotypic-pablo-unridiculous.ngrok-free.dev")
         self.llm = OllamaEmb(base_url=url, model="qwen2.5:14b")
 
     def _deduplicate(self, results: List[Dict]) -> List[Dict]:
-        """
-        Merges results from Fuzzy and Semantic search, removing duplicates by ID/Name.
-        """
         seen = set()
         unique_results = []
         
         for doc in results:
-            # Normalize structure between your two services
-            # Assuming both return objects with a 'meta' or 'metadata' key
             meta = doc.get('meta') or doc.get('metadata') or doc
             name = meta.get('name') or meta.get('dish_name')
             
@@ -33,30 +28,20 @@ class HybridSearchService:
         return unique_results
 
     def search_restaurants(self, user_query: str, filters: Dict = None):
-        """
-        Step 1: HYBRID RETRIEVAL (Get broad candidates)
-        """
-        # A. Run Semantic Search (Good for "Vibes" and "Cuisine types")
+        
         print(f" > Running Semantic Search for: {user_query}")
         semantic_docs = self.semantic.search_restaurant_by_name(user_query)
         
         try:
-        # B. Run Fuzzy Search (Good for specific names/locations)
             print(f" > Running Fuzzy Search for: {user_query}")
             fuzzy_docs = self.fuzzy.search_restaurant_by_name(user_query, limit=5)
         except:
             fuzzy_docs = []
             print("WARNING: THERE IS SOMETHING WRONG WITH FUZZY SEARCH")
-        # C. Merge Results
+
         raw_candidates = self._deduplicate(semantic_docs + fuzzy_docs)
         print(f" > Found {len(raw_candidates)} unique candidates.")
 
-        """
-        Step 2: AGENTIC VERIFICATION (The "No Spicy" Filter)
-        If the query contains negative constraints, we must check the AI Description.
-        """
-        # Only trigger heavy LLM verification if query implies a constraint
-        # Simple heuristic: longer queries or keywords like "no", "not", "allergy"
         needs_verification = any(w in user_query.lower() for w in ["no ", "not ", "free", "avoid", "allergy", "dị ứng", "không", "đừng"])
         
         if needs_verification:
@@ -68,14 +53,12 @@ class HybridSearchService:
         print(" > verifying results with Agent...")
         verified_results = []
         
-        for doc in candidates[:8]: # Limit to top 8 to save time
+        for doc in candidates[:8]:
             meta = doc.get('meta') or doc.get('metadata') or doc
             
-            # 1. Get the AI Description we generated during ingestion
             ai_desc = meta.get('ai_description') or meta.get('description', '')
             name = meta.get('name') or meta.get('dish_name')
             
-            # 2. Ask LLM to check valididity
             prompt = f"""
             User Query: "{user_query}"
             Item: {name}
@@ -89,7 +72,6 @@ class HybridSearchService:
             ANSWER (TRUE/FALSE):
             """
             
-            # This is a synchronous call, might be slow. In production, use threading.
             response = self.llm.generate_content(prompt).strip().upper()
             
             if "TRUE" in response:

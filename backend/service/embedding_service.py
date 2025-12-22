@@ -8,8 +8,8 @@ import os
 class EmbeddingService:
     
     def __init__(self):
-        URL = os.environ.get("OLLAMA_URL", "https://your-ngrok-url.ngrok-free.app")
-        self.model = OllamaEmb(base_url = URL)
+        URL = os.environ.get("OLLAMA_URL", "https://collotypic-pablo-unridiculous.ngrok-free.dev")
+        self.model = OllamaEmb(base_url = URL, model="nomic-embed-text")
     
     def embed_text(self, text):
         vector = self.model.embed(prompt=text)

@@ -8,6 +8,7 @@ from .utils import encode_name
 
 def init_driver(headless=False):
     options = Options()
+    options.add_argument("-headless")
     if headless:
         options.add_argument("--headless")
     driver = webdriver.Firefox(options=options)

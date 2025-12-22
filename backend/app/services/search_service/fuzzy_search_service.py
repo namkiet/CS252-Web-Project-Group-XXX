@@ -2,8 +2,9 @@ from typing import List, Dict
 import unicodedata
 import re
 
-from service.vector_store import VectorStore
+# from service.vector_store import VectorStore
 from service.embedding_service import EmbeddingService
+# from service.ingestor import _embed_text
 from service.supabase import get_admin_db
 
 
@@ -34,12 +35,9 @@ class FuzzySearchService:
         
         res = (
             db.table(self.table_name)
-            .select("*")
+            .select("metadata")
             .eq("metadata->>type", "restaurant")
-            .or_(
-                f"metadata->>name.ilike.%{key}%,"
-                f"metadata->>address.ilike.%{key}%"
-            )
+            .filter("metadata->>name", "ilike", f"%{key}%")
             .limit(limit)
             .execute()
         )
@@ -52,12 +50,9 @@ class FuzzySearchService:
         
         res = (
             db.table(self.table_name)
-            .select("*")
-            .eq("metadata->>type", "dish")
-            .or_(
-                f"metadata->>dish_name.ilike.%{key}%,"
-                f"metadata->>restaurant.ilike.%{key}%"
-            )
+            .select("metadata")
+            .filter("metadata->>type", "eq", "dish")
+            .filter("metadata->>dish_name", "ilike", f"%{key}%")
             .limit(limit)
             .execute()
         )
@@ -70,7 +65,7 @@ class FuzzySearchService:
         
         res = (
             db.table(self.table_name)
-            .select("*")
+            .select("metadata")
             .eq("metadata->>type", "restaurant")
             .ilike("metadata->>address", f"%{key}%")
             .limit(limit)
@@ -118,8 +113,8 @@ class FuzzySearchService:
         db = get_admin_db()
         
         res = (
-            db.table("documents")
-            .select("*")
+            db.table(self.table_name)
+            .select("metadata")
             .or_(
                 f"metadata->>name.ilike.%{key}%,"
                 f"metadata->>dish_name.ilike.%{key}%,"

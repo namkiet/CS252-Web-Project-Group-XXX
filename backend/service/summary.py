@@ -1,3 +1,6 @@
+import unicodedata
+import re
+
 from service.ollama_emb import OllamaEmb
 
 class Summary():
@@ -8,10 +11,25 @@ class Summary():
         except Exception as e:
             print(f"Summary: Failed to initialize AI Agent: {e}")
             self.root = None
+            
+    def normalize_text(self, text: str) -> str:
+        if not text:
+            return ""
+
+        text = text.lower()
+        
+        text = unicodedata.normalize('NFD', text)
+        text = re.sub(r'[\u0300-\u036f]', '', text)
+        text = unicodedata.normalize('NFC', text)
+        
+        return text.strip()
     
     def generate_dish_summary(self, dish_data, restaurant_data):
         if not self.root:
             return "Summary unavailable (Agent offline)."
+        
+        # name = dish_data.get('name', 'Unknown Dish')
+        # name = self.normalize_text(name)
         
         menu_items = [d.get('name', '') for d in restaurant_data.get('dishes', [])]
         menu_context = menu_items[:150]
