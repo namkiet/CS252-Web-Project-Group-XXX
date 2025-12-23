@@ -74,35 +74,21 @@ class FuzzySearchService:
 
         return res.data or []
     
-    # def search_restaurant_by_rating(self, query, limit: int = 10):
-    #     key = self.normalize_text(str(query))
-    #     db = get_admin_db()
-        
-    #     res = (
-    #         db.table("documents")
-    #         .select("*")
-    #         .eq("metadata->>type", "restaurant")
-    #         .ilike("metadata->>rating", f"%{key}%")
-    #         .limit(limit)
-    #         .execute()
-    #     )
+    def search_restaurant_by_dish(self, dish_query: str, limit: int = 10):
+        dishes = self.search_dish_by_name(dish_query, limit)
 
-    #     return res.data or []
-    
-    # def search_dish_by_price(self, query, limit: int = 10):
-    #     key = self.normalize_text(str(query))
-    #     db = get_admin_db()
-        
-    #     res = (
-    #         db.table("documents")
-    #         .select("*")
-    #         .eq("metadata->>type", "dish")
-    #         .ilike("metadata->>price", f"%{key}%")
-    #         .limit(limit)
-    #         .execute()
-    #     )
+        results = []
+        for d in dishes:
+            meta = d.get("metadata", {})
+            results.append({
+                "restaurant": meta.get("restaurant"),
+                "dish": meta.get("dish_name"),
+                "description": meta.get("description"),
+                "price": meta.get("price"),
+                "img_src": meta.get("img_src")
+            })
 
-    #     return res.data or []
+        return results
     
     def search_random(self, query: str, limit: int = 10):
         """
@@ -126,3 +112,11 @@ class FuzzySearchService:
         )
 
         return res.data or []
+    
+    def search_restaurants(self, user_query: str, limit: int = 3):
+        return (
+            self.search_restaurant_by_name(user_query, limit) 
+            + self.search_restaurant_by_address(user_query, limit) 
+            + self.search_random(user_query, limit)
+            + self.search_restaurant_by_dish(user_query, limit)
+        )

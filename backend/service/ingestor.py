@@ -69,6 +69,31 @@ class Ingestor:
         res = query.execute()
         return bool(res.data)
 
+    def _calculate_price_range(self, dishes: list) -> str:
+        if not dishes:
+            return "Unknown"
+        
+        prices = []
+        for dish in dishes:
+            raw_price = str(dish.get('price', ''))
+            clean_str = re.sub(r'[^\d]', '', raw_price) 
+            if clean_str:
+                try:
+                    prices.append(int(clean_str))
+                except ValueError:
+                    continue
+        
+        if not prices:
+            return "Unknown"
+            
+        min_price = min(prices)
+        max_price = max(prices)
+        
+        if min_price == max_price:
+            return f"{min_price}"
+        
+        return f"{min_price} - {max_price}"
+    
     def process(self, restaurants):
         if not restaurants:
             print("No data received in process()")
@@ -95,6 +120,7 @@ class Ingestor:
             ai_description = self.summarizer.generate_restaurant_summary(res)
             print(f" > Summary: {ai_description[:100]}...")
             
+            price_range = self._calculate_price_range(dishes)
             text = (
                 f"Restaurant: {name}. "
                 f"Address: {address}. "
@@ -108,12 +134,12 @@ class Ingestor:
                 "name": name,
                 "address": address,
                 "img_src": res.get("img_src", ""),
+                "price_range": {price_range},
                 "url" : url,
                 "description": ai_description,
                 "source": "json_upload"
             })
             print(f"ADD {name}\n")
-            
             
             for dish in dishes:
                 raw_dish_name = dish.get('name', "")

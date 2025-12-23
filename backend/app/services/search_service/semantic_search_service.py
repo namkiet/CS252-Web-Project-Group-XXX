@@ -51,10 +51,14 @@ class SemanticSearchService:
         return text.strip()
     
     def _normalize_doc(self, doc: Dict) -> Dict:
-        meta = doc.get("metadata", {})
+        if "meta" in doc or "metadata" in doc:
+            return doc
         return {
-            "description": meta.get("description"),
-            "meta": meta
+            "metadata": {
+                "name": doc.get("restaurant") or doc.get("name"),
+                "description": doc.get("description"),
+                "price": doc.get("price"),
+            }
         }
     
     def search_restaurant_by_name(self, name: str):
@@ -92,12 +96,39 @@ class SemanticSearchService:
     #     )
     #     return self._filter_by_type(docs, "dish")
     
+    def search_restaurant_by_dish(self, query: str):
+        docs = self._semantic_search(
+            query=f"dish {query}",
+            threshold=0.55
+        )
+
+        results = []
+        for doc in docs:
+            meta = doc.get("metadata", {})
+            if meta.get("type") == "dish":
+                results.append({
+                    "restaurant": meta.get("restaurant"),
+                    "dish": meta.get("dish_name"),
+                    "description": meta.get("description"),
+                    "price": meta.get("price")
+                })
+
+        return results
+    
     def search_random(self, query: str):
         """
             Agentic Fall back
         """
         docs = self._semantic_search(query, threshold=0.6)
-        return {
-            "Restaurants": self._filter_by_type(docs, "restaurant"),
-            "Dishes": self._filter_by_type(docs, "dish")
-        }
+        return (
+            self._filter_by_type(docs, "restaurant")
+            + self._filter_by_type(docs, "dish")
+        )
+    
+    def search_restaurants(self, user_query: str):
+        return (
+            self.search_restaurant_by_name(user_query) 
+            + self.search_restaurant_by_address(user_query) 
+            + self.search_random(user_query)
+            + self.search_restaurant_by_dish(user_query)
+        )
