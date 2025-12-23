@@ -12,10 +12,11 @@ class EmbeddingService:
         self.model = OllamaEmb(base_url = URL, model="nomic-embed-text")
     
     def embed_text(self, text):
-        vector = self.model.embed(prompt=text)
+        try:
+            vector = self.model.embed(prompt=text)
+            if not isinstance(vector, list) or len(vector) != 768:
+                raise ValueError("Invalid embedding vector")
 
-        if not isinstance(vector, list) or len(vector) != 768:
-            raise ValueError("Invalid embedding vector")
-
-        return vector
-            
+            return vector
+        except Exception as e:
+            print(f"error: {e}")

@@ -30,14 +30,6 @@ class SemanticSearchService:
             threshold=threshold
         )
     
-    def _filter_by_type(self, docs: List[Dict], doc_type: str) -> List[Dict]:
-        results = []
-        for doc in docs:
-            meta = doc.get("metadata", {})
-            if meta.get("type") == doc_type:
-                results.append(self._normalize_doc(doc))
-        return results
-    
     def normalize_text(self, text: str) -> str:
         if not text:
             return ""
@@ -50,81 +42,91 @@ class SemanticSearchService:
         
         return text.strip()
     
-    def _normalize_doc(self, doc: Dict) -> Dict:
-        if "meta" in doc or "metadata" in doc:
-            return doc
-        return {
-            "metadata": {
-                "name": doc.get("restaurant") or doc.get("name"),
-                "description": doc.get("description"),
-                "price": doc.get("price"),
-            }
-        }
-    
     def search_restaurant_by_name(self, name: str):
-        docs = self._semantic_search(
-            query=f"Restaurant: {name}",
-            threshold=0.6
-        )
-        return self._filter_by_type(docs, "restaurant")
-    
+        try:
+            name = self.normalize_text(name)
+            docs = self._semantic_search(
+                query=f"Restaurant: {name}",
+                threshold=0.7
+            )
+
+            results = []
+            for d in docs:
+                meta = d.get("metadata", {})
+                if meta.get("type") == "restaurant":
+                    results.append({
+                        "type": "restaurant",
+                        "restaurant_name": meta.get("name", "Unknown"),
+                        "dish_name": None
+                    })
+            return results
+        except Exception as e:
+            print(f"Error: {e}")
+            return []
+        
     def search_dish_by_name(self, name: str):
-        docs = self._semantic_search(
-            query=f"Dish: {name}",
-            threshold=0.6
-        )
-        return self._filter_by_type(docs, "dish")
+        try:
+            name = self.normalize_text(name)
+            docs = self._semantic_search(
+                query=f"Dish: {name}",
+                threshold=0.7
+            )
+            
+            results = []
+            for d in docs:
+                meta = d.get("metadata", {})
+                if meta.get("type") == "dish":
+                    results.append({
+                        "type": "dish",
+                        "dish_name": meta.get("dish_name", "Unknown"),
+                        "restaurant_name": meta.get("restaurant", "Unknown")
+                    })
+            return results
+        except Exception as e:
+            print(f"Error: {e}")
+            return []
 
     def search_restaurant_by_address(self, address: str):
-        docs = self._semantic_search(
-            query=f"Address: {address}",
-            threshold=0.6
-        )
-        return self._filter_by_type(docs, "restaurant")
-    
-    # def search_restaurant_by_rating(self, rating):
-    #     docs = self._semantic_search(
-    #         query=f"rating {rating}",
-    #         threshold=0.6
-    #     )
-    #     return self._filter_by_type(docs, "restaurant")
-    
-    # def search_dish_by_price(self, price):
-    #     docs = self._semantic_search(
-    #         query=f"price {price}",
-    #         threshold=0.6
-    #     )
-    #     return self._filter_by_type(docs, "dish")
-    
+        try:
+            address = self.normalize_text(address)
+            docs = self._semantic_search(
+                query=f"Address: {address}",
+                threshold=0.6
+            )
+            
+            results = []
+            for d in docs:
+                meta = d.get("metadata", "")
+                if meta.get("type") == "restaurant":
+                    results.append({
+                        "type": "restaurant",
+                        "restaurant_name": meta.get("name", "Unknown"),
+                        "dish_name": None
+                    })
+            return results
+        except Exception as e:
+            print(f"Error: {e}")
+            return []
+
     def search_restaurant_by_dish(self, query: str):
-        docs = self._semantic_search(
-            query=f"dish {query}",
-            threshold=0.55
-        )
-
-        results = []
-        for doc in docs:
-            meta = doc.get("metadata", {})
-            if meta.get("type") == "dish":
-                results.append({
-                    "restaurant": meta.get("restaurant"),
-                    "dish": meta.get("dish_name"),
-                    "description": meta.get("description"),
-                    "price": meta.get("price")
-                })
-
-        return results
+        return self.search_dish_by_name(query)
     
     def search_random(self, query: str):
         """
             Agentic Fall back
         """
-        docs = self._semantic_search(query, threshold=0.6)
-        return (
-            self._filter_by_type(docs, "restaurant")
-            + self._filter_by_type(docs, "dish")
-        )
-    
+        try:
+            query = self.normalize_text(query)
+            docs = self._semantic_search(query, threshold=0.6)
+
+            return (
+                self._filter_by_type(docs, "restaurant")
+                + self._filter_by_type(docs, "dish")
+            )
+        except Exception as e:
+            print(f"Error: {e}")
+            return []
+        
     def search_restaurants(self, user_query: str):
         return (
             self.search_restaurant_by_name(user_query) 
