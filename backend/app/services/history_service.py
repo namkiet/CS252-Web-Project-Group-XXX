@@ -38,9 +38,9 @@ class ChatHistoryService:
             "widget": widget,
             "audio_path": audio_path, 
         }
-        print("ADD MESSAGE")
+        # print("ADD MESSAGE")
         resp = supabase.table('chat_messages').insert(payload).execute()
-        print("SUPABASE RESP:", resp)
+        # print("SUPABASE RESP:", resp)
         return 
     
     # for sidebar history
@@ -72,9 +72,9 @@ class ChatHistoryService:
                 .range(offset, offset + limit - 1)
                 .execute()
             )
-            print("------------")
-            print(response.data)
-            print("------------")
+            # print("------------")
+            # print(response.data)
+            # print("------------")
             return response.data
         except Exception as e:
             print(f"error getting history: {e}")

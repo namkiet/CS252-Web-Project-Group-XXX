@@ -14,30 +14,33 @@ class ChatService:
         try:
             URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
             router = OllamaLocalModel(base_url=URL, model="qwen2.5:14b")
-            router2 = novaLite()
-            self.root = RootControllerAgent(router)
-            self._register_agent()
+            
+            from app.agents.PrebuiltAgent.SupervisorMain import SupervisorAgentPrebuilt1
+            self.root = SupervisorAgentPrebuilt1()
+            # router2 = novaLite()
+            # self.root = RootControllerAgent(router)
+            # self._register_agent()
         except Exception as e:
             print(f"Failed to initialize AI Agent: {e}")
             self.root = None
             
-    def _register_agent(self):
-        try:
-            from app.agents.sub_agents.Test import DeepseekFinder
-            DeepseekF = DeepseekFinder()
-            self.root.register_agent(DeepseekF)
+    # def _register_agent(self):
+    #     try:
+    #         from app.agents.sub_agents.Test import DeepseekFinder
+    #         DeepseekF = DeepseekFinder()
+    #         self.root.register_agent(DeepseekF)
             
-            from app.agents.sub_agents.GeminiFoodFinder import GeminiFoodFinder
-            FoodFounder = GeminiFoodFinder()
-            self.root.register_agent(FoodFounder)
+    #         from app.agents.sub_agents.GeminiFoodFinder import GeminiFoodFinder
+    #         FoodFounder = GeminiFoodFinder()
+    #         self.root.register_agent(FoodFounder)
             
-            from app.agents.sub_agents.LocationFinder import LocationFinder
-            locFinder = LocationFinder()
-            self.root.register_agent(locFinder)
+    #         from app.agents.sub_agents.LocationFinder import LocationFinder
+    #         locFinder = LocationFinder()
+    #         self.root.register_agent(locFinder)
             
             
-        except Exception as e:
-            print(f"Failed to register agents: {e}")
+    #     except Exception as e:
+    #         print(f"Failed to register agents: {e}")
     
     def _format_history(self, history : list):
         if not history:
@@ -131,6 +134,8 @@ class ChatService:
             myPayload = agent_output.get("payload", None)
             if myPayload:
                 msg_type = "recommendation"
+            
+            print(agent_output)
             print("Get here?")
             return {
                 "type": msg_type,

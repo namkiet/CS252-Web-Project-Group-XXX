@@ -50,9 +50,9 @@ def handle_message():
         
         chat_history = history_service.get_history(session_id)
         
-        print("------------------------------------------------")
-        print(chat_history)
-        print("------------------------------------------------")
+        # print("------------------------------------------------")
+        # print(chat_history)
+        # print("------------------------------------------------")
         
         response = chat_service.generate_response(user_message, chat_history, current_schedule)
         # response = chat_mock.process_message(user_message, chat_history)

@@ -14,8 +14,13 @@ class Hybrid_RAG_agent(BaseAgent):
         # try:
         msg = payload["message"]
         data = self.HybridSearch.search_restaurants(msg)
-        if len(data) > 0:
-            return {"output" :{ "message": "The agent success on returning the food list, stop the agent loop."},
+        if len(data) > 1:
+            final_result = {
+                "message": "The agent success on returning the food list, stop the agent loop.",
+                "payload": data                
+            }
+            
+            return {"output" :final_result,
                     "payload": data}
         else:
             print("Calling notify agent")
