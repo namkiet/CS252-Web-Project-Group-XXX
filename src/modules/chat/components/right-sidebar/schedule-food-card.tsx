@@ -1,4 +1,5 @@
-import { MapPin, Star, Trash2, Map as MapIcon, ArrowRightLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { MapPin, Star, Trash2, Map as MapIcon, Repeat } from 'lucide-react';
 import type { FoodItem } from '../../types';
 
 interface ScheduleFoodCardProps {
@@ -20,9 +21,11 @@ export const ScheduleFoodCard = ({
   onSwap,
   isSwapping = false,
 }: ScheduleFoodCardProps) => {
+  const { t } = useTranslation();
+
   return (
     <div
-      className="relative bg-white p-3 rounded-lg border border-orange-200 shadow-sm hover:border-orange-400 hover:shadow-md transition-all duration-300 group flex flex-col gap-1.5"
+      className="relative bg-white p-2.5 md:p-3 rounded-lg border border-orange-200 shadow-sm hover:border-orange-400 hover:shadow-md transition-all duration-300 group flex flex-col gap-1.5"
       style={isSwapping ? { animation: 'swapPulse 0.85s ease-out' } : undefined}
     >
       <style>{`
@@ -46,7 +49,7 @@ export const ScheduleFoodCard = ({
       )}
         <div className="flex items-start justify-between gap-2">
         {/* Header (name of food) */}
-        <h4 className="text-sm font-bold text-gray-900 line-clamp-1 flex-1 leading-tight" title={food.restaurant_name}>
+        <h4 className="text-xs md:text-sm font-bold text-gray-900 line-clamp-1 flex-1 leading-tight" title={food.restaurant_name}>
           {food.restaurant_name}
         </h4>
 
@@ -58,23 +61,23 @@ export const ScheduleFoodCard = ({
                 e.stopPropagation();
                 onSwap();
               }}
-              className="w-7 h-7 flex items-center justify-center rounded bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white transition-colors"
-              title="Swap with selected"
+              className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white transition-colors"
+              title={t('chat.rightsidebar.tooltips.swap')}
             >
-              <ArrowRightLeft className="w-3.5 h-3.5" />
+              <Repeat className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </button>
           )}
-
+          
           {/* Map */}
           <button
             onClick={(e) => {
               e.stopPropagation();
               onShowMap?.(food);
             }}
-            className="w-7 h-7 flex items-center justify-center rounded bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white transition-colors"
-            title="See map"
+            className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white transition-colors"
+            title={t('chat.rightsidebar.tooltips.see_map')}
           >
-            <MapIcon className="w-3.5 h-3.5" />
+            <MapIcon className="w-3 h-3 md:w-3.5 md:h-3.5" />
           </button>
 
           {/* Recycle bin */}
@@ -84,10 +87,10 @@ export const ScheduleFoodCard = ({
                 e.stopPropagation();
                 onRemove();
               }}
-              className="w-7 h-7 flex items-center justify-center rounded bg-gray-100 text-gray-400 hover:bg-red-500 hover:text-white transition-colors"
-              title="Delete"
+              className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded bg-gray-100 text-gray-400 hover:bg-red-500 hover:text-white transition-colors"
+              title={t('chat.rightsidebar.tooltips.delete')}
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </button>
           )}
         </div>
@@ -103,8 +106,8 @@ export const ScheduleFoodCard = ({
       {/* Address and rating */}
       <div className="flex items-end justify-between gap-2 pt-1 mt-auto">
         {food.address && (
-          <div className="flex items-center gap-1.5 text-xs font-medium text-gray-900 flex-1 min-w-0">
-            <MapPin className="w-3.5 h-3.5 shrink-0 text-gray-500" />
+          <div className="flex items-center gap-1.5 text-[10px] md:text-xs font-medium text-gray-900 min-w-0">
+            <MapPin className="w-3 h-3 shrink-0" />
             <span className="line-clamp-1">{food.address}</span>
           </div>
         )}

@@ -1,5 +1,6 @@
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/auth-context";
-import { Bell, Lock, User as UserIcon, Settings as SettingsIcon, Clock } from "lucide-react";
+import { Lock, User as UserIcon, Settings as SettingsIcon, Clock } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -7,14 +8,13 @@ import { useSearchParams } from "react-router-dom";
 import { ProfileHeader } from "../components/profile-header";
 import { ProfileTabContent } from "../components/profile-tab-content";
 import { SecurityTabContent } from "../components/security-tab-content";
-import { NotificationsTabContent } from "../components/notification-tab-content";
 import { GeneralSettingsTabContent } from "../components/general-settings-tab-content";
-import { SessionTabContent } from "../components/session-tab-content";
 import { useGeneralSettingsStore } from "../types";
 import { Button } from "@/shared/components/ui/button";
 import { toast } from "sonner";
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, isLoading, logout } = useAuth();
   const { loadSettings, fixing, setFixing, saveSettings, current } = useGeneralSettingsStore();
   const [searchParams] = useSearchParams();
@@ -24,15 +24,13 @@ export default function ProfilePage() {
     loadSettings();
   }, []);
 
-  // Check if there's a tab query param and set it
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab === "general" || tab === "session") {
+    if (tab === "general" ) {
       setActiveTab(tab);
     }
   }, [searchParams]);
 
-  // Apply theme to the document for live preview
   useEffect(() => {
     const applyTheme = (theme: string) => {
       const root = document.documentElement;
@@ -50,114 +48,97 @@ export default function ProfilePage() {
   }, [fixing?.theme, current.theme]);
 
   const handleDeleteAccount = () => {
-    const confirmed = window.confirm("Are you sure you want to delete your account? This cannot be undone.");
+    const confirmed = window.confirm(t('profile_page.delete_confirm'));
     if (!confirmed) return;
-    toast.success("Account deletion requested.");
+    toast.success(t('profile_page.delete_requested'));
   };
 
-  // Loading state
   if (isLoading) {
-    return <div className="flex h-screen items-center justify-center">Loading profile...</div>;
+    return <div className="flex h-screen items-center justify-center">{t('profile_page.loading')}</div>;
   }
 
-  // If no log in yet
   if (!user) {
     return (
-        <div className="flex h-screen flex-col items-center justify-center gap-4">
-            <p>You need to login to view this page.</p>
-            <Button onClick={() => window.location.href = '/login'}>Go to Login</Button>
+        <div className="flex h-screen flex-col items-center justify-center gap-4 px-4 text-center">
+            <p>{t('settings.login_required')}</p>
+            <Button onClick={() => window.location.href = '/login'}>{t('settings.go_to_login')}</Button>
         </div>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-4xl py-10">
+    <div className="container mx-auto max-w-4xl py-6 md:py-10 px-4">
       
       {/* Header */}
-      <div className="flex justify-between items-start gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
         <ProfileHeader user={user} />
-        <div className="flex flex-col items-center gap-2">
+        
+        <div className="flex flex-col sm:flex-row md:flex-col w-full md:w-auto gap-3 items-stretch">
           <Button 
             variant="default" 
             onClick={logout} 
-            className="w-40 bg-orange-500 text-white border border-orange-500 hover:bg-orange-600"
+            className="w-full md:w-40 bg-orange-500 text-white border border-orange-500 hover:bg-orange-600 shadow-sm"
           >
-              Logout
+            {t('profile_page.logout')}
           </Button>
           <Button 
             variant="default" 
             onClick={handleDeleteAccount} 
-            className="w-40 bg-orange-500 text-white border border-orange-500 hover:bg-orange-600"
+            className="w-full md:w-40 bg-white text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300"
           >
-              Delete Account
+            {t('profile_page.delete_account')}
           </Button>
         </div>
       </div>
 
       {/* Tabs Navigation System */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-8 grid w-full grid-cols-5 bg-transparent p-0 gap-0 md:w-[750px]">
-          <TabsTrigger
-            value="profile"
-            className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
-          >
-            <UserIcon className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
-            Profile
-          </TabsTrigger>
-          <TabsTrigger
-            value="security"
-            className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
-          >
-            <Lock className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
-            Security
-          </TabsTrigger>
-          <TabsTrigger
-            value="notifications"
-            className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
-          >
-            <Bell className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
-            Notifications
-          </TabsTrigger>
-          <TabsTrigger
-            value="general"
-            className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
-          >
-            <SettingsIcon className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
-            Settings
-          </TabsTrigger>
-          <TabsTrigger
-            value="session"
-            className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
-          >
-            <Clock className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
-            Session
-          </TabsTrigger>
-        </TabsList>
+        
+        <div className="w-full overflow-x-auto pb-2 mb-6 no-scrollbar">
+            <TabsList className="inline-flex md:grid w-auto md:w-[750px] md:grid-cols-5 bg-transparent p-0 gap-0">
+            <TabsTrigger
+                value="profile"
+                className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 whitespace-nowrap data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
+            >
+                <UserIcon className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
+                {t('profile_page.tabs.profile')}
+            </TabsTrigger>
+            <TabsTrigger
+                value="security"
+                className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 whitespace-nowrap data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
+            >
+                <Lock className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
+                {t('profile_page.tabs.security')}
+            </TabsTrigger>
+            <TabsTrigger
+                value="general"
+                className="group relative rounded-none border-none px-4 py-2 text-gray-900 transition-colors duration-150 hover:text-orange-600 data-[state=active]:text-orange-600 whitespace-nowrap data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-orange-500"
+            >
+                <SettingsIcon className="mr-2 h-4 w-4 text-gray-900 transition-colors group-hover:text-orange-600 group-data-[state=active]:text-orange-600" />
+                {t('profile_page.tabs.settings')}
+            </TabsTrigger>
+            </TabsList>
+        </div>
 
         {/* Tab Contents */}
-        <TabsContent value="profile">
-          <ProfileTabContent user={user} />
-        </TabsContent>
+        <div className="mt-2">
+            <TabsContent value="profile">
+            <ProfileTabContent user={user} />
+            </TabsContent>
 
-        <TabsContent value="security">
-          <SecurityTabContent />
-        </TabsContent>
+            <TabsContent value="security">
+            <SecurityTabContent />
+            </TabsContent>
 
-        <TabsContent value="notifications">
-          <NotificationsTabContent />
-        </TabsContent>
+            <TabsContent value="general">
+            <GeneralSettingsTabContent
+                fixing={fixing}
+                setFixing={setFixing}
+                saveSettings={saveSettings}
+            />
+            </TabsContent>
+        </div>
 
-        <TabsContent value="general">
-          <GeneralSettingsTabContent
-            fixing={fixing}
-            setFixing={setFixing}
-            saveSettings={saveSettings}
-          />
-        </TabsContent>
-
-        <TabsContent value="session">
-          <SessionTabContent />
-        </TabsContent>
       </Tabs>
     </div>
   );

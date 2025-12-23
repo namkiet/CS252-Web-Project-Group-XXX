@@ -59,6 +59,8 @@ def handle_message():
         if not response:
             return jsonify({"error" : "No response"}), 500
         
+        
+        
         history_service.add_message(
             session_id=session_id,
             role="assistant",

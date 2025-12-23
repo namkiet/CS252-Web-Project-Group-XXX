@@ -1,12 +1,15 @@
+import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 
 // Branding Section (For only desktop)
 export const BrandingSection = () => {
+  const { t } = useTranslation();
+
   const features = [
-    { icon: '🤖', text: 'AI recommendations' },
-    { icon: '🥗', text: 'Personalized plans' },
-    { icon: '📅', text: 'Smart scheduling' },
-    { icon: '🌱', text: 'Dietary support' }
+    { icon: '🤖', text: t('auth.branding.features.ai') },
+    { icon: '🥗', text: t('auth.branding.features.plans') },
+    { icon: '📅', text: t('auth.branding.features.smart') },
+    { icon: '🌱', text: t('auth.branding.features.diet') }
   ];
 
   return (
@@ -15,12 +18,12 @@ export const BrandingSection = () => {
         {/* Tag Line */}
         <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
           <Sparkles className="w-4 h-4 text-orange-500" />
-          <span className="text-gray-700">AI-Powered Meal Planning</span>
+          <span className="text-gray-700">{t('auth.branding.tagline')}</span>
         </div>
 
         {/* Title */}
         <h1 className="text-white font-bold text-4xl lg:text-5xl drop-shadow-lg">
-          Welcome to<br />
+          {t('auth.branding.title')}<br />
           <span className="bg-gradient-to-r from-orange-400 to-green-300 bg-clip-text text-transparent">
             Local Food
           </span>
@@ -28,7 +31,7 @@ export const BrandingSection = () => {
 
         {/* Description */}
         <p className="text-gray-200 max-w-md drop-shadow">
-          Get personalized meal suggestions based on your preferences, dietary needs, and schedule.
+          {t('auth.branding.desc')}
         </p>
 
         <div className="grid grid-cols-2 gap-3 pt-2">

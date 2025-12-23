@@ -18,6 +18,50 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
+const parseBackendSchedule = (raw: any): any[] => {
+  if (!raw) return [];
+
+  if (Array.isArray(raw)) return raw;
+
+  const dayList = Array.isArray(raw.dayList) ? raw.dayList : [];
+
+  return dayList.map((dayItem: any, dayIdx: number) => {
+    const dayNumber = Number(dayItem?.day) || dayIdx + 1;
+    const dishList = Array.isArray(dayItem?.['dish-list']) ? dayItem['dish-list'] : [];
+
+    const scheduleInDay = dishList.map((dish: any, itemIdx: number) => {
+      const lat = dish?.lat !== undefined ? Number(dish.lat) : undefined;
+      const lon = dish?.lon !== undefined ? Number(dish.lon) : undefined;
+      const safeId = typeof crypto !== 'undefined' && (crypto as any).randomUUID
+        ? (crypto as any).randomUUID()
+        : `sched_${dayNumber}_${itemIdx}_${Date.now()}`;
+
+      return {
+        id: safeId,
+        activity: dish?.activity || '',
+        day: dayNumber,
+        food: {
+          id: safeId,
+          restaurant_name: dish?.restaurant_name || '',
+          image: dish?.img || '',
+          desc: dish?.desc || '',
+          address: dish?.address || '',
+          star: dish?.star ? Number(dish.star) : 0,
+          dish_name: dish?.dish_name || '',
+          priceRange: dish?.price ? String(dish.price) : '',
+          openTime: dish?.openTime || '',
+          coordinates: lat !== undefined && lon !== undefined ? { lat, lng: lon } : undefined,
+        }
+      } as any;
+    });
+
+    return {
+      day: dayNumber,
+      scheduleInDay,
+    } as any;
+  });
+};
+
 export const ChatProvider = ( { children }: { children: ReactNode} ) => {
   const [chatStore, setChatStore] = useState<Conversation[]>([]);
   const [currentIdChat, setCurrentIdChat] = useState<number>(0);
@@ -33,7 +77,7 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
   }, [chatStore]);
 
   const mapMessages = useCallback((msgs: any[]): Message[] => {
-    return msgs.map((m: any) => {
+    return msgs.map((m: any, idx: number) => {
       const baseMessage: Message = {
           role: m.message?.role === "assistant" || m.role === "assistant" ? "ai" : "user",
           type: "chat",
@@ -42,22 +86,31 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
 
       const widgetData = m.widget || m.metadata;
       const rawPayload = widgetData?.payload || widgetData?.data;
-
+      
       if (widgetData?.type === "recommendation" && Array.isArray(rawPayload) && rawPayload.length > 0) {
           return {
               ...baseMessage,
               type: "recommendation",
-              data: rawPayload.map((item: any) => ({
-                  id: crypto.randomUUID(),
-                  restaurant_name: item.restaurant_name || "Nhà hàng",
-                  image: item.image || "", 
+              data: rawPayload.map((item: any) => {
+                const lat = item.coordinates?.lat ?? item.lat;
+                const lng = item.coordinates?.lng ?? item.lon;
+
+                return {
+                  ...item,
+                  id: item.id || crypto.randomUUID(),
+                  restaurant_name: item.restaurant_name || "Restaurant",
+                  image: item.image || item.img || "", 
                   desc: item.desc || item.description || "",
                   address: item.address || "",
                   star: Number(item.star || 0),
                   dish_name: item.dish_name || "",
                   priceRange: item.priceRange || "",
-                  openTime: "",
-              }))
+                  openTime: item.openTime || "",
+                  coordinates: lat !== undefined && lng !== undefined 
+                    ? { lat: Number(lat), lng: Number(lng) } 
+                    : undefined,
+                };
+              })
           };
       }
       return baseMessage;
@@ -76,17 +129,21 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
       const conversations: Conversation[] = sessionData.data.map((item: any) => ({
         id: item.id,
         title: item.title || "New Conversation",
+        is_pinned: item.is_pinned || false,
         messages: [],
         hasMore: true,
         offset: 0,
-        isLoaded: false
-      }));
+        isLoaded: false,
+        schedule: [{ day: 1, scheduleInDay: [] }],
+        savedSchedule: [{ day: 1, scheduleInDay: [] }],
+        suggestedDish: []
+      } as any));
 
       setChatStore(conversations);
       setIsLoadedSessions(true);
       
     } catch (error) {
-      console.error("Lỗi load session:", error);
+      console.error("Error load session:", error);
     } finally {
       setIsLoadingHistory(false);
     }
@@ -115,24 +172,36 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
     setIsLoadingMessages(true);
     try {
         const sessionId = currentStore[index].id;
-        const data = await hisService.chatHistory(sessionId, 10, 0);
+        
+        // Load messages and schedule in parallel
+        const [data, schedule] = await Promise.all([
+          hisService.chatHistory(sessionId, 10, 0),
+          hisService.getSessionSchedule(sessionId)
+        ]);
         
         if (data.status === "success") {
-            const rawMsgs = data.messages || [];
+          const rawMsgs = data.messages || [];
             
-            const parsed = mapMessages(rawMsgs).reverse();
+          const parsed = mapMessages(rawMsgs).reverse();
 
-            setChatStore(prev => {
-                const newStore = [...prev];
-                newStore[index] = {
-                    ...newStore[index],
-                    messages: parsed,
-                    offset: rawMsgs.length,
-                    hasMore: rawMsgs.length >= 10,
-                    isLoaded: true
-                } as any;
-                return newStore;
-            });
+          setChatStore(prev => {
+            const newStore = [...prev];
+            const convertedSchedule = parseBackendSchedule(schedule);
+            const scheduleToSet = convertedSchedule.length > 0 
+              ? convertedSchedule 
+              : currentStore[index].schedule;
+
+            newStore[index] = {
+              ...newStore[index],
+              messages: parsed,
+              offset: rawMsgs.length,
+              hasMore: rawMsgs.length >= 10,
+              isLoaded: true,
+              schedule: scheduleToSet,
+              savedSchedule: scheduleToSet
+            } as any;
+            return newStore;
+          });
         }
     } catch (e) {
         console.error(e);

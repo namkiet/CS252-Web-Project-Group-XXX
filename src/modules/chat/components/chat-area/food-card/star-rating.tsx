@@ -11,7 +11,7 @@ export function StarRating({ rating, maxRating = 5 }: StarRatingProps) {
       {Array.from({ length: maxRating }, (_, i) => (
         <Star
           key={i}
-          className={`w-4 h-4 ${
+          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
             i < rating
               ? "fill-yellow-400 text-yellow-400"
               : "fill-none text-gray-300"

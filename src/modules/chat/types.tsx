@@ -23,8 +23,13 @@ export type Message = {
 
 export type Conversation = {
   id: string;
+  is_pinned: boolean;
   messages: Message[];
-  title: string ;
+  title: string;
+  schedule?: ScheduleDay[];
+  savedSchedule?: ScheduleDay[];
+  suggestedDish?: string[];
+  isLoaded?: boolean;
 };
 
 export type ScheduleItem = {

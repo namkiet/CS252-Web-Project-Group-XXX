@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/shared/components/ui/button"
 import { PanelRightClose, PanelRightOpen } from "lucide-react"
 
@@ -8,17 +9,23 @@ type ChatHeaderProps = {
 }
 
 export function ChatHeader({title, isScheduleSidebarOpen, onToggleScheduleSidebar} :ChatHeaderProps) {
+  const { t } = useTranslation();
+
   return (
-    <header className="bg-background sticky top-0 flex h-14 shrink-0 items-center gap-2 border-b px-4 z-10">
-      <div className="flex flex-1 items-center gap-2 px-3">
-        <span className="font-semibold text-gray-700">{title}</span>
+    <div className="flex w-full items-center justify-between gap-2 h-full">
+      <div className="flex flex-1 items-center gap-2 px-0 md:px-2 min-w-0">
+        <span className="font-semibold text-gray-700 truncate text-sm md:text-base">
+          {title}
+        </span>
       </div>
+      
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
           size="sm"
           onClick={onToggleScheduleSidebar}
-          className="h-8 w-8 p-0 hover:bg-gray-100 transition-all duration-200"
+          className="hidden lg:flex h-8 w-8 p-0 hover:bg-gray-100 transition-all duration-200"
+          title={t('chat.area.header.toggle_sidebar')}
         >
           <div className="transition-transform duration-200 ease-in-out">
             {isScheduleSidebarOpen ? (
@@ -29,6 +36,6 @@ export function ChatHeader({title, isScheduleSidebarOpen, onToggleScheduleSideba
           </div>
         </Button>
       </div>
-    </header>
+    </div>
   )
 }

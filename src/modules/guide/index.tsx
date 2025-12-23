@@ -2,6 +2,15 @@ import FoodGuidePage from "./pages/food-guide-page";
 
 export default FoodGuidePage
 
+export type SuggestedRestaurant = {
+  dishName: string;
+  price: number;
+  image: string;
+  restaurantName: string;
+  address: string;
+  rating: number;
+};
+
 export type DishData = {
   id: string;
   name: string;
@@ -12,6 +21,7 @@ export type DishData = {
   mainIngredients: string[];
   servingStyle: string;
   image: string;
+  suggestedRestaurants?: SuggestedRestaurant[];
 };
 
 export type LocationData = {

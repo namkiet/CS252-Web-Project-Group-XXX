@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useLayoutEffect } from 'react'
+import { useRef, useState, useLayoutEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Bot } from 'lucide-react'
 import { ChatMessage } from './chat-message'
 import { ChatEmptyState } from './chat-empty-state'
@@ -17,6 +18,8 @@ interface ChatListProps {
 }
 
 export function ChatList({ conversation, schedule, isLoading, onAddToSchedule, foodCardSelected, setFoodCardSelected, onShowMap }: ChatListProps) {
+  const { t } = useTranslation();
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { loadMoreMessages, currentIdChat, isLoadingMessages } = useChatContext()
   const [isLoadingMore, setIsLoadingMore] = useState(false)
@@ -62,9 +65,9 @@ export function ChatList({ conversation, schedule, isLoading, onAddToSchedule, f
 
   return (
     <div 
-    ref={messagesEndRef}
-    onScroll={handleScroll}
-    className="flex-1 overflow-y-auto custom-scrollbar relative"
+      ref={messagesEndRef}
+      onScroll={handleScroll}
+      className="flex-1 overflow-y-auto custom-scrollbar relative bg-gray-50/30"
     >
       {isLoadingMore && (
         <div className="w-full flex justify-center py-4 absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-white/80 to-transparent">
@@ -93,11 +96,11 @@ export function ChatList({ conversation, schedule, isLoading, onAddToSchedule, f
           ))}
 
           {isLoading && (
-            <div className="pl-12 flex items-center gap-2 animate-pulse">
-              <div className="w-8 h-8 rounded-full bg-[var(--color-brand)] flex items-center justify-center text-white">
-                <Bot size={16} />
+            <div className="pl-10 md:pl-12 flex items-center gap-2 animate-pulse">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-[var(--color-brand)] flex items-center justify-center text-white">
+                <Bot size={16} className="w-4 h-4"/>
               </div>
-              <span className="text-sm text-gray-400 italic">AI is thinking...</span>
+              <span className="text-xs md:text-sm text-gray-400 italic">{t('chat.area.list.ai_thinking')}</span>
             </div>
           )}
           <div ref={messagesEndRef} />

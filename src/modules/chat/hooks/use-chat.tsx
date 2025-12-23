@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next';
 import { chatService } from "../../../services/chat.service";
-import { hisService } from '@/services/history.service';
-import type { FoodItem, Message, ScheduleDay, ScheduleItem } from '../types'
+import type { Message } from '../types'
 import { flushSync } from 'react-dom';
 
-import { getLocationsFromDay } from '../utils/map-helpers'
 import { useChatContext } from '@/context/chat-context';
+import { useSchedule } from './use-schedule';
 
 export function useChat() {
+  const { t } = useTranslation();
   const { 
     chatStore, 
     setChatStore, 
@@ -18,16 +19,10 @@ export function useChat() {
   } = useChatContext();
 
   const [inputValue, setInputValue] = useState('');
-  const [schedule, setSchedule] = useState<ScheduleDay[]>([
-    { day: 1, scheduleInDay: [] }
-  ]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [scheduleItemSelected, setScheduleItemSelected] = useState<ScheduleItem|null>(null)
-  const [foodCardSelected, setFoodCardSelected] = useState<FoodItem | null>(null);
-  const [isScheduleSidebarOpen, setIsScheduleSidebarOpen] = useState<boolean>(true)
-  const [swappedItemIds, setSwappedItemIds] = useState<string[]>([])
-
+  const scheduleData = useSchedule();
+  
   useEffect(() => {
     const activeSession = chatStore[currentIdChat];
     if (chatStore.length > 0 && activeSession && activeSession.id) {
@@ -35,166 +30,18 @@ export function useChat() {
     }
   }, [currentIdChat, chatStore.length, fetchInitialMessages]);
 
-  const onAddDay = (insertAtIndex: number = -1) => {
-  setSchedule(prev => {
-    const insertPos =
-      insertAtIndex === -1 || insertAtIndex >= prev.length
-        ? prev.length
-        : insertAtIndex < 0
-        ? 0
-        : insertAtIndex;
-
-    const newDayNumber =
-      insertPos === 0
-        ? 1
-        : prev[insertPos - 1].day + 1;
-
-    const result: ScheduleDay[] = [];
-
-    prev.forEach((dayObj, idx) => {
-      if (idx < insertPos) {
-        result.push(dayObj);
-      } else {
-        const shiftedDay = dayObj.day + 1;
-        const updatedItems = dayObj.scheduleInDay.map(item => ({
-          ...item,
-          day: shiftedDay
-        }));
-
-        result.push({
-          ...dayObj,
-          day: shiftedDay,
-          scheduleInDay: updatedItems
-        });
+  useEffect(() => {
+    const activeSession = chatStore[currentIdChat];
+    if (activeSession && activeSession.id) {
+      const key = `chat_draft_${activeSession.id}`;
+      const draft = sessionStorage.getItem(key);
+      if (draft !== null) {
+        setInputValue(draft);
       }
-    });
+    }
+  }, [chatStore, currentIdChat]);
 
-    result.splice(insertPos, 0, {
-      day: newDayNumber,
-      scheduleInDay: []
-    });
-
-    return result;
-  });
-};
-
-  const onAddInDay = (
-    dayNumber: number = -1,
-    position: number | ScheduleItem = -1,
-    activity: string = "",
-    food: FoodItem | null = null
-  ) => {
-    setSchedule(prev => {
-      if (prev.length === 0) return prev;
-
-      let targetDay: number;
-      let insertPos: number = -1;
-
-      if (typeof position === "object" && position !== null) {
-        targetDay = position.day;
-        const dayData = prev.find(d => d.day === targetDay);
-        if (dayData) {
-          const idx = dayData.scheduleInDay.indexOf(position);
-          insertPos = idx === -1 ? -1 : idx + 1;
-        }
-      } else {
-        targetDay = dayNumber === -1 
-          ? prev[prev.length - 1].day 
-          : dayNumber;
-
-        insertPos = position as number;
-      }
-
-      if (!prev.some(d => d.day === targetDay)) return prev;
-
-      const newItem: ScheduleItem = {
-        activity,
-        day: targetDay,
-        food: food ?? undefined
-      };
-
-      return prev.map(dayObj => {
-        if (dayObj.day !== targetDay) return dayObj;
-
-        const items = dayObj.scheduleInDay;
-
-        if (insertPos === -1 || insertPos >= items.length) {
-          return { ...dayObj, scheduleInDay: [...items, newItem] };
-        }
-        if (insertPos <= 0) {
-          return { ...dayObj, scheduleInDay: [newItem, ...items] };
-        }
-
-        const list = [...items];
-        list.splice(insertPos, 0, newItem);
-        return { ...dayObj, scheduleInDay: list };
-      });
-    });
-  };
-
-  const handleAddToSchedule = (
-    foodItem: FoodItem,
-    targetDay?: number
-  ) => {
-    setSchedule(prev => {
-      if (scheduleItemSelected) {
-        return prev.map(dayObj => ({
-          ...dayObj,
-          scheduleInDay: dayObj.scheduleInDay.map(item =>
-            item === scheduleItemSelected
-              ? { ...item, food: foodItem }
-              : item
-          )
-        }));
-      }
-
-      let dayToAdd: number;
-
-      if (targetDay !== undefined && targetDay !== -1) {
-        dayToAdd = targetDay;
-      } else {
-        dayToAdd = prev.length > 0 ? prev[prev.length - 1].day : 1;
-      }
-
-      const newItem: ScheduleItem = {
-        activity: "",
-        day: dayToAdd,
-        food: foodItem
-      };
-
-      return prev.map(dayObj => {
-        if (dayObj.day === dayToAdd) {
-          return {
-            ...dayObj,
-            scheduleInDay: [...dayObj.scheduleInDay, newItem]
-          };
-        }
-        return dayObj;
-      });
-    });
-
-    setScheduleItemSelected(null);
-  };
-
-  const toggleScheduleSidebar = () => {
-    setIsScheduleSidebarOpen(prev => !prev);
-  };
-
-  const handleRemoveFromSchedule = (idToRemove: string) => {
-    if (!idToRemove) return;
-    
-    setSchedule((prevSchedule) => {
-      return prevSchedule.map((day) => ({
-        ...day,
-        scheduleInDay: day.scheduleInDay.filter((item) => {
-          const currentId = item.id || item.food?.id;
-          return currentId !== idToRemove;
-        }),
-      }));
-    });
-  }
-
-  // --- LOGIC SEND MESSAGE ---
+  // ------------------------------------SEND MESSAGE-----------------------------------
   const addMessageToCurrentChat = (msg: Message) => {
     setChatStore(prev => {
       if (prev.length === 0) return prev;
@@ -208,32 +55,20 @@ export function useChat() {
     });
   };
 
-
-  const addConversation = () => {
-    setChatStore(prev => {
-      const newState = [
-        ...prev,
-        {
-          id: "",
-          title: `Conversation ${prev.length}`,
-          messages: []
-        }
-      ];
-
-      newState.forEach((conv, i) => {
-        console.log(`Conversation ${i} messages:`, conv.messages);
-      });
-
-      return newState;
-    });
-  };
-
   const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+    const activeSession = chatStore[currentIdChat];
+    const suggested = activeSession?.suggestedDish || [];
+    let userMessageContent = inputValue.trim();
+    
+    if (!inputValue.trim() && suggested.length === 0) return;
 
-    const userMessageContent = inputValue.trim();
+    if (suggested.length > 0) {
+      userMessageContent = t('chat.area.prompt_prefix', { 
+        dishes: suggested.join(', '), 
+        input: inputValue.trim() 
+      });
+    }
 
-    // 1. Show user message instantly
     const userMsg: Message = {
       role: 'user',
       type: 'chat',
@@ -241,6 +76,23 @@ export function useChat() {
       data: undefined,
     };
     addMessageToCurrentChat(userMsg);
+
+    if (activeSession && activeSession.id) {
+      sessionStorage.removeItem(`chat_draft_${activeSession.id}`);
+    }
+
+    if (suggested.length > 0) {
+      setChatStore(prev => {
+        const newStore = [...prev];
+        if (newStore[currentIdChat]) {
+          newStore[currentIdChat] = {
+            ...newStore[currentIdChat],
+            suggestedDish: []
+          } as any;
+        }
+        return newStore;
+      });
+    }
 
     setInputValue('');
     setIsLoading(true);
@@ -276,7 +128,6 @@ export function useChat() {
 
     } catch (error: any) {
       console.error('Failed to send message:', error);
-
       const errorMsg: Message = {
         role: 'ai',
         type: 'chat',
@@ -289,172 +140,33 @@ export function useChat() {
     }
   };
 
-  const handleRemoveDay = (dayToRemove: number) => {
-    setSchedule((prev) => {
-      const filteredSchedule = prev.filter((d) => d.day !== dayToRemove);
-
-      const reindexedSchedule = filteredSchedule.map((day, index) => ({
-        ...day,
-        day: index + 1,
-        scheduleInDay: day.scheduleInDay.map((item) => ({
-          ...item,
-          day: index + 1,
-        })),
-      }));
-
-      return reindexedSchedule;
-    });
-  };
-
-  const handleSwapScheduleItems = (item1: ScheduleItem, item2: ScheduleItem) => {
-    setSchedule((prev) => {
-      // Find indices and days of both items
-      let item1Day = -1, item1Idx = -1;
-      let item2Day = -1, item2Idx = -1;
-
-      prev.forEach((dayObj) => {
-        const idx1 = dayObj.scheduleInDay.findIndex(
-          (item) => item === item1 || (item.id === item1.id && item.id)
-        );
-        if (idx1 !== -1) {
-          item1Day = dayObj.day;
-          item1Idx = idx1;
-        }
-
-        const idx2 = dayObj.scheduleInDay.findIndex(
-          (item) => item === item2 || (item.id === item2.id && item.id)
-        );
-        if (idx2 !== -1) {
-          item2Day = dayObj.day;
-          item2Idx = idx2;
-        }
-      });
-
-      // If items not found, return unchanged
-      if (item1Day === -1 || item2Day === -1) return prev;
-
-      // If items are in same day, swap within day
-      if (item1Day === item2Day) {
-        return prev.map((dayObj) => {
-          if (dayObj.day === item1Day) {
-            const items = [...dayObj.scheduleInDay];
-            [items[item1Idx], items[item2Idx]] = [items[item2Idx], items[item1Idx]];
-            return { ...dayObj, scheduleInDay: items };
-          }
-          return dayObj;
-        });
-      }
-
-      // If items are in different days, swap across days
-      return prev.map((dayObj) => {
-        if (dayObj.day === item1Day) {
-          const items = [...dayObj.scheduleInDay];
-          items[item1Idx] = { ...item2, day: item1Day };
-          return { ...dayObj, scheduleInDay: items };
-        } else if (dayObj.day === item2Day) {
-          const items = [...dayObj.scheduleInDay];
-          items[item2Idx] = { ...item1, day: item2Day };
-          return { ...dayObj, scheduleInDay: items };
-        }
-        return dayObj;
-      });
-    });
-
-    // Collect ids for animation feedback
-    const id1 = item1.id || item1.food?.id;
-    const id2 = item2.id || item2.food?.id;
-    if (id1 && id2) {
-      setSwappedItemIds([id1, id2]);
-      setTimeout(() => setSwappedItemIds([]), 900);
-    }
-
-    // Reset selection after swap
-    setScheduleItemSelected(null);
-  };
-
-  const handleOpenDayMap = (daySchedule: ScheduleDay) => {
-    const locations = getLocationsFromDay(daySchedule);
-
-    if(locations.length > 0) {
+  // ------------------------------------ REMOVE SUGGESTION -----------------------------------
+  const handleRemoveSuggestedDish = (indexToRemove: number) => {
+    setChatStore(prev => {
+      const newStore = [...prev];
+      const activeSession = newStore[currentIdChat];
       
-    }
-  };
-
-  const handleDeleteSession = async (sessionId: string) => {
-    if (!window.confirm("Are you sure you want to delete this conversation?")) return;
-
-    try {
-      const isDelete = await hisService.deleteSession(sessionId);
-
-      if (isDelete) {
-        const newChatStore = chatStore.filter((chat) => chat.id !== sessionId);
-        setChatStore(newChatStore);
-
-        if (newChatStore.length === 0) {
-          setChatStore([{
-              id: "",
-              title: "New Conversation",
-              messages: []
-            }]);
-            setCurrentIdChat(0);
-        } else {
-          setChatStore(newChatStore);
-          setCurrentIdChat(0);
-        }
+      if (activeSession && activeSession.suggestedDish) {
+        const newSuggestions = activeSession.suggestedDish.filter((_, idx) => idx !== indexToRemove);
         
-      } else {
-        console.error("Failed to delete session");
+        newStore[currentIdChat] = {
+          ...activeSession,
+          suggestedDish: newSuggestions
+        } as any;
       }
-    } catch (error) {
-      console.error("Error deleting session:", error);
-    }
+      return newStore;
+    });
   };
-
-  const handleRenameSession = async (sessionId: string, newTitle: string) => {
-    if (!newTitle.trim()) return;
-
-    setChatStore(prev => prev.map(chat => 
-      chat.id === sessionId 
-        ? { ...chat, title: newTitle } 
-        : chat
-    ));
-
-    try {
-      const isSuccess = await hisService.renameSession(sessionId, newTitle);
-      
-      if (!isSuccess) {
-        console.error("Failed to rename on server");
-      }
-    } catch (error) {
-      console.error("Error renaming:", error);
-    }
-  }
 
   return {
     inputValue,
     setInputValue,
-    schedule,
     isLoading: isLoading || isLoadingHistory,
     currentIdChat,
     chatStore,
-    handleAddToSchedule,
-    handleRemoveFromSchedule,
     handleSendMessage,
-    addConversation,
     setCurrentIdChat,
-    onAddDay,
-    onAddInDay,
-    scheduleItemSelected,
-    setScheduleItemSelected,
-    foodCardSelected,
-    setFoodCardSelected,
-    isScheduleSidebarOpen,
-    toggleScheduleSidebar,
-    handleRemoveDay,
-    handleOpenDayMap,
-    handleDeleteSession,
-    handleRenameSession,
-    handleSwapScheduleItems,
-    swappedItemIds
+    handleRemoveSuggestedDish,
+    ...scheduleData
   }
 }
