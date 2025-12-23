@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import type { User } from "@/services/auth.service";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/shared/components/ui/button";
@@ -11,6 +12,7 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
+  const { t } = useTranslation();
   const { updateUser } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(
@@ -29,11 +31,11 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-        toast.error("Please select an image file.");
+        toast.error(t('profile.header.toast.error_file'));
         return;
     }
     if (file.size > 2 * 1024 * 1024) { 
-        toast.error("Image size should be less than 2MB.");
+        toast.error(t('profile.header.toast.error_size'));
         return;
     }
 
@@ -45,13 +47,13 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           setAvatarUrl(res.url);
           updateUser({ avatar_url: res.url });
         }
-        toast.success("Avatar updated successfully!");
+        toast.success(t('profile.header.toast.success'));
       } else {
-        toast.error(res.message || "Failed to update avatar.");
+        toast.error(res.message || t('profile.header.toast.error'));
       }
     } catch (error) {
        console.error(error);
-       toast.error("Failed to update avatar.");
+       toast.error(t('profile.header.toast.error'));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -101,7 +103,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
       <div className="space-y-1 text-center md:text-left pt-1">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-            {user?.full_name || "Guest User"}
+            {user?.full_name || t('profile.header.guest')}
           </h1>
           <p className="text-muted-foreground dark:text-gray-400 text-sm md:text-base">
             {user?.email}
@@ -115,11 +117,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           disabled={isUploading}
           className="mt-3 border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-800 dark:border-orange-800 dark:text-orange-400"
         >
-          {isUploading ? (
-              <>Uploading...</>
-          ) : (
-              <>Change Avatar</>
-          )}
+          {isUploading ? t('profile.header.uploading') : t('profile.header.change_avatar')}
         </Button>
       </div>
     </div>

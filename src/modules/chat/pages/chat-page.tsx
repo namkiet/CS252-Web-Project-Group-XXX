@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { 
   Calendar, 
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { SidebarLeft } from '../components/left-sidebar/user-sidebar'
 import { ScheduleSidebar } from '../components/right-sidebar/schedule-sidebar'
@@ -27,6 +28,8 @@ import { useMapModal } from '../hooks/use-map-modal'
 import { type Conversation } from '../types';
 
 export default function ChatPage() {
+  const { t } = useTranslation();
+
   const {
     inputValue,
     setInputValue,
@@ -63,7 +66,12 @@ export default function ChatPage() {
 
   const activeConversation: Conversation = chatStore && chatStore[currentIdChat] 
     ? chatStore[currentIdChat] 
-    : { id: "", title: "New Conversation...", messages: [], suggestedDish: [] } as any;
+    : { 
+        id: "", 
+        title: t('chat.area.new_conversation'), 
+        messages: [], 
+        suggestedDish: [] 
+      } as any;
 
   return (
     <SidebarProvider
@@ -160,8 +168,8 @@ export default function ChatPage() {
         <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 bg-white">
           {/* Header ẩn để fix lỗi accessibility */}
           <SheetHeader className="hidden">
-            <SheetTitle>Schedule</SheetTitle>
-            <SheetDescription>Mobile Schedule View</SheetDescription>
+            <SheetTitle>{t('chat.area.mobile_schedule_title')}</SheetTitle>
+            <SheetDescription>{t('chat.area.mobile_schedule_desc')}</SheetDescription>
           </SheetHeader>
 
           <div className="h-full flex flex-col">

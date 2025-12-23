@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next';
 import { chatService } from "../../../services/chat.service";
 import type { Message } from '../types'
 import { flushSync } from 'react-dom';
@@ -7,6 +8,7 @@ import { useChatContext } from '@/context/chat-context';
 import { useSchedule } from './use-schedule';
 
 export function useChat() {
+  const { t } = useTranslation();
   const { 
     chatStore, 
     setChatStore, 
@@ -61,7 +63,10 @@ export function useChat() {
     if (!inputValue.trim() && suggested.length === 0) return;
 
     if (suggested.length > 0) {
-      userMessageContent = `I want to eat and experience the taste of ${suggested.join(', ')}. ${inputValue.trim()}`;
+      userMessageContent = t('chat.area.prompt_prefix', { 
+        dishes: suggested.join(', '), 
+        input: inputValue.trim() 
+      });
     }
 
     const userMsg: Message = {

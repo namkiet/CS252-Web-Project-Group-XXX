@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState, useRef } from 'react';
 import { locations } from '../data/location-data';
 import { dishes } from '../data/dish-data';
@@ -23,6 +24,8 @@ import {
 } from "@/shared/components/ui/sheet";
 
 export default function FoodGuidePage() {
+  const { t } = useTranslation();
+
   // --- HOOKS ---
   const { chatStore, setCurrentIdChat, setChatStore } = useChatContext();
 
@@ -39,12 +42,13 @@ export default function FoodGuidePage() {
   const handlePrefillDishToChat = async (dish: DishData, conversationIndex: number) => {
     if (conversationIndex === -1) {
       const defaultSchedule = [{ day: 1, scheduleInDay: [] }];
-      const created = await hisService.addSession(`Conversation ${chatStore.length + 1}`);
+      const convTitle = t('guide.modal.conv_index', { index: chatStore.length + 1 });
+      const created = await hisService.addSession(convTitle);
       const newSession = created?.data;
 
       const newConversation = {
         id: newSession?.id || "",
-        title: newSession?.title || `Conversation ${chatStore.length + 1}`,
+        title: newSession?.title || convTitle,
         messages: [],
         schedule: defaultSchedule,
         savedSchedule: [...defaultSchedule],
@@ -171,8 +175,8 @@ export default function FoodGuidePage() {
           </SheetTrigger>
           <SheetContent side="bottom" className="h-[60vh] rounded-t-3xl">
              <SheetHeader className="mb-4 text-left">
-                <SheetTitle>Select Location</SheetTitle>
-                <SheetDescription>Jump to a region to explore dishes</SheetDescription>
+                <SheetTitle>{t('guide.mobile.select_location')}</SheetTitle>
+                <SheetDescription>{t('guide.mobile.jump_to_region')}</SheetDescription>
              </SheetHeader>
              <div className="overflow-y-auto h-full pb-10">
                 <LocationSidebar 
@@ -195,7 +199,7 @@ export default function FoodGuidePage() {
       <footer className="bg-white border-t border-orange-100 mt-16 pb-20 lg:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-center text-gray-600">
-            Explore the world one dish at a time 🍜
+            {t('guide.footer.explore_text')}
           </p>
         </div>
       </footer>

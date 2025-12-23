@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import { ImageWithFallback } from '../../../shared/components/ui/image-with-fallback';
 
@@ -19,6 +20,8 @@ type DishCardProps = {
 };
 
 export function DishCard({ dish, onClick }: DishCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div 
       onClick={onClick}
@@ -36,17 +39,17 @@ export function DishCard({ dish, onClick }: DishCardProps) {
           <h3 className="text-white font-bold text-lg md:text-xl mb-1 line-clamp-1">{dish.name}</h3>
           <div className="flex items-center gap-1.5 text-orange-200 text-xs md:text-sm font-medium">
             <MapPin className="w-3.5 h-3.5" />
-            <span className="truncate">{dish.origin}, {dish.country}</span>
+            <span className="truncate">{t(dish.origin)}, {t(dish.country)}</span>
           </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-4 md:p-5 flex flex-col flex-1">
-        <p className="text-gray-600 text-sm md:text-base line-clamp-3 mb-4 flex-1 leading-relaxed">{dish.whatIsIt}</p>
+        <p className="text-gray-600 text-sm md:text-base line-clamp-3 mb-4 flex-1 leading-relaxed">{t(dish.whatIsIt)}</p>
         
         <div className="flex items-center justify-between">
-          <span className="text-orange-600">Click to learn more →</span>
+          <span className="text-orange-600">{t('guide.card.learn_more')}</span>
         </div>
       </div>
     </div>

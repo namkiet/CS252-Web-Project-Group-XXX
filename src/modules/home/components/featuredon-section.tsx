@@ -1,27 +1,30 @@
+import { useTranslation } from 'react-i18next'
 import { Clock, Wallet, MapPin, Star } from 'lucide-react'
 import { SlideInOnScroll } from '@/shared/components/slideInOnScroll'
 
 export const FeaturedOnSection = () => {
+  const { t } = useTranslation();
+
   const features = [
     {
       icon: Clock,
-      title: "Save Time",
-      desc: "Plan in seconds"
+      title: t('home.features.save_time.title'),
+      desc: t('home.features.save_time.desc')
     },
     {
       icon: MapPin,
-      title: "Authentic Spots",
-      desc: "No tourist traps"
+      title: t('home.features.authentic.title'),
+      desc: t('home.features.authentic.desc')
     },
     {
       icon: Wallet,
-      title: "Smart Budget",
-      desc: "Price estimation"
+      title: t('home.features.budget.title'),
+      desc: t('home.features.budget.desc')
     },
     {
       icon: Star,
-      title: "Top Rated",
-      desc: "Curated by AI"
+      title: t('home.features.rated.title'),
+      desc: t('home.features.rated.desc')
     }
   ];
 
@@ -30,7 +33,7 @@ export const FeaturedOnSection = () => {
       <div className="container mx-auto max-w-6xl px-4 md:px-6 text-center">
         <SlideInOnScroll direction='down' duration={1100}>
           <h3 className="mb-8 md:mb-12 text-xs md:text-sm font-bold uppercase tracking-widest text-gray-400">
-            Why travelers love us
+            {t('home.features.main_title')}
           </h3>
         </SlideInOnScroll>
 
@@ -38,7 +41,8 @@ export const FeaturedOnSection = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-10 md:gap-12">
             {features.map((feature, index) => (
               <div key={index} className="flex flex-col items-center gap-3 group">
-                <div className="p-3 bg-white rounded-full shadow-sm group-hover:shadow-md transition-all duration-300 transform group-hover:-translate-y-1">
+                <div className="p-3 bg-white rounded-full shadow-sm group-hover:shadow-md
+                  transition-all duration-300 transform group-hover:-translate-y-1">
                   <feature.icon className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
                 </div>
                 <div className="flex flex-col">

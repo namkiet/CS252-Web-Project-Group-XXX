@@ -5,6 +5,7 @@ import { AuthProvider } from './context/auth-context'
 import './index.css'
 import App from './App.tsx'
 import { ChatProvider } from './context/chat-context.tsx'
+import './i18n.ts'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

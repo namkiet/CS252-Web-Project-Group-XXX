@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { convertFoodToLocation, getLocationsFromDay } from '../utils/map-helpers';
 import type { FoodItem, ScheduleDay } from '../types';
 import type { MapLocation } from '../components/map-area/simple-map';
 
 export function useMapModal() {
+  const { t } = useTranslation();
+
   const [isOpen, setIsOpen] = useState(false);
   const [locations, setLocations] = useState<MapLocation[]>([]);
   const [title, setTitle] = useState("");
@@ -26,7 +29,7 @@ export function useMapModal() {
 
     if(dayLocations.length > 0) {
       setLocations(dayLocations);
-      setTitle(`Schedule day ${daySchedule.day}`);
+      setTitle(t('chat.map.day_title', { day: daySchedule.day }));
       setIsOpen(true);
     } else {
       console.warn(`No location for day ${daySchedule.day}`);

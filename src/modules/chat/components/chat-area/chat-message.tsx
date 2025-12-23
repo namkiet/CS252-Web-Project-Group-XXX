@@ -33,12 +33,10 @@ export function ChatMessage({ message, currentSchedule, onAddToSchedule, foodCar
         <div className="pl-9 md:pl-11 w-full max-w-2xl pt-1 md:pt-2">
           <div className="flex flex-col gap-3 md:gap-4">
             {message.data.map((place) => {
-              // Check whether this item added
               const isAdded = currentSchedule.some(day =>
                 day.scheduleInDay.some(i => i.food?.id === place.id)
               );
 
-              // Check whether this card ploging and pluging
               const isDragging = foodCardSelected?.id === place.id;
 
               return (

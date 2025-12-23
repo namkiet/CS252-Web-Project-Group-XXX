@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   MoreHorizontal,
   Pin,
@@ -39,6 +40,7 @@ interface HistoryActionsMenuProps {
 }
 
 export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle, onRename, is_pinned, onTogglePin }: HistoryActionsMenuProps) {
+  const { t } = useTranslation();
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [newName, setNewName] = useState(currentTitle);
 
@@ -59,7 +61,7 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
       <DropdownMenuTrigger asChild>
         <SidebarMenuAction showOnHover>
           <MoreHorizontal />
-          <span className="sr-only">More</span>
+          <span className="sr-only">{t('chat.leftsidebar.actions.more')}</span>
         </SidebarMenuAction>
       </DropdownMenuTrigger>
 
@@ -92,7 +94,7 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
                 : "text-orange-500"
             }`} 
           />
-          <span>{is_pinned ? "Bỏ ghim" : "Ghim"}</span>
+          <span>{is_pinned ? t('chat.leftsidebar.actions.unpin') : t('chat.leftsidebar.actions.pin')}</span>
           </DropdownMenuItem>
 
         <DropdownMenuSeparator />
@@ -116,7 +118,7 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
           }}
         >
           <Pencil className="text-muted-foreground mr-2 h-4 w-4 text-orange-500" />
-          <span>Rename</span>
+          <span>{t('chat.leftsidebar.actions.rename')}</span>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
@@ -139,7 +141,7 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
           }}
         >
           <Trash2 className="mr-2 h-4 w-4 text-red-500" />
-          <span>Delete</span>
+          <span>{t('chat.leftsidebar.actions.delete')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -156,11 +158,11 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
                 <Pencil className="h-4 w-4 text-orange-600" />
               </div>
               <DialogTitle className="text-lg font-bold text-orange-800 tracking-tight">
-                Rename Chat
+                {t('chat.leftsidebar.rename_modal.title')}
               </DialogTitle>
             </div>
             <DialogDescription className="text-orange-600/70 text-[13px] ml-[40px] leading-tight font-medium">
-              Give this conversation a memorable name.
+              {t('chat.leftsidebar.rename_modal.desc')}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -170,7 +172,7 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
             id="name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="e.g. Food Tour Planning..."
+            placeholder={t('chat.leftsidebar.rename_modal.placeholder')}
             className="
               h-11 px-4 bg-zinc-50 border-zinc-200 text-orange-800 rounded-lg
               focus-visible:ring-orange-200 focus-visible:border-orange-300
@@ -198,7 +200,7 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
               font-medium text-sm transition-all duration-200
             "
           >
-            Cancel
+            {t('chat.leftsidebar.rename_modal.cancel')}
           </Button>
           <Button 
             onClick={handleSaveRename}
@@ -207,7 +209,7 @@ export function HistoryActionsMenu({ isMobile, sessionId, onDelete, currentTitle
               font-semibold shadow-sm active:scale-95 transition-all text-sm
             "
           >
-            Save Changes
+            {t('chat.leftsidebar.rename_modal.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

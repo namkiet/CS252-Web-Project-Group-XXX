@@ -1,8 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
-import type { DishData, SuggestedRestaurant } from '../index';
-import { MapPin, X, Plus, Check } from 'lucide-react';
+import type { DishData } from '../index';
+import { MapPin, X, Plus } from 'lucide-react';
 import { useChatContext } from '@/context/chat-context';
-import type { FoodItem } from '@/modules/chat/types';
 
 interface DishDetailModalProps {
   dish: DishData | null;
@@ -11,6 +11,8 @@ interface DishDetailModalProps {
 }
 
 export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose, onPrefillDishToChat }) => {
+  const { t } = useTranslation();
+
   const { chatStore } = useChatContext();
   const [showConversationMenu, setShowConversationMenu] = useState(false);
 
@@ -66,7 +68,7 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose,
           <div className="p-6 md:p-8 space-y-8">
             <div className="space-y-3">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  🍽️ What is it?
+                  🍽️ {t('guide.modal.what_is_it')}
               </h3>
               <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                   {dish.whatIsIt}
@@ -75,7 +77,7 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose,
 
             <div className="space-y-3">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  🥕 Main Ingredients
+                  🥕 {t('guide.modal.ingredients')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {dish.mainIngredients.map((ingredient, index) => (
@@ -91,7 +93,7 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose,
 
             <div className="space-y-3 pb-4">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  🥢 How it's served
+                  🥢 {t('guide.modal.how_served')}
               </h3>
               <div className="bg-gray-50 p-4 rounded-xl border-l-4 border-orange-400 text-gray-700 text-sm md:text-base italic leading-relaxed">
                   "{dish.servingStyle}"
@@ -104,13 +106,13 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose,
                 onClick={() => setShowConversationMenu(!showConversationMenu)}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-3 rounded-xl shadow-md transition-all"
               >
-                ✍️ Add to chat suggestion
+                ✍️ {t('guide.modal.add_to_chat')}
               </button>
 
               {showConversationMenu && (
                 <div className="bg-white border border-orange-200 rounded-xl shadow-lg overflow-hidden animate-in slide-in-from-top-2 duration-200">
                   <div className="bg-gradient-to-r from-orange-50 to-orange-100 px-4 py-3 border-b border-orange-200">
-                    <p className="text-sm font-bold text-orange-900">Select conversation to add suggestion</p>
+                    <p className="text-sm font-bold text-orange-900">{t('guide.modal.select_conv')}</p>
                   </div>
                   <div className="divide-y divide-orange-100">
                     <button
@@ -118,10 +120,10 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose,
                       className="w-full text-left px-4 py-3 text-sm font-semibold text-orange-900 bg-orange-50 hover:bg-orange-100 transition-colors flex items-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
-                      Add new conversation
+                      {t('guide.modal.add_new_conv')}
                     </button>
                     {chatStore.length === 0 ? (
-                      <p className="px-4 py-3 text-sm text-gray-500">No conversations available</p>
+                      <p className="px-4 py-3 text-sm text-gray-500">{t('guide.modal.no_convs')}</p>
                     ) : (
                       chatStore.map((conversation, convIdx) => (
                         <button
@@ -130,7 +132,7 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose,
                           className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-orange-100 hover:text-orange-700 transition-colors font-medium flex items-center gap-2"
                         >
                           <div className="w-2 h-2 rounded-full bg-orange-400"></div>
-                          {conversation.title || `Conversation ${convIdx + 1}`}
+                          {conversation.title || t('guide.modal.conv_index', { index: convIdx + 1 })}
                         </button>
                       ))
                     )}
@@ -143,7 +145,7 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({ dish, onClose,
         
         <div className="p-4 border-t border-gray-100 bg-white md:hidden sticky bottom-0 z-10">
           <button onClick={onClose} className="w-full bg-gray-100 text-gray-800 font-bold py-3 rounded-xl hover:bg-gray-200">
-            Close
+            {t('guide.modal.close')}
           </button>
         </div>
 

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Send, X } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { Textarea } from '@/shared/components/ui/textarea'
@@ -12,6 +13,8 @@ interface ChatInputProps {
 }
 
 export function ChatInput({ value, onChange, onSubmit, onRemoveDish, isLoading, suggestedDish = [] }: ChatInputProps) {
+  const { t } = useTranslation();
+
   const hasSuggestions = suggestedDish.length > 0;
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -28,7 +31,7 @@ export function ChatInput({ value, onChange, onSubmit, onRemoveDish, isLoading, 
       {hasSuggestions && (
         <div className="mx-auto max-w-3xl mb-3">
           <div className="flex items-start gap-2 rounded-2xl border bg-white shadow-sm px-3 py-2.5">
-            <span className="text-xs font-semibold text-gray-700 mt-0.5">Suggested</span>
+            <span className="text-xs font-semibold text-gray-700 mt-0.5">{t('chat.area.input.suggested')}</span>
             <div className="flex flex-wrap gap-2">
               {suggestedDish.map((dish, idx) => (
                 <div
@@ -39,7 +42,7 @@ export function ChatInput({ value, onChange, onSubmit, onRemoveDish, isLoading, 
                   <button
                     onClick={() => onRemoveDish(idx)}
                     className="p-0.5 hover:bg-orange-200/50 rounded-full transition-colors"
-                    title="Remove suggestion"
+                    title={t('chat.area.input.remove_suggest')}
                   >
                     <X size={12} strokeWidth={2.5} />
                   </button>
@@ -52,7 +55,7 @@ export function ChatInput({ value, onChange, onSubmit, onRemoveDish, isLoading, 
 
       <div className="mx-auto max-w-3xl relative rounded-2xl border bg-gray-50 focus-within:ring-1 focus-within:ring-[var(--color-brand)] shadow-sm transition-all">
         <Textarea
-          placeholder="Type your recommendation (Example: Suggest for me a nice restaurant)..."
+          placeholder={t('chat.area.input.placeholder')}
           className="min-h-[48px] md:min-h-[55px] w-full border-0 bg-transparent p-3 md:p-4 pr-12 md:pr-14 resize-none focus-visible:ring-0 shadow-none text-base md:text-sm"
           value={value}
           onChange={(e) => onChange(e.target.value)}

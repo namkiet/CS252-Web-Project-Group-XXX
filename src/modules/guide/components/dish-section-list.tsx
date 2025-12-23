@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { MapPin } from 'lucide-react';
 import { DishCard } from '../components/dish-card';
@@ -10,6 +11,7 @@ interface DishSectionListProps {
 }
 
 export const DishSectionList: React.FC<DishSectionListProps> = ({ locations, allDishes, onDishClick }) => {
+  const { t } = useTranslation();
   
   const getDishesByLocation = (locationName: string) => {
     return allDishes.filter(dish => dish.origin === locationName);
@@ -51,7 +53,7 @@ export const DishSectionList: React.FC<DishSectionListProps> = ({ locations, all
       })}
       
       {locations.length === 0 && (
-          <div className="text-center py-20 text-gray-500">No data available.</div>
+          <div className="text-center py-20 text-gray-500">{t('guide.list.no_data')}</div>
       )}
     </div>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/shared/components/ui/button";
 import { PlusCircle, CalendarPlus } from "lucide-react";
 
@@ -10,6 +11,8 @@ export function ScheduleFooter ({
   AddDay ,
   AddInDay,
 }: ScheduleFooterProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="p-4 border-t border-zinc-200 bg-white">
       <div className="flex justify-between gap-2">
@@ -19,7 +22,7 @@ export function ScheduleFooter ({
           onClick={AddDay}
         >
           <CalendarPlus className="w-4 h-4 mr-2" />
-          Add Day
+          {t('chat.rightsidebar.footer.add_day')}
         </Button>
 
         <Button 
@@ -28,7 +31,7 @@ export function ScheduleFooter ({
           onClick={AddInDay}
         >
           <PlusCircle className="w-4 h-4 mr-2" />
-          Add Meal
+          {t('chat.rightsidebar.footer.add_meal')}
         </Button>
         
       </div>

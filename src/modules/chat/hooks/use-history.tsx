@@ -1,8 +1,11 @@
 import { hisService } from '@/services/history.service';
 import { useChatContext } from '@/context/chat-context';
 import { type ScheduleDay } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export function useHistory(defaultSchedule: ScheduleDay[]) {
+  const { t } = useTranslation();
+
   const {
     chatStore,
     setChatStore,
@@ -12,14 +15,15 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
 
   // --------------------------------------ADD CONVERSATION------------------------------------
   const addConversation = async () => {
-    const created = await hisService.addSession('New Conversation');
+    const defaultTitle = t('chat.leftsidebar.new_chat_title');
+    const created = await hisService.addSession(defaultTitle);
     const newSession = created?.data;
 
     setChatStore(prev => {
       const next = [...prev];
       const newConv = {
         id: newSession?.id || "",
-        title: newSession?.title || `Conversation ${prev.length + 1}`,
+        title: newSession?.title || t('chat.leftsidebar.conv_index', { index: prev.length + 1 }),
         messages: [],
         is_pinned: false,
         schedule: defaultSchedule,
@@ -34,7 +38,7 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
   };
   // ---------------------------------------DELETE SESSION--------------------------------------
   const handleDeleteSession = async (sessionId: string) => {
-    if (!window.confirm("Are you sure you want to delete this conversation?")) return;
+    if (!window.confirm(t('chat.leftsidebar.delete_confirm'))) return;
 
     try {
       const isDelete = await hisService.deleteSession(sessionId);
@@ -44,7 +48,7 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
           setChatStore([{
             id: "",
             is_pinned: false,
-            title: "New Conversation",
+            title: t('chat.leftsidebar.new_chat_title'),
             messages: [],
             schedule: defaultSchedule,
             isLoaded: true

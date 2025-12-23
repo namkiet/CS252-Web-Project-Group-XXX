@@ -1,0 +1,352 @@
+{
+  "staff": {
+    "header_title": "Đội ngũ của chúng tôi",
+    "header_desc": "Những chuyên gia tận tâm đằng sau những cuộc hành trình khám phá ẩm thực của riêng bạn.",
+    "banner_text": "Cùng khám phá Ẩm thực Việt Nam.",
+    "banner_alt": "Hình nền nhà hàng Việt Nam với các món ăn truyền thống",
+    "roles": {
+      "developer": "Lập trình viên",
+      "leader_developer": "Trưởng nhóm / Lập trình viên"
+    },
+    "members": {
+      "linh_desc": "Biến những đoạn mã phức tạp thành những điểm đến hấp dẫn. Tôi đảm bảo trải nghiệm người dùng của bạn mượt mà.",
+      "huy_desc": "Xây dựng logic để tìm ra bữa ăn yêu thích tiếp theo của bạn. Lập trình với niềm đam mê dành cho ẩm thực đường phố địa phương.",
+      "kiet_desc": "Người đứng sau dự án này, định hướng tầm nhìn kỹ thuật để đảm bảo không một chiếc bụng nào bị bỏ đói.",
+      "duy_desc": "Tinh chỉnh các thuật toán AI để hiểu rõ cơn thèm ăn của bạn và đưa ra lịch trình ăn uống hoàn hảo.",
+      "anh_desc": "Xây dựng cầu nối giữa bạn và ẩm thực địa phương, đảm bảo mỗi điểm trên bản đồ đều dẫn đến một bữa ăn tuyệt vời."
+    }
+  },
+  "nav": {
+    "menu": "Danh mục",
+    "mobile_nav_desc": "Điều hướng di động",
+    "language_label": "Ngôn ngữ",
+    "home": "Trang chủ",
+    "food_tour": "Tạo lịch trình",
+    "food_guide": "Khám phá",
+    "staff": "Nhân sự",
+    "contact_us": "Liên hệ",
+    "facebook": "Facebook",
+    "signed_in_as": "Đã đăng nhập",
+    "profile": "Hồ sơ của tôi",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất",
+    "login": "Đăng nhập",
+    "default_user": "Người dùng",
+    "logo_alt": "Local Food"
+  },
+  "home": {
+    "hero": {
+      "subtitle": "Công cụ lập kế hoạch ăn uống AI",
+      "title": "Thưởng thức\n&\nLên kế hoạch",
+      "desc": "Đừng lãng phí hàng giờ tìm kiếm. Chỉ cần cho chúng tôi biết bạn định đi đâu, AI của chúng tôi sẽ tạo ra một lộ trình ẩm thực cá nhân hóa phù hợp với khẩu vị của bạn.",
+      "btn_explore": "Khám phá ngay"
+    },
+    "about": {
+      "title": "Ẩm thực địa phương",
+      "p1": "Bạn mệt mỏi vì phải lướt qua vô số đánh giá hoặc rơi vào 'bẫy' du lịch? Những món ăn địa phương thực thụ không phải lúc nào cũng nằm trên trang đầu của sách hướng dẫn. Chúng nằm trong những con hẻm nhỏ và những quán ăn gia đình mà chỉ người dân bản địa mới biết.",
+      "p2": "AI của chúng tôi phân tích hàng ngàn điểm dữ liệu để chuẩn bị một hành trình ẩm thực cá nhân hóa dành riêng cho bạn. Dù bạn thèm đồ ăn đường phố hay các món truyền thống, chúng tôi sẽ dẫn bạn đến những hương vị nguyên bản nhất.",
+      "btn_create": "Tạo lịch trình",
+      "img_street_alt": "Đồ ăn đường phố địa phương",
+      "img_authentic_alt": "Món ăn bản địa"
+    },
+    "features": {
+      "main_title": "Tại sao du khách yêu thích chúng tôi",
+      "save_time": {
+        "title": "Tiết kiệm thời gian",
+        "desc": "Lập kế hoạch trong giây lát"
+      },
+      "authentic": {
+        "title": "Địa điểm bản địa",
+        "desc": "Không lo 'bẫy' du lịch"
+      },
+      "budget": {
+        "title": "Ngân sách thông minh",
+        "desc": "Ước tính chi phí"
+      },
+      "rated": {
+        "title": "Đánh giá hàng đầu",
+        "desc": "Tuyển chọn bởi AI"
+      }
+    }
+  },
+  "guide": {
+    "tabs": {
+      "vietnam": "Ẩm thực Việt Nam",
+      "international": "Ẩm thực Quốc tế"
+    },
+    "card": {
+      "signature": "Món đặc trưng",
+      "more": "món khác",
+      "learn_more": "Xem chi tiết →",
+      "cuisine_alt": "Ẩm thực {{name}}"
+    },
+    "modal": {
+      "what_is_it": "Món này là gì?",
+      "ingredients": "Thành phần chính",
+      "how_served": "Cách phục vụ",
+      "add_to_chat": "Thêm vào gợi ý chat",
+      "select_conv": "Chọn cuộc hội thoại để thêm gợi ý",
+      "add_new_conv": "Thêm cuộc hội thoại mới",
+      "no_convs": "Không có cuộc hội thoại nào",
+      "conv_index": "Cuộc hội thoại {{index}}",
+      "close": "Đóng"
+    },
+    "list": {
+      "no_data": "Không có dữ liệu."
+    },
+    "sidebar": {
+      "provinces": "Tỉnh thành",
+      "countries": "Quốc gia"
+    },
+    "header": {
+      "title": "Cẩm nang Du lịch Ẩm thực",
+      "subtitle": "Khám phá các món ăn bản địa theo tỉnh thành và quốc gia"
+    },
+    "mobile": {
+      "select_location": "Chọn địa điểm",
+      "jump_to_region": "Di chuyển nhanh đến các khu vực"
+    },
+    "footer": {
+      "explore_text": "Khám phá thế giới qua từng món ăn 🍜"
+    }
+  },
+  "auth": {
+    "login_tab": "Đăng nhập",
+    "signup_tab": "Đăng ký",
+    "google_btn": "Tiếp tục với Google",
+    "or_email": "hoặc tiếp tục với email",
+    "remember_me": "Ghi nhớ đăng nhập",
+    "forgot_password": "Quên mật khẩu?",
+    "processing": "Đang xử lý...",
+    "submit_login": "Đăng nhập vào tài khoản",
+    "submit_signup": "Tạo tài khoản mới",
+    "no_account": "Chưa có tài khoản?",
+    "has_account": "Đã có tài khoản?",
+    "signup_free": "Đăng ký miễn phí",
+    "login_here": "Đăng nhập tại đây",
+    "agreement": "Tiếp tục, bạn đồng ý với",
+    "terms": "Điều khoản",
+    "privacy": "Chính sách bảo mật",
+    "mobile_title": "Lập kế hoạch ăn uống",
+    "error_generic": "Đã có lỗi xảy ra, vui lòng thử lại",
+    "branding": {
+      "tagline": "Lập kế hoạch ăn uống với AI",
+      "title": "Chào mừng bạn đến với",
+      "desc": "Nhận các gợi ý ăn uống cá nhân hóa dựa trên sở thích, nhu cầu dinh dưỡng và lịch trình của bạn.",
+      "features": {
+        "ai": "Gợi ý từ AI",
+        "plans": "Kế hoạch cá nhân",
+        "smart": "Lịch trình thông minh",
+        "diet": "Hỗ trợ chế độ ăn"
+      }
+    },
+    "fields": {
+      "name": "Họ và tên",
+      "name_placeholder": "Nhập họ và tên của bạn",
+      "email": "Địa chỉ Email",
+      "email_placeholder": "vidu@email.com",
+      "password": "Mật khẩu",
+      "password_placeholder": "Nhập mật khẩu của bạn"
+    }
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "subtitle": "Quản lý tùy chỉnh và cấu hình ứng dụng của bạn",
+    "loading": "Đang tải cài đặt...",
+    "login_required": "Bạn cần đăng nhập để xem trang này.",
+    "go_to_login": "Đi đến Đăng nhập",
+    "tabs": {
+      "general": "Cài đặt chung",
+      "session": "Phiên làm việc"
+    },
+    "general": {
+      "theme": "Giao diện",
+      "themes": {
+        "light": "Sáng",
+        "dark": "Tối",
+        "system": "Hệ thống"
+      },
+      "language": "Ngôn ngữ",
+      "notifications": {
+        "title": "Thông báo tin nhắn",
+        "desc": "Nhận thông báo khi bạn có tin nhắn mới"
+      },
+      "sounds": {
+        "title": "Hiệu ứng âm thanh",
+        "desc": "Phát âm thanh khi tương tác với ứng dụng"
+      },
+      "status": {
+        "enabled": "Đã bật",
+        "disabled": "Đã tắt"
+      },
+      "reset": "Đặt lại",
+      "save": "Lưu cài đặt"
+    },
+    "session": {
+      "auto_logout": "Thời gian tự động đăng xuất",
+      "auto_logout_desc": "Thời gian đăng xuất được cố định là 1 giờ vì lý do bảo mật",
+      "info_title": "Thông tin phiên",
+      "last_activity": "Hoạt động cuối",
+      "status_title": "Trạng thái",
+      "status_active": "Đang hoạt động",
+      "security_title": "Bảo mật phiên",
+      "security_items": {
+        "auto_logout": "Tự động đăng xuất khi không hoạt động",
+        "warning": "Cảnh báo hết hạn phiên",
+        "remember": "Ghi nhớ phiên đăng nhập",
+        "warning_val": "5 phút trước đó"
+      },
+      "badge_fixed": "Cố định",
+      "badge_enabled": "Bật",
+      "badge_disabled": "Tắt"
+    }
+  },
+  "profile": {
+    "header": {
+      "guest": "Người dùng",
+      "uploading": "Đang tải lên...",
+      "change_avatar": "Đổi ảnh đại diện",
+      "toast": {
+        "error_file": "Vui lòng chọn tệp hình ảnh.",
+        "error_size": "Kích thước ảnh phải nhỏ hơn 2MB.",
+        "success": "Cập nhật ảnh đại diện thành công!",
+        "error": "Không thể cập nhật ảnh đại diện."
+      }
+    },
+    "details": {
+      "title": "Chi tiết hồ sơ",
+      "first_name": "Tên",
+      "last_name": "Họ",
+      "email": "Email",
+      "nickname": "Biệt danh",
+      "save_changes": "Lưu thay đổi",
+      "change_pwd": "Đổi mật khẩu",
+      "hide_pwd": "Ẩn đổi mật khẩu",
+      "toast": {
+        "success": "Đã lưu hồ sơ",
+        "error": "Lưu hồ sơ thất bại"
+      }
+    },
+    "password": {
+      "current": "Mật khẩu hiện tại",
+      "new": "Mật khẩu mới",
+      "confirm": "Xác nhận mật khẩu mới",
+      "cancel": "Hủy",
+      "ok": "Xác nhận",
+      "toast": {
+        "fill_all": "Vui lòng điền đầy đủ các trường mật khẩu",
+        "mismatch": "Mật khẩu mới không khớp",
+        "success": "Đổi mật khẩu thành công",
+        "error": "Mật khẩu hiện tại không chính xác"
+      }
+    },
+    "socials": {
+      "title": "Tài khoản đã liên kết",
+      "connected": "Đã kết nối",
+      "not_connected": "Chưa kết nối",
+      "connect": "Kết nối",
+      "disconnect": "Ngắt kết nối",
+      "toast_connected": "Đã kết nối {{platform}}",
+      "toast_disconnected": "Đã ngắt kết nối {{platform}}"
+    },
+    "security": {
+      "title": "Cài đặt bảo mật",
+      "tfa": "Xác thực 2 yếu tố",
+      "tfa_desc": "Thêm một lớp bảo mật bổ sung cho tài khoản của bạn",
+      "enable": "Kích hoạt",
+      "pwd_label": "Mật khẩu",
+      "last_changed": "Thay đổi {{time}} trước",
+      "change": "Thay đổi"
+    }
+  },
+  "profile_page": {
+    "loading": "Đang tải hồ sơ...",
+    "logout": "Đăng xuất",
+    "delete_account": "Xóa tài khoản",
+    "delete_confirm": "Bạn có chắc chắn muốn xóa tài khoản không? Hành động này không thể hoàn tác.",
+    "delete_requested": "Đã gửi yêu cầu xóa tài khoản.",
+    "tabs": {
+      "profile": "Hồ sơ",
+      "security": "Bảo mật",
+      "settings": "Cài đặt"
+    }
+  },
+  "chat": {
+    "leftsidebar": {
+      "history_title": "Lịch sử trò chuyện",
+      "new_chat": "Lịch trình mới",
+      "actions": {
+        "pin": "Ghim",
+        "unpin": "Bỏ ghim",
+        "rename": "Đổi tên",
+        "delete": "Xóa",
+        "more": "Thêm"
+      },
+      "rename_modal": {
+        "title": "Đổi tên cuộc trò chuyện",
+        "desc": "Đặt tên dễ nhớ cho cuộc trò chuyện này.",
+        "placeholder": "VD: Kế hoạch Food Tour...",
+        "cancel": "Hủy",
+        "save": "Lưu thay đổi"
+      },
+      "nav_main": {
+        "home": "Trang chủ"
+      },
+      "nav_secondary": {
+        "settings": "Cài đặt",
+        "help": "Hỗ trợ"
+      },
+      "close_sidebar": "Thu gọn thanh bên",
+      "conv_index": "Cuộc hội thoại {{index}}",
+      "new_chat_title": "Cuộc hội thoại mới",
+      "delete_confirm": "Bạn có chắc chắn muốn xóa cuộc trò chuyện này không?"
+    },
+    "rightsidebar": {
+      "header": {
+        "title": "Lịch trình của bạn",
+        "undo": "Hoàn tác",
+        "save": "Lưu"
+      },
+      "empty_state": {
+        "title": "Bắt đầu chat để lập kế hoạch",
+        "drop_here": "Thả món ăn vào đây"
+      },
+      "day_label": "Ngày {{day}}",
+      "activity_default": "Hoạt động",
+      "tooltips": {
+        "swap": "Hoán đổi với mục chọn",
+        "see_map": "Xem bản đồ",
+        "delete": "Xóa",
+        "see_day_map": "Xem bản đồ Ngày {{day}}",
+        "delete_day": "Xóa Ngày {{day}}"
+      },
+      "footer": {
+        "add_day": "Thêm ngày",
+        "add_meal": "Thêm món ăn"
+      }
+    },
+    "map": {
+      "default_title": "Bản đồ ẩm thực",
+      "day_title": "Lịch trình Ngày {{day}}",
+      "location_count_one": "{{count}} địa điểm",
+      "location_count_other": "{{count}} địa điểm"
+    },
+    "area": {
+      "empty_state": "Bắt đầu trò chuyện để lập kế hoạch cho hành trình ẩm thực của bạn!",
+      "header": {
+        "toggle_sidebar": "Đóng/Mở thanh lịch trình"
+      },
+      "input": {
+        "suggested": "Gợi ý",
+        "remove_suggest": "Xóa gợi ý",
+        "placeholder": "Nhập tin nhắn (Ví dụ: Gợi ý cho tôi một nhà hàng ngon)..."
+      },
+      "list": {
+        "ai_thinking": "AI đang suy nghĩ..."
+      },
+      "new_conversation": "Cuộc hội thoại mới...",
+      "mobile_schedule_title": "Lịch trình",
+      "mobile_schedule_desc": "Giao diện lịch trình di động"
+    }
+  }
+}

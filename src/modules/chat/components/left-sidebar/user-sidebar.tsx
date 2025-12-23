@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 import {
   Home,
   MessageCircleQuestion,
@@ -24,20 +25,20 @@ import type { Conversation } from '../../types'
 const data = {
   navMain: [
     {
-      title: "Home",
-      url: "#",
+      title: "chat.leftsidebar.nav_main.home",
+      url: "/",
       icon: Home,
       isActive: true,
     },
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
+      title: "chat.leftsidebar.nav_secondary.settings",
+      url: "/profile?tab=general",
       icon: Settings,
     },
     {
-      title: "Help",
+      title: "chat.leftsidebar.nav_secondary.help",
       url: "#",
       icon: MessageCircleQuestion,
     },
@@ -53,10 +54,11 @@ type SidebarLeftProps = {
 } & React.ComponentProps<typeof Sidebar>;
 
 export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDeleteSession, onRenameSession, onTogglePin }: SidebarLeftProps) {
+  const { t } = useTranslation();
   const { toggleSidebar } = useSidebar()
 
   const historyItems = chatStore.map((c, index) => ({
-    name: c.title || `Conversation ${index + 1}`,
+    name: c.title || t('chat.leftsidebar.conv_index', { index: index + 1 }),
     id : index,
     sessionId: c.id,
     url: "#",
@@ -71,7 +73,7 @@ export function SidebarLeft({ chatStore, setCurrentIdChat, addConversation, onDe
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={toggleSidebar}
-              tooltip="Close Sidebar"
+              tooltip={t('chat.leftsidebar.close_sidebar')}
               className="text-sidebar-foreground/70 hover:text-sidebar-foreground"
             >
               <Menu className="size-4" /> 

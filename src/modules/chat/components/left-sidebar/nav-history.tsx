@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { MessageSquareText, Pin } from "lucide-react"
 import { HistoryActionsMenu } from "./his-actions-menu";
 
@@ -28,6 +29,7 @@ import {
 } from "@/shared/components/ui/sidebar"
 
 function NavHistory({ history, setCurrentIdChat, onDeleteSession, onRenameSession, onTogglePin } : NavHistoryProps) {
+  const { t } = useTranslation();
   const { isMobile } = useSidebar()
 
   const sortedHistory = [...history].sort((a, b) => {
@@ -38,7 +40,7 @@ function NavHistory({ history, setCurrentIdChat, onDeleteSession, onRenameSessio
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <div className="px-2 pt-0 py-2 text-xs font-medium text-muted-foreground">
-        Chat history
+        {t('chat.leftsidebar.history_title')}
       </div>
 
       <SidebarMenu>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { MapPin, Star, Trash2, Map as MapIcon, Repeat } from 'lucide-react';
 import type { FoodItem } from '../../types';
 
@@ -20,6 +21,8 @@ export const ScheduleFoodCard = ({
   onSwap,
   isSwapping = false,
 }: ScheduleFoodCardProps) => {
+  const { t } = useTranslation();
+
   return (
     <div
       className="relative bg-white p-2.5 md:p-3 rounded-lg border border-orange-200 shadow-sm hover:border-orange-400 hover:shadow-md transition-all duration-300 group flex flex-col gap-1.5"
@@ -59,7 +62,7 @@ export const ScheduleFoodCard = ({
                 onSwap();
               }}
               className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white transition-colors"
-              title="Swap with selected"
+              title={t('chat.rightsidebar.tooltips.swap')}
             >
               <Repeat className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </button>
@@ -72,7 +75,7 @@ export const ScheduleFoodCard = ({
               onShowMap?.(food);
             }}
             className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded bg-orange-100 text-orange-600 hover:bg-orange-600 hover:text-white transition-colors"
-            title="See map"
+            title={t('chat.rightsidebar.tooltips.see_map')}
           >
             <MapIcon className="w-3 h-3 md:w-3.5 md:h-3.5" />
           </button>
@@ -85,7 +88,7 @@ export const ScheduleFoodCard = ({
                 onRemove();
               }}
               className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded bg-gray-100 text-gray-400 hover:bg-red-500 hover:text-white transition-colors"
-              title="Delete"
+              title={t('chat.rightsidebar.tooltips.delete')}
             >
               <Trash2 className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </button>

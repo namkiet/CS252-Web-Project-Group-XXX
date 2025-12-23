@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { X, MapPin, Star, DollarSign, Map } from 'lucide-react';
 import { SimpleMap, type MapLocation } from './simple-map';
 
@@ -9,6 +10,8 @@ interface GlobalMapModalProps {
 }
 
 export function GlobalMapModal({ isOpen, onClose, locations, title }: GlobalMapModalProps) {
+  const { t } = useTranslation();
+
   if (!isOpen) return null;
 
   return (
@@ -31,7 +34,7 @@ export function GlobalMapModal({ isOpen, onClose, locations, title }: GlobalMapM
             </div>
             <div>
               <h3 className="font-bold text-gray-900 leading-tight text-sm md:text-base line-clamp-1">
-                {title || "Bản đồ ẩm thực"}
+                {title || t('chat.map.default_title')}
               </h3>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="relative flex h-2 w-2">
@@ -39,7 +42,7 @@ export function GlobalMapModal({ isOpen, onClose, locations, title }: GlobalMapM
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
                 <span className="text-xs text-gray-500 font-medium">
-                  {locations.length} {locations.length > 1 ? 'locations' : 'location'}
+                  {t('chat.map.location_count', { count: locations.length })}
                 </span>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { LocationData } from '../index';
 
 interface LocationSidebarProps {
@@ -11,12 +12,14 @@ interface LocationSidebarProps {
 export const LocationSidebar: React.FC<LocationSidebarProps> = ({ 
   locations, activeLocationId, activeTab, onScrollToLocation 
 }) => {
+  const { t } = useTranslation();
+
   return (
     <aside className="w-full lg:w-72 flex-shrink-0">
       <div className="lg:sticky lg:top-[152px]">
         <div className="bg-white lg:rounded-xl lg:shadow-lg lg:p-6 lg:border lg:border-orange-100">
           <h3 className="text-gray-900 mb-4 font-bold text-lg hidden lg:block">
-            {activeTab === 'vietnam' ? 'Provinces' : 'Countries'}
+            {activeTab === 'vietnam' ? t('guide.sidebar.provinces') : t('guide.sidebar.countries')}
           </h3>
           <nav className="space-y-1">
             {locations.map((location, index) => (

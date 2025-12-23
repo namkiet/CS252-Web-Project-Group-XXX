@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { MapPin, Utensils } from 'lucide-react';
 
@@ -7,6 +8,8 @@ interface CategoryTabsProps {
 }
 
 export const CategoryTabs: React.FC<CategoryTabsProps> = ({ activeTab, onTabChange }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white border-b border-gray-200 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,7 +23,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({ activeTab, onTabChan
             }`}
           >
             <MapPin className="w-4 h-4" />
-            <span>Vietnamese Provinces</span>
+            <span>{t('guide.tabs.vietnam')}</span>
           </button>
           <button
             onClick={() => onTabChange('international')}
@@ -31,7 +34,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({ activeTab, onTabChan
             }`}
           >
             <Utensils className="w-4 h-4" />
-            <span>International Cuisine</span>
+            <span>{t('guide.tabs.international')}</span>
           </button>
         </div>
       </div>
