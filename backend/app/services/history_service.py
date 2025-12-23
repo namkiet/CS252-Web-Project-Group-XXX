@@ -73,7 +73,6 @@ class ChatHistoryService:
                 .range(offset, offset + limit - 1)
                 .execute()
             )
-
             return response.data
         except Exception as e:
             print(f"error getting history: {e}")

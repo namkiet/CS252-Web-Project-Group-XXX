@@ -67,39 +67,28 @@ def get_history_messages(session_id):
             audio_url = None
             if msg.get("audio_path"):
                 audio_url = storage_service.get_signed_url(msg["audio_path"])
-                
             # Read widget and schedule directly from DB columns
-            widget = msg.get('widget') or {"type": "chat", "payload": None}
-            schedule = msg.get('schedule')
-            
+            widget = msg.get('widget', {"type": "chat", "payload": None})
+            schedule = msg.get('schedule', {})
             msg_obj = {
-                "id" : msg.get('id'),
+                "id" : msg.get('id', ""),
                 "message" : {
-                    "role" : msg.get('role'),
-                    "content" : msg.get('content'),
-                    "created_at": msg.get('created_at')
+                    "role" : msg.get('role', ""),
+                    "content" : msg.get('content', ""),
+                    "created_at": msg.get('created_at', {"N/A"})
                 },
                 "widget" : widget,
                 "schedule": schedule,
                 "audio_url": audio_url
             }
-            
-            meta = msg.get('metadata') or {}
-            mtype = meta.get('type')
-            mdata = meta.get('data')
-            
-            if mtype == 'recommendation' and mdata:
-                msg_obj['widget']['payload'] = mdata
-                msg_obj['widget']['type'] = mtype
-            # elif
-                
+
             messages.append(msg_obj)
-            
+        
         session = history_service.get_session(session_id)
         
         if not session or session.get("user_id", "") != user.id:
             return jsonify({"error": "Access denied"}), 403
-   
+        
         response = {
             "status" : "success",
             "session_id" : session_id,
@@ -109,7 +98,7 @@ def get_history_messages(session_id):
 
         return jsonify(response), 200
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error History Message: {e}")
         return jsonify({"Error" : "Internal server error"}), 500
     
 @history_bp.route('/<session_id>', methods=['DELETE'])
