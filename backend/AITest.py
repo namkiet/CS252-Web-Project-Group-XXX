@@ -1,3 +1,4 @@
+import time
 from app.agents.supervisor import RootControllerAgent
 from app.agents.tools.sub_tools.Router.Ollama import OllamaLocalModel
 from app.agents.sub_agents.Test import DeepseekFinder
@@ -8,7 +9,7 @@ from app.agents.tools.PromptCreater import json_to_prompt
 from app.agents.sub_agents.SearchRAGAgent import Hybrid_RAG_agent
 from app.agents.sub_agents.NotifyAgent import NotifyAgent
 payload = {
-    "message": "Chào bạn, tôi muốn một tô Bún bò, có gà nhưng không có hành. Càng cay càng tốt"
+    "message": "Chào bạn, tôi ăn ở đường Quang Trung"
 }
 
 router = OllamaLocalModel(model = "qwen2.5:14b")
@@ -17,8 +18,12 @@ root = RootControllerAgent(router)
 
 HybridSearch = Hybrid_RAG_agent(router)
 notify_agent = NotifyAgent(router)
+print("10")
+start_time = time.perf_counter()
 data = HybridSearch.run(payload)
-
+end_time = time.perf_counter()
+elapsed_time = end_time - start_time
+print(f"Tra loi trong {elapsed_time:.2f} giây")
 print(data)
 print("finish")
 

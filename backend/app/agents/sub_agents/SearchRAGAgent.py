@@ -18,10 +18,12 @@ class Hybrid_RAG_agent(BaseAgent):
                 restaurant = d.get("restaurant", {})
                 dish = d.get("dish", {})
                 result.append({
-                    "restaurant_name": restaurant.get("name", "Unknown"),
+                    "restaurant_name": restaurant.get("raw_name", "Unknown"),
                     "description" : restaurant.get("description", ""),
                     "address": restaurant.get("address", ""),
-                    "url": restaurant.get("url", "")
+                    "url": restaurant.get("url", ""),
+                    "img_src": restaurant.get("img_src", ""),
+                    "price_range": restaurant.get("price_range", "N/A")
                 })
             return result
         except Exception as e:
