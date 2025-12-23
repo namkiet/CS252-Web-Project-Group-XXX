@@ -10,14 +10,33 @@ class Hybrid_RAG_agent(BaseAgent):
         )
         self.HybridSearch = HybridSearchService(table_name="abcd")
         self.notify_agent = NotifyAgent(coreModel=coreModel)
+    
+    def _format_output(self, data):
+        result = []
+        try:
+            for d in data:
+                restaurant = d.get("restaurant", {})
+                dish = d.get("dish", {})
+                result.append({
+                    "restaurant_name": restaurant.get("name", "Unknown"),
+                    "description" : restaurant.get("description", ""),
+                    "address": restaurant.get("address", ""),
+                    "url": restaurant.get("url", "")
+                })
+            return result
+        except Exception as e:
+            print(f"Error Hybrid: {e}")
+            return []
+        
     def run(self, payload: dict) -> dict:
         # try:
         msg = payload["message"]
         data = self.HybridSearch.search_restaurants(msg)
         if len(data) > 1:
+            
             final_result = {
                 "message": "The agent success on returning the food list, stop the agent loop.",
-                "payload": data                
+                "payload": self._format_output(data)                
             }
             
             return {"output" :final_result,

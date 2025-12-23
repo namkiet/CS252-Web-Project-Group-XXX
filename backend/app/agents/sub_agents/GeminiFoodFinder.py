@@ -77,7 +77,7 @@ class GeminiFoodFinder(BaseAgent):
                             {
                                 "restaurant_name": chunk.maps.title,
                                 "description": "",
-                                "địa chỉ": "",
+                                "address": "",
                                 "url": chunk.maps.uri,
                                 "lat": lat,
                                 "lon": lng
