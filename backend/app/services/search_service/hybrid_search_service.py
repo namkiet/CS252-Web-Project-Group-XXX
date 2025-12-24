@@ -35,7 +35,7 @@ class HybridSearchService:
             out = []
 
             for i in items:
-                key = (i["type"], i["restaurant_name"], i.get("dish_name"))
+                key = (i["type"], i["restaurant_name"])
                 if key not in seen:
                     seen.add(key)
                     out.append(i)
