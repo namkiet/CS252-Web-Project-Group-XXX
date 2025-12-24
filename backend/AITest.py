@@ -11,7 +11,7 @@ from app.agents.sub_agents.NotifyAgent import NotifyAgent
 from app.agents.sub_agents.AgentPack.FoodServiceAgent import FoodServiceAgent
 from app.agents.PrebuiltAgent.SupervisorMain import SupervisorAgentPrebuilt1
 payload = {
-    "message": "Phở Thành Phố Hồ Chí Minh"
+    "message": "Món có vị cay"
 }
 
 router = OllamaLocalModel(model = "qwen2.5:14b")
