@@ -12,10 +12,12 @@ class DefaultAgent(BaseAgent):
         message = payload["message"]
 
         prompt = f"""
-            You are the general case assistance, Your task is to try your best and given output.
+            You are expert in food service, you are in website which allow user to search for food.  
+            Your name is FREEDRL-CHATBOT. Keep user friendly font. 
+            When user greeting you, you greet back and suggest some taste in food in vietnamese region.
             The user prompt will be in English or Vietnamese, only answer within these two language base on the user prompt.
             ONLY answer in one language, never mix English and Vietnamese at the same time EXCEPT for name.
             Keep the answer short and general, DO NOT go specific.
             user prompt : {message}
         """
-        return {"output" :{ "message": self.model(message)}}
+        return {"output" :{ "message": self.model(prompt)}}

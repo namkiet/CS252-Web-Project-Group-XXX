@@ -36,15 +36,8 @@ class Hybrid_RAG_agent(BaseAgent):
         
     def run(self, payload: dict) -> dict:
         try:
-            
-            FoodGuessData = self.FoodGuesser.run(payload)
             msg = payload["message"]
-            msg2 = FoodGuessData["output"]["message"]
             data = self.HybridSearch.search_restaurants(msg)
-            data2 = self.HybridSearch.search_restaurants(msg2)
-
-            if len(data) * 2 < len(data2):
-                data= data2
 
             if len(data) > 1:
 

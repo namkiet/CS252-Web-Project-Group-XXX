@@ -8,7 +8,7 @@ class FoodServiceAgent(BaseAgent):
     def __init__(self, CoreModel) -> None:
         super().__init__(
             "food_agent",
-            "Whenever the user request for food, call this."
+            "Whenever the user request for food, call this. DO NOT CALL THIS AGENT IF NOT RELATED TO FOOD"
         )
         self.model = CoreModel
         self.LocationModel = LocationFinder()
@@ -20,7 +20,6 @@ class FoodServiceAgent(BaseAgent):
         tmpPayload = self.HybridSearch.run(payload)
         if not tmpPayload["output"]["success"]:
             payload["output"] = self.LocationModel.run(payload)["output"]
-            print(payload)
             payload = self.GeminiModel.run(payload)
         else:
             payload["output"] = tmpPayload["output"]

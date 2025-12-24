@@ -89,8 +89,10 @@ class GeminiFoodFinder(BaseAgent):
                                 "description": "",
                                 "address": "",
                                 "url": chunk.maps.uri,
-                                "lat": lat,
-                                "lon": lng
+                                "coordinates":{
+                                    "lat": lat,
+                                    "lng": lng
+                                }
                             }
                         )
             return {

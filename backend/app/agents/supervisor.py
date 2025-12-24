@@ -10,6 +10,8 @@ class RootControllerAgent:
         self.agents = {}
         default_router = DefaultAgent(router_model)
         self.agents[default_router.name] = default_router
+        self.PreviousCall = ""
+        self.CurrentCall = ""
     def register_agent(self, agent: BaseAgent):
         self.agents[agent.name] = agent
 
@@ -63,8 +65,16 @@ class RootControllerAgent:
             agent_name = "default_agent"
             agent = self.agents[agent_name]
         print("I'm calling:", agent_name)
+        self.PreviousCall = self.CurrentCall
+        self.CurrentCall = agent_name
+        if self.__CheckDupeCall():
+            return payload
         return agent.run(payload)
-    
+    def __CheckDupeCall(self):
+        
+        if self.PreviousCall != "":
+            return self.PreviousCall == self.CurrentCall
+        return False
     def should_continue(self, user_input, agent_output):
         prompt = f"""
             You are a decision making evaluator.
@@ -104,6 +114,7 @@ class RootControllerAgent:
                 - If there is apology content from outputs, focus on that ONLY.
                 - Avoid using markdown or latex, result in plain text only.
                 - Never mention about agent, if the agent tell it success then return something like "Rất vui được hỗ trợ bạn, dưới đây là những món có thể đúng ý bạn, bạn có thể đưa thêm thông tin để tìm chi tiết hơn!"
+                - Remove food related, remove link, remove address, remove restaurant , keep it short
             Keep user friendly attitude.
 """
         prompt = base_prompt
@@ -113,6 +124,8 @@ class RootControllerAgent:
         return raw
 
     def handle(self, payload) -> dict:
+        self.PreviousCall = ""
+        self.CurrentCall = ""
         if self.router_model is None:
             return self.LLM_Handle(payload)
         user_input = json_to_prompt(payload)
@@ -124,10 +137,9 @@ class RootControllerAgent:
         conversation_history_str = ""
         while loop_count < MAX_LOOPs:
             loop_count += 1
-
             agent_result = self.LLM_Handle(payload)
-            
-
+            if self.__CheckDupeCall():
+                break
             output = agent_result.get("output", {})
             last_result = output["message"]
             message = json_to_prompt(output)

@@ -13,7 +13,7 @@ class FoodGuesserAgent(BaseAgent):
 
         prompt = f"""
             You are expert in vietnamese food, your job is to guess the food in vietname via user query.
-            If you cannot find anything, response "Món"
+            If the information is unclear or too general, response "Món"
             user prompt : {message}
             Only return a single name of food with no addition text.
         """
