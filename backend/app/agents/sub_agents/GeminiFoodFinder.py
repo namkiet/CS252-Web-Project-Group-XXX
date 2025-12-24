@@ -31,6 +31,16 @@ class GeminiFoodFinder(BaseAgent):
                 lat = pos.get("latitude", None)
                 lng = pos.get("longitude", None)
 
+            PreviousOutput = payload.get("output", None)
+            if PreviousOutput is not None:
+                pos = PreviousOutput.get("position")
+                lat = None
+                lng = None
+                if pos is not None:
+                    lat = pos.get("latitude", None)
+                    lng = pos.get("longitude", None)
+
+
             if lat is None or lng is None:
                 return {
                     "output":{

@@ -77,9 +77,9 @@ class RootControllerAgent:
             Decide whether the agent's answer is FINAL or needs ADDITIONAL questions.
             If the agent output ask the user for futher clarification, then consider it is FINAL.
             Some model may ask for other agentic to run first with keyword "agent". If that happen then continue.
-            If the answer still not answer the user query, continue.
+            If the answer still not answer the user query, continue. 
             If there is apology in generation, stop.
-
+            If the agent specific tell to stop, stop.
             Reply with ONLY one word
             - "continue"
             - "stop"
@@ -102,6 +102,8 @@ class RootControllerAgent:
                 - Remove duplicates
                 - produce the BEST final answer in clear message.
                 - If there is apology content from outputs, focus on that ONLY.
+                - Avoid using markdown or latex, result in plain text only.
+                - Never mention about agent, if the agent tell it success then return something like "Rất vui được hỗ trợ bạn, dưới đây là những món có thể đúng ý bạn, bạn có thể đưa thêm thông tin để tìm chi tiết hơn!"
             Keep user friendly attitude.
 """
         prompt = base_prompt
@@ -160,8 +162,6 @@ class RootControllerAgent:
         
         final_result["output"] = output
         
-        if (loop_count == 1):
-            final_result["output"]["message"] = last_result
-        else:   
-            final_result["output"]["message"] = self.sythesize(user_input, conversation_history)
+        
+        final_result["output"]["message"] = self.sythesize(user_input, conversation_history)
         return final_result

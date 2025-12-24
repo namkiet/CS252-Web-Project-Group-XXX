@@ -7,20 +7,12 @@ from app.agents.tools.sub_tools.Router.openRouter import novaLite
 from app.agents.tools.PromptCreater import json_to_prompt
 from app.agents.sub_agents.SearchRAGAgent import Hybrid_RAG_agent
 from app.agents.sub_agents.NotifyAgent import NotifyAgent
+from app.agents.sub_agents.AgentPack.FoodServiceAgent import FoodServiceAgent
 
+def SupervisorAgentPrebuilt1(router):
 
-def SupervisorAgentPrebuilt1():
-
-    router = OllamaLocalModel(model = "qwen2.5:14b")
-    router2 = novaLite()
     root = RootControllerAgent(router)
-    HybridSearch = Hybrid_RAG_agent(router)
-    DeepseekF = DeepseekFinder()
-    FoodFounder = GeminiFoodFinder()
-    locFinder = LocationFinder()
+    foodAgent = FoodServiceAgent(router)
 
-    root.register_agent(DeepseekF)
-    root.register_agent(FoodFounder)
-    root.register_agent(locFinder)
-    root.register_agent(HybridSearch)
+    root.register_agent(foodAgent)
     return root
