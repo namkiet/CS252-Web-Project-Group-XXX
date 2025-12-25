@@ -1,6 +1,7 @@
 import re
 from app.agents.supervisor import RootControllerAgent
-from app.agents.tools.Ollama import OllamaLocalModel
+from app.agents.tools.sub_tools.Router.Ollama import OllamaLocalModel
+from app.agents.tools.sub_tools.Router.openRouter import novaLite
 
 class ChatService:
     
@@ -11,21 +12,35 @@ class ChatService:
     
     def _init_agent(self):
         try:
-            router = OllamaLocalModel("qwen2.5:14b")
-            self.root = RootControllerAgent(router)
-            self._register_agent()
+            URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
+            router = OllamaLocalModel(model="qwen2.5:14b")
+            
+            from app.agents.PrebuiltAgent.SupervisorMain import SupervisorAgentPrebuilt1
+            self.root = SupervisorAgentPrebuilt1(router)
+            # router2 = novaLite()
+            # self.root = RootControllerAgent(router)
+            # self._register_agent()
         except Exception as e:
             print(f"Failed to initialize AI Agent: {e}")
             self.root = None
             
-    def _register_agent(self):
-        try:
-            from app.agents.sub_agents.Test import DeepseekFinder
-            DeepseekF = DeepseekFinder()
+    # def _register_agent(self):
+    #     try:
+    #         from app.agents.sub_agents.Test import DeepseekFinder
+    #         DeepseekF = DeepseekFinder()
+    #         self.root.register_agent(DeepseekF)
             
-            self.root.register_agent(DeepseekF)
-        except Exception as e:
-            print(f"Failed to register agents: {e}")
+    #         from app.agents.sub_agents.GeminiFoodFinder import GeminiFoodFinder
+    #         FoodFounder = GeminiFoodFinder()
+    #         self.root.register_agent(FoodFounder)
+            
+    #         from app.agents.sub_agents.LocationFinder import LocationFinder
+    #         locFinder = LocationFinder()
+    #         self.root.register_agent(locFinder)
+            
+            
+    #     except Exception as e:
+    #         print(f"Failed to register agents: {e}")
     
     def _format_history(self, history : list):
         if not history:
@@ -73,7 +88,8 @@ class ChatService:
                 print(f"WARNING: Classification failed ({e})")
         return True
         
-    def generate_response(self, user_message, chat_history):
+    def generate_response(self, user_message, chat_history, current_schedule):
+
         if not self.root:
             return {
                 "type" : "chat",
@@ -87,9 +103,10 @@ class ChatService:
             }
         try:
             import html
-            user_message = html.escape(user_message)
+            user_message_tmp = user_message
+            user_message = html.escape(user_message_tmp)
             
-            is_safe = self._classify_intent(user_message)
+            is_safe = self._classify_intent(user_message_tmp)
             
             if not is_safe:
                 return {
@@ -101,24 +118,31 @@ class ChatService:
                 }
 
             history_context = self._format_history(chat_history)
+            
+            
             prompt = f"{history_context}\nUser's current input: {user_message}"
             payload = {
                 "message" : prompt,
-                "raw_input" : user_message
+                "raw_input" : user_message,
+                "chat_history" : chat_history,
+                "current_schedule" : current_schedule
             }
-            
-            agent_output = self.root.handle(payload)
-            
+
+            agent_output = self.root.handle(payload)["output"]
+
             msg_type = "chat"
-            if agent_output.get("payload"):
+            myPayload = agent_output.get("payload", None)
+            if myPayload:
                 msg_type = "recommendation"
-                
+            
+            print(agent_output)
+            print("Get here?")
             return {
                 "type": msg_type,
                 "role": "assistant",
-                "content": agent_output.get("message", "I couldn't generate a text response."),
-                "payload": agent_output.get("payload"),
-                "metadata": agent_output.get("metadata")        
+                "content": agent_output["message"] if not None else "I couldn't generate a text response.",
+                "payload": myPayload if not None else None,
+                "metadata": "normal chat"    
             }
         except Exception as e:
             print(f"ChatService Error: {e}")

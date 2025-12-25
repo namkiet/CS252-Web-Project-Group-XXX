@@ -14,37 +14,34 @@ class ChatHistoryService:
 
         data = {
             "user_id" : user_id,
-            "title" : final_title
+            "title" : final_title,
+            "schedule" : ""
         }
         response = supabase.table('chat_sessions').insert(data).execute()
         
         return response.data[0]
     
-    def add_message(self, session_id, role : str, user_message : str, 
-                    widget_type = 'chat', widget_payload = None, schedule = None):
-        import html
-        user_message = html.escape(user_message)
+    def add_message(
+        self, session_id, role : str, user_message : str, 
+        metadata = None, audio_path: str = None, 
+        widget: dict = None
+    ):
+        # import html
+        # user_message = html.escape(user_message)
 
         supabase = get_auth_db()
-        
-        # Build widget object
-        widget = {
-            "type": widget_type,
-            "payload": widget_payload
-        }
-        
-        message_data = {
+        payload = {
             "session_id" : session_id,
             "role" : role,
             "content" : user_message,
-            "widget" : widget,
-            "schedule": schedule,
-            # Ensure legacy metadata column is explicitly null when unused
-            "metadata": None
+            "metadata" : metadata,
+            "widget": widget,
+            "audio_path": audio_path, 
         }
-        
-        supabase.table('chat_messages').insert(message_data).execute()
-        return
+        # print("ADD MESSAGE")
+        resp = supabase.table('chat_messages').insert(payload).execute()
+        # print("SUPABASE RESP:", resp)
+        return 
     
     # for sidebar history
     def get_user_sessions(self, user_id):
@@ -76,7 +73,6 @@ class ChatHistoryService:
                 .range(offset, offset + limit - 1)
                 .execute()
             )
-            
             return response.data
         except Exception as e:
             print(f"error getting history: {e}")
@@ -174,3 +170,42 @@ class ChatHistoryService:
         except Exception as e:
             print(f"error getting session schedule: {e}")
             raise e
+    
+    def add_schedule(self, session_id, schedule: dict = None):
+        try:
+            supabase = get_auth_db()
+            
+            supabase.table("chat_sessions").update({
+                "schedule": schedule
+            }).eq("id", session_id).execute()
+        except Exception as e:
+            print(f"error adding schedule: {e}")
+            raise e
+        
+    def get_session(self, session_id):
+        try:
+            supabase = get_auth_db()
+            response = (
+                supabase.table('chat_sessions')
+                .select('*')
+                .eq('id', session_id)
+                .single()
+                .execute()
+            )
+            
+            return response.data
+        except Exception as e:
+            print(f"error getting user profile: {e}")
+            raise e
+    
+    def add_schedule(self, session_id, schedule: dict = None):
+        try:
+            supabase = get_auth_db()
+            
+            supabase.table("chat_sessions").update({
+                "schedule": schedule
+            }).eq("id", session_id).execute()
+        except Exception as e:
+            print(f"error adding schedule: {e}")
+            raise e
+        

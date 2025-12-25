@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
-from app.services.supa_client import get_auth_db, get_db
+
+from service.supabase import get_db
+from app.services.supa_client import get_auth_db
 from gotrue.errors import AuthApiError
 
 auth_bp = Blueprint('auth', __name__)

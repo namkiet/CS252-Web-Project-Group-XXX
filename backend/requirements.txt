@@ -2,20 +2,16 @@
 flask
 flask_cors
 
-flask_sqlalchemy
-flask_migrate
-flask_jwt_extended
-
 gunicorn
 google
 google.genai
-
-
+selenium
 supabase
 vecs
 postgrest
 gotrue
-
+sqlite3
+unicodedata
 # Library from AI Developer
 openai
 pandas

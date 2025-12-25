@@ -2,7 +2,9 @@ from flask import Blueprint, request, jsonify
 
 from app.utils.decorators import token_required
 from app.services.history_service import ChatHistoryService
+from app.services.audio_service import StorageService
 
+storage_service = StorageService()
 history_bp = Blueprint('history', __name__)
 
 history_service = ChatHistoryService()
@@ -15,10 +17,9 @@ def get_sessions_sidebar():
     try:
         sessions = history_service.get_user_sessions(user.id)
         response = {
-            "status" : "success",
-            "data" : sessions
+            "status": "success",
+            "data": sessions
         }
-        
         return jsonify(response), 200
     except Exception as e:
         print(f"Error: {e}")
@@ -50,7 +51,7 @@ def create_new_sessions():
 def get_history_messages(session_id):
     if not session_id:
         return jsonify({"error": "Invalid session ID"}), 400
-    
+    user = request.current_user
     try:
         try:
             limit = int(request.args.get('limit', 20))
@@ -63,30 +64,41 @@ def get_history_messages(session_id):
         messages = []
         
         for msg in history:
+            audio_url = None
+            if msg.get("audio_path"):
+                audio_url = storage_service.get_signed_url(msg["audio_path"])
             # Read widget and schedule directly from DB columns
-            widget = msg.get('widget') or {"type": "chat", "payload": None}
-            schedule = msg.get('schedule')
-            
+            widget = msg.get('widget', {"type": "chat", "payload": None})
+            schedule = msg.get('schedule', {})
             msg_obj = {
-                "id" : msg.get('id'),
+                "id" : msg.get('id', ""),
                 "message" : {
-                    "role" : msg.get('role'),
-                    "content" : msg.get('content'),
-                    "created_at": msg.get('created_at')
+                    "role" : msg.get('role', ""),
+                    "content" : msg.get('content', ""),
+                    "created_at": msg.get('created_at', {"N/A"})
                 },
                 "widget" : widget,
-                "schedule": schedule
+                "schedule": schedule,
+                "audio_url": audio_url
             }
-            
+
             messages.append(msg_obj)
+        
+        session = history_service.get_session(session_id)
+        
+        if not session or session.get("user_id", "") != user.id:
+            return jsonify({"error": "Access denied"}), 403
+        
         response = {
             "status" : "success",
             "session_id" : session_id,
+            "schedule": session.get("schedule"),
             "messages" : messages
         }
+
         return jsonify(response), 200
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error History Message: {e}")
         return jsonify({"Error" : "Internal server error"}), 500
     
 @history_bp.route('/<session_id>', methods=['DELETE'])

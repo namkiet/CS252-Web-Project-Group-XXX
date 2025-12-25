@@ -17,7 +17,7 @@ def token_required(f):
 
         try:
             supabase = get_auth_db()
-            user_response = supabase.auth.get_user()
+            user_response = supabase.auth.get_user(token)
             
             if not user_response.user:
                 raise Exception("Invalid Session")
