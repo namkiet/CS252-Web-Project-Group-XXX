@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Chrome, Apple, Facebook, Loader2 } from 'lucide-react';
 import { FormInput } from './form-input';
+import { toast } from 'sonner';
 
 import { authService } from '@/services/auth.service';
 
@@ -24,35 +25,34 @@ export const AuthFormCard: React.FC<AuthFormCardProps> = ({ isLogin, setIsLogin 
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    // Handle logic submission
     try {
       if (isLogin) {
-        // Call API Login
         await authService.login(email, password);
-        console.log("Login Success");
-        // Go to home page
+        toast.success(t('auth.login_success'));        
         window.location.href = '/';
       } else {
-        // Call API Signup
         await authService.signup(email, password, name);
-        console.log("Signup Success");
-        // Go to home page
+        toast.success(t('auth.signup_success'));
         window.location.href = '/'; 
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.message || t('auth.error_generic'));
+      const errorMessage = err.message || t('auth.error_generic');
+
+      toast.error(errorMessage, {
+        description: t('auth.invalid_password'),
+        duration: 4000,
+      });
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleOAuth = (provider: string) => {
-    // Handle logic for OAuth
     console.log(`${provider} authentication`);
   };
 
-  // Component Toggle Tabs (Login/SignUp)
   const AuthToggleButton = () => (
     <div className="flex gap-1.5 mb-4 bg-gray-100/80 p-1 rounded-xl">
       <button
@@ -83,7 +83,6 @@ export const AuthFormCard: React.FC<AuthFormCardProps> = ({ isLogin, setIsLogin 
     </div>
   );
 
-  // Handle OAuth Buttons
   const OAuthButtons = () => (
     <div className="space-y-2 mb-4">
         <button
@@ -113,7 +112,6 @@ export const AuthFormCard: React.FC<AuthFormCardProps> = ({ isLogin, setIsLogin 
     </div>
   );
   
-  // Component for Mobile Header
   const MobileHeader = () => (
     <div className="lg:hidden text-center mb-3">
       <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-orange-500 to-green-500 rounded-2xl mb-2 shadow-xl">
@@ -123,10 +121,8 @@ export const AuthFormCard: React.FC<AuthFormCardProps> = ({ isLogin, setIsLogin 
     </div>
   );
 
-  // Component for Footer Text/Terms
   const FormFooter = () => (
     <>
-      {/* Footer Text */}
       <p className="text-center text-gray-600 mt-3 text-xs">
         {isLogin ? t('auth.no_account') : t('auth.has_account')}{' '}
         <button
@@ -138,7 +134,6 @@ export const AuthFormCard: React.FC<AuthFormCardProps> = ({ isLogin, setIsLogin 
         </button>
       </p>
 
-      {/* Terms */}
       <p className="text-center text-gray-200 mt-2 px-4 text-xs drop-shadow">
         {t('auth.agreement')}{' '}
         <a href="#" className="text-orange-400 hover:underline">{t('auth.terms')}</a>
@@ -150,20 +145,14 @@ export const AuthFormCard: React.FC<AuthFormCardProps> = ({ isLogin, setIsLogin 
 
 
   return (
-    // Container of Form (2 last column)
     <div className="w-full max-w-sm mx-auto max-h-[80vh] overflow-y-auto lg:col-span-2">
-      {/* Header on Mobile */}
       <MobileHeader />
 
-      {/* Main Form */}
       <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-5 border border-white/20">
-        {/* Login/Sign Up */}
         <AuthToggleButton />
 
-        {/* OAuth Buttons */}
         <OAuthButtons />
 
-        {/* Divider Line */}
         <div className="relative mb-4">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300"></div>
@@ -173,9 +162,7 @@ export const AuthFormCard: React.FC<AuthFormCardProps> = ({ isLogin, setIsLogin 
           </div>
         </div>
 
-        {/* Form Email/Password */}
         <form onSubmit={handleSubmit} className="space-y-3">
-          {/* Name Input (For Only Sign Up) */}
           {!isLogin && (
             <div className="transform transition-all duration-300">
               <FormInput

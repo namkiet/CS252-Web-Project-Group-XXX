@@ -5,7 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { saveProfile, updateSocialAccount, changePassword, type SocialAccountStatus } from "@/services/profile.service";
+import { saveProfile, updateSocialAccount, type SocialAccountStatus } from "@/services/profile.service";
 import { toast } from "sonner";
 
 interface ProfileTabContentProps {
@@ -23,11 +23,6 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
     { platform: "facebook", connected: false },
     { platform: "instagram", connected: false },
   ]);
-  const [showChangePassword, setShowChangePassword] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [changePwdResult, setChangePwdResult] = useState<string | null>(null);
 
   const handleSaveProfile = async () => {
     const payload = {
@@ -58,29 +53,6 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
     }
   };
 
-  const handleChangePassword = async () => {
-    if (!currentPassword || !newPassword || !confirmNewPassword) {
-      toast.error(t('profile.password.toast.fill_all'));
-      return;
-    }
-    if (newPassword !== confirmNewPassword) {
-      toast.error(t('profile.password.toast.mismatch'));
-      return;
-    }
-
-    const res = await changePassword({ current_password: currentPassword, new_password: newPassword });
-    const msg = res.success ? t('profile.password.toast.success') : t('profile.password.toast.error');
-    setChangePwdResult(msg);
-    toast[res.success ? "success" : "error"](msg);
-  };
-
-  const resetPasswordFields = () => {
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmNewPassword("");
-    setChangePwdResult(null);
-  };
-
   return (
     <div className="space-y-6">
       {/* Profile Details Card */}
@@ -96,11 +68,10 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastname" className="text-gray-900 dark:text-gray-100">{t('profile.details.last_name')}</Label>
-              <Input id="lastname" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t('profile.details.first_name')} className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
+              <Input id="lastname" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t('profile.details.last_name')} className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-900 dark:text-gray-100">{t('profile.details.email')}</Label>
-              {/* Readonly for email */}
               <Input id="email" defaultValue={user?.email || ""} disabled className="border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 bg-gray-50" />
             </div>
             <div className="space-y-2">
@@ -109,86 +80,14 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
             </div>
           </div>
           
-          <div className="mt-8 flex flex-col gap-4">
-            {showChangePassword && (
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700">
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="space-y-1">
-                  <Label htmlFor="current-password" className="text-gray-900 dark:text-gray-100">{t('profile.password.current')}</Label>
-                  <Input
-                    id="current-password"
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="bg-white border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-                  />
-                  </div>
-                  <div className="space-y-1">
-                  <Label htmlFor="new-password" className="text-gray-900 dark:text-gray-100">{t('profile.password.new')}</Label>
-                  <Input
-                    id="new-password"
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="bg-white border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-                  />
-                  </div>
-                  <div className="space-y-1">
-                  <Label htmlFor="confirm-password" className="text-gray-900 dark:text-gray-100">{t('profile.password.confirm')}</Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    value={confirmNewPassword}
-                    onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    className="bg-white border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-                  />
-                  </div>
-
-                  {changePwdResult && (
-                  <div className="md:col-span-3 text-sm text-muted-foreground dark:text-gray-400">
-                    {changePwdResult}
-                  </div>
-                  )}
-
-                  <div className="md:col-span-3 flex justify-end gap-2 pt-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                    setShowChangePassword(false);
-                    resetPasswordFields();
-                    }}
-                    className="border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
-                  >
-                    {t('profile.password.cancel')}
-                  </Button>
-                  <Button 
-                    onClick={handleChangePassword}
-                    variant="outline"
-                    className="bg-orange-600 text-white border-orange-600 hover:bg-orange-700 hover:text-white"
-                  >
-                    {t('profile.password.ok')}{changePwdResult ? ` – ${changePwdResult}` : ""}
-                  </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="flex flex-col sm:flex-row justify-between gap-3">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowChangePassword((v) => !v)}
-                className="w-full sm:w-auto border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
-              >
-                {showChangePassword ? t('profile.details.hide_pwd') : t('profile.details.change_pwd')}
-              </Button>
-              <Button 
-                onClick={handleSaveProfile}
-                variant="outline"
-                className="w-full sm:w-auto border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
-              >
-                {t('profile.details.save_changes')}
-              </Button>
-            </div>
+          <div className="mt-8 flex justify-end">
+            <Button 
+              onClick={handleSaveProfile}
+              variant="outline"
+              className="w-full sm:w-auto border-orange-500 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-500 dark:hover:bg-orange-900/20"
+            >
+              {t('profile.details.save_changes')}
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -210,7 +109,7 @@ export function ProfileTabContent({ user }: ProfileTabContentProps) {
               <Button
                 variant="outline"
                 onClick={() => toggleSocial(social.platform)}
-                className={`w-full sm:w-auto ${social.connected ? "border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700" : "border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"}`}
+                className="w-full sm:w-auto border-gray-300 text-gray-900 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
               >
                 {social.connected ? t('profile.socials.disconnect') : t('profile.socials.connect')}
               </Button>

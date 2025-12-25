@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation, Trans } from 'react-i18next'
 import { Link } from 'react-router-dom';
 import { Button } from '@/shared/components/ui/button'
 import { SlideInOnScroll } from '@/shared/components/slideInOnScroll';
@@ -6,7 +6,8 @@ import { Sparkles, ArrowRight } from 'lucide-react';
 import heroBgImage from '@/assets/images/slide1.jpg'
 
 export const HeroSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isVi = i18n.language?.startsWith('vi');
 
   return (
     <div
@@ -23,8 +24,19 @@ export const HeroSection = () => {
             <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
             {t('home.hero.subtitle')} 
           </div>
-          <h1 className="mb-6 text-5xl sm:text-6xl md:text-8xl font-bold leading-tight">
-            {t('home.hero.title')}
+          <h1 className={`
+            mb-6 font-bold leading-tight whitespace-pre-line transition-all duration-300
+            ${isVi 
+              ? 'text-4xl sm:text-5xl md:text-7xl leading-[1.1]'
+              : 'text-5xl sm:text-6xl md:text-8xl leading-tight'
+            }
+          `}>
+            <Trans
+              i18nKey="home.hero.title"
+              components={{
+                small: <span className="text-2xl sm:text-3xl md:text-5xl block my-2 opacity-80" />
+              }}
+            />
           </h1>
           <p className="mx-auto mt-8 md:mt-14 text-center max-w-2xl text-base md:text-lg text-gray-100 drop-shadow-md mb-8">
             {t('home.hero.desc')}

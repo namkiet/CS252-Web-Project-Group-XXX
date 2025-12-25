@@ -35,6 +35,8 @@ import logoImage from '@/assets/images/logo.png'
 export function Navbar() {
   const { t, i18n } = useTranslation();
 
+  const currentLang = i18n.language?.split('-')[0] || 'en';
+
   const location = useLocation();
   const currentPath = location.pathname;
   const isHomePage = currentPath === '/';
@@ -192,7 +194,7 @@ export function Navbar() {
                     <span className={i18n.language === lang.code ? "font-bold text-orange-600" : "text-gray-700"}>
                       {lang.label}
                     </span>
-                    {i18n.language === lang.code && <Check className="h-4 w-4 text-orange-500" />}
+                    {currentLang === lang.code && <Check className="h-4 w-4 text-orange-500" />}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -332,7 +334,7 @@ export function Navbar() {
                           key={lang.code}
                           onClick={() => i18n.changeLanguage(lang.code)}
                           className={`py-2.5 px-3 rounded-lg text-sm font-bold transition-all ${
-                            i18n.language === lang.code 
+                            currentLang === lang.code 
                             ? 'bg-white text-orange-600 shadow-sm ring-1 ring-black/5' 
                             : 'text-gray-500 hover:text-gray-700'
                           }`}

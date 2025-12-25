@@ -5,7 +5,6 @@ from app.utils.decorators import token_required
 from app.services.history_service import ChatHistoryService
 
 me_bp = Blueprint('me', __name__)
-
 history_service = ChatHistoryService()
 
 @me_bp.route('/', methods = ['GET'])

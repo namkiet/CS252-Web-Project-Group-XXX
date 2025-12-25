@@ -37,7 +37,7 @@
   "home": {
     "hero": {
       "subtitle": "Công cụ lập kế hoạch ăn uống AI",
-      "title": "Thưởng thức\n&\nLên kế hoạch",
+      "title": "Thưởng thức<small>&</small>Lên kế hoạch",
       "desc": "Đừng lãng phí hàng giờ tìm kiếm. Chỉ cần cho chúng tôi biết bạn định đi đâu, AI của chúng tôi sẽ tạo ra một lộ trình ẩm thực cá nhân hóa phù hợp với khẩu vị của bạn.",
       "btn_explore": "Khám phá ngay"
     },
@@ -129,6 +129,7 @@
     "privacy": "Chính sách bảo mật",
     "mobile_title": "Lập kế hoạch ăn uống",
     "error_generic": "Đã có lỗi xảy ra, vui lòng thử lại",
+    "invalid_password": "Vui lòng kiểm tra lại mật khẩu.",
     "branding": {
       "tagline": "Lập kế hoạch ăn uống với AI",
       "title": "Chào mừng bạn đến với",

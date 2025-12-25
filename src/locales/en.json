@@ -129,6 +129,7 @@
     "privacy": "Privacy Policy",
     "mobile_title": "Food Schedule Planner",
     "error_generic": "Something went wrong, please try again",
+    "invalid_password": "Please check your password again.",
     "branding": {
       "tagline": "AI-Powered Meal Planning",
       "title": "Welcome to",

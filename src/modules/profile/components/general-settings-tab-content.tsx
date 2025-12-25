@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
@@ -19,6 +20,14 @@ interface GeneralSettingsTabContentProps {
 
 export function GeneralSettingsTabContent({ fixing, setFixing, saveSettings }: GeneralSettingsTabContentProps) {
   const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    const currentLang = i18n.language?.split('-')[0] || 'en';
+    if (fixing.language !== currentLang) {
+      setFixing({ language: currentLang as any });
+    }
+  }, [i18n.language]);
+
   const themes = [
     { value: "light", label: t('settings.general.themes.light'), icon: Sun },
     { value: "dark", label: t('settings.general.themes.dark'), icon: Moon },
@@ -48,7 +57,9 @@ export function GeneralSettingsTabContent({ fixing, setFixing, saveSettings }: G
   };
 
   const selectedTheme = themes.find(t => t.value === fixing.theme);
-  const selectedLanguage = languages.find(l => l.value === (fixing.language || i18n.language));
+  
+  const currentCode = fixing.language || i18n.language?.split('-')[0] || 'en';
+  const selectedLanguage = languages.find(l => l.value === currentCode) || languages[0];
 
   return (
     <div className="space-y-6">

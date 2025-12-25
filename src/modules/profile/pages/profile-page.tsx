@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/auth-context";
-import { Lock, User as UserIcon, Settings as SettingsIcon, Clock } from "lucide-react";
+import { Lock, User as UserIcon, Settings as SettingsIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
