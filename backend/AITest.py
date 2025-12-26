@@ -10,9 +10,15 @@ from app.agents.sub_agents.SearchRAGAgent import Hybrid_RAG_agent
 from app.agents.sub_agents.NotifyAgent import NotifyAgent
 from app.agents.sub_agents.AgentPack.FoodServiceAgent import FoodServiceAgent
 from app.agents.PrebuiltAgent.SupervisorMain import SupervisorAgentPrebuilt1
+from app.agents.tools.ScheduleCreater import ScheduleCreate
+from app.agents.sub_agents.ScheduleAgent import ScheduleAgent
 payload = {
-    "message": "Món có vị cay"
+    "message": "Món có vị cay ở quận tân phú Thành phố Hồ chí Minh",
 }
+
+# data = ScheduleCreate(payload)
+# print(data)
+
 
 router = OllamaLocalModel(model = "qwen2.5:14b")
 router2 = novaLite()
@@ -21,9 +27,11 @@ root = SupervisorAgentPrebuilt1(router)
 HybridSearch = Hybrid_RAG_agent(router)
 notify_agent = NotifyAgent(router)
 myFoodAgent = FoodServiceAgent(router)
+myScheduleAgent = ScheduleAgent(router)
+
 print("10")
 start_time = time.perf_counter()
-data = root.handle(payload)
+data = myScheduleAgent.run(payload)
 end_time = time.perf_counter()
 elapsed_time = end_time - start_time
 print(f"Tra loi trong {elapsed_time:.2f} giây")
