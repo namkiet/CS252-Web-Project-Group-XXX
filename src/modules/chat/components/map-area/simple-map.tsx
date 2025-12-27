@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -22,6 +22,9 @@ interface SimpleMapProps {
   locations: MapLocation[];
   zoom?: number;
   className?: string;
+  userLocation?: { lat: number; lng: number } | null;
+  routeGeometry?: Array<[number, number]> | null;
+  routeSegments?: Array<Array<[number, number]>> | null;
 }
 
 // Create Icon Marker for each color
@@ -74,8 +77,19 @@ function MapController({ locations, zoom = 15 }: { locations: MapLocation[], zoo
   return null;
 }
 
-export function SimpleMap({ locations, zoom = 15, className = "h-full w-full" }: SimpleMapProps) {
-  const defaultCenter: [number, number] = locations.length > 0 
+const SEGMENT_COLORS = [
+  '#f97316', // orange
+  '#3b82f6', // blue
+  '#10b981', // green
+  '#ef4444', // red
+  '#8b5cf6', // purple
+  '#06b6d4', // cyan
+];
+
+export function SimpleMap({ locations, zoom = 15, className = "h-full w-full", userLocation, routeGeometry, routeSegments }: SimpleMapProps) {
+  const defaultCenter: [number, number] = userLocation
+    ? [userLocation.lat, userLocation.lng]
+    : locations.length > 0 
     ? [locations[0].lat, locations[0].lng] 
     : [21.0285, 105.8542];
 
@@ -86,11 +100,25 @@ export function SimpleMap({ locations, zoom = 15, className = "h-full w-full" }:
           attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        
+        {/* User Location Marker */}
+        {userLocation && (
+          <Marker 
+            position={[userLocation.lat, userLocation.lng]}
+            icon={createCustomIcon('#3b82f6')}
+          >
+            <Popup>
+              <div className="font-semibold">My Location</div>
+            </Popup>
+          </Marker>
+        )}
+
+        {/* Restaurant Location Markers (uniform color) */}
         {locations.map((loc) => (
           <Marker 
             key={loc.id} 
             position={[loc.lat, loc.lng]}
-            icon={createCustomIcon(loc.color)}
+            icon={createCustomIcon('#f97316')}
           >
             <Popup>
               <div className="font-semibold">{loc.restaurant_name}</div>
@@ -98,7 +126,37 @@ export function SimpleMap({ locations, zoom = 15, className = "h-full w-full" }:
             </Popup>
           </Marker>
         ))}
-        <MapController locations={locations} zoom={zoom} />
+
+        {/* Route Polylines (segmented) */}
+        {routeSegments && routeSegments.length > 0 ? (
+          routeSegments.map((segment, idx) => (
+            <Polyline
+              key={idx}
+              positions={segment.map(([lng, lat]) => [lat, lng])}
+              color={SEGMENT_COLORS[idx % SEGMENT_COLORS.length]}
+              weight={5}
+              opacity={0.8}
+            />
+          ))
+        ) : (
+          routeGeometry && routeGeometry.length > 0 && (
+            <Polyline 
+              positions={routeGeometry.map(([lng, lat]) => [lat, lng])}
+              color={SEGMENT_COLORS[0]}
+              weight={4}
+              opacity={0.7}
+              dashArray="5, 5"
+            />
+          )
+        )}
+
+        {/* Fit bounds to include user location and markers */}
+        {(() => {
+          const boundsLocations: MapLocation[] = userLocation
+            ? [...locations, { id: 'user', restaurant_name: 'My Location', lat: userLocation.lat, lng: userLocation.lng }]
+            : locations;
+          return <MapController locations={boundsLocations} zoom={zoom} />
+        })()}
       </MapContainer>
     </div>
   );

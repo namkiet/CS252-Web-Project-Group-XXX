@@ -51,7 +51,7 @@ export default function FoodGuidePage() {
         title: newSession?.title || convTitle,
         messages: [],
         schedule: defaultSchedule,
-        savedSchedule: [...defaultSchedule],
+        scheduleList: [JSON.parse(JSON.stringify(defaultSchedule))],
         suggestedDish: [dish.name]
       } as any;
 

@@ -32,6 +32,15 @@ export function useSchedule() {
 
     if (!chatStore[currentIdChat]?.id || !isLoaded) return;
 
+    // Guard: Skip auto-save if schedule equals last snapshot
+    const scheduleList = chatStore[currentIdChat]?.scheduleList as ScheduleDay[][] | undefined;
+    const lastSnapshot = Array.isArray(scheduleList) && scheduleList.length > 0
+      ? scheduleList[scheduleList.length - 1]
+      : null;
+    if (lastSnapshot && JSON.stringify(schedule) === JSON.stringify(lastSnapshot)) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       history.handleSaveSchedule();
     }, 1500);

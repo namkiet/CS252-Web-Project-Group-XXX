@@ -27,7 +27,7 @@ export type Conversation = {
   messages: Message[];
   title: string;
   schedule?: ScheduleDay[];
-  savedSchedule?: ScheduleDay[];
+  scheduleList?: ScheduleDay[][];
   suggestedDish?: string[];
   isLoaded?: boolean;
 };

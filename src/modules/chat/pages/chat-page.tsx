@@ -57,7 +57,6 @@ export default function ChatPage() {
     handleTogglePin,
     handleSwapScheduleItems,
     swappedItemIds,
-    handleSaveSchedule,
     handleUndoSchedule
   } = useChat();
 
@@ -146,7 +145,7 @@ export default function ChatPage() {
         <ScheduleSidebar
           className="h-full border-l w-80 bg-white shrink-0"
           schedule={schedule} 
-          savedSchedule={activeConversation.savedSchedule || schedule}
+          scheduleList={activeConversation.scheduleList || []}
           onRemoveItem={handleRemoveFromSchedule}
           onAddDay={onAddDay}
           onAddInDay={onAddInDay}
@@ -159,7 +158,6 @@ export default function ChatPage() {
           onShowDayMap={mapModal.openDayMap}
           onSwapItems={handleSwapScheduleItems}
           swappedItemIds={swappedItemIds}
-          onSaveSchedule={handleSaveSchedule}
           onUndoSchedule={handleUndoSchedule}
         />
       </div>
@@ -176,7 +174,7 @@ export default function ChatPage() {
             <ScheduleSidebar
               className="flex-1 w-full border-none"
               schedule={schedule} 
-              savedSchedule={activeConversation.savedSchedule || schedule}
+              scheduleList={activeConversation.scheduleList || []}
               onRemoveItem={handleRemoveFromSchedule}
               onAddDay={onAddDay}
               onAddInDay={onAddInDay}
@@ -189,7 +187,6 @@ export default function ChatPage() {
               onShowDayMap={mapModal.openDayMap}
               onSwapItems={handleSwapScheduleItems}
               swappedItemIds={swappedItemIds}
-              onSaveSchedule={handleSaveSchedule}
               onUndoSchedule={handleUndoSchedule}
             />
           </div>

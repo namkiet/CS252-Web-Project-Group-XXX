@@ -135,7 +135,7 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
         offset: 0,
         isLoaded: false,
         schedule: [{ day: 1, scheduleInDay: [] }],
-        savedSchedule: [{ day: 1, scheduleInDay: [] }],
+        scheduleList: [[{ day: 1, scheduleInDay: [] }]],
         suggestedDish: []
       } as any));
 
@@ -198,7 +198,7 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
               hasMore: rawMsgs.length >= 10,
               isLoaded: true,
               schedule: scheduleToSet,
-              savedSchedule: scheduleToSet
+              scheduleList: [JSON.parse(JSON.stringify(scheduleToSet))]
             } as any;
             return newStore;
           });

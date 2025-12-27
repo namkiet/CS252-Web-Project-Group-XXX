@@ -18,7 +18,7 @@ import {ScheduleFoodCard} from './schedule-food-card'
 
 interface ScheduleSidebarProps extends React.ComponentProps<typeof Sidebar> {
   schedule: ScheduleDay[];
-  savedSchedule?: ScheduleDay[];
+  scheduleList?: ScheduleDay[][];
   onRemoveItem: (id: string) => void;
   onAddDay: (day:number) => void;
   onAddInDay: (daynumber: number, position: number |ScheduleItem, activity: string, food: FoodItem | null) => void ;
@@ -37,7 +37,7 @@ interface ScheduleSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 export function ScheduleSidebar({
   schedule = [],
-  savedSchedule = [],
+  scheduleList = [],
   onRemoveItem,
   onAddDay,
   onAddInDay,
@@ -78,7 +78,7 @@ export function ScheduleSidebar({
   };
 
   // Detect if schedule has changed from saved version
-  const hasScheduleChanges = JSON.stringify(schedule) !== JSON.stringify(savedSchedule);
+  const canUndo = Array.isArray(scheduleList) && scheduleList.length > 1;
 
   const handleDrop = (e: React.DragEvent, dayNumber: number) => {
     e.preventDefault();
@@ -125,22 +125,18 @@ export function ScheduleSidebar({
               <Calendar className="h-5 w-5 text-orange-600" />
               <h2 className="font-semibold text-lg text-gray-800">{t('chat.rightsidebar.header.title')}</h2>
             </div>
-            {hasScheduleChanges && (
-              <div className="flex gap-2">
-                <button
-                  onClick={onUndoSchedule}
-                  className="h-7 px-2.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
-                >
-                  {t('chat.rightsidebar.header.undo')}
-                </button>
-                <button
-                  onClick={onSaveSchedule}
-                  className="h-7 px-2.5 text-xs font-medium text-white bg-orange-500 hover:bg-orange-600 rounded transition-colors"
-                >
-                  {t('chat.rightsidebar.header.save')}
-                </button>
-              </div>
-            )}
+            <button
+              onClick={onUndoSchedule}
+              disabled={!canUndo}
+              className={cn(
+                "h-7 px-2.5 text-xs font-medium rounded transition-colors",
+                canUndo
+                  ? "text-white bg-orange-500 hover:bg-orange-600"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed"
+              )}
+            >
+              {t('chat.rightsidebar.header.undo')}
+            </button>
           </div>
         </div>
       </SidebarHeader>

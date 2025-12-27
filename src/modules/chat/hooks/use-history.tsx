@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 export function useHistory(defaultSchedule: ScheduleDay[]) {
   const { t } = useTranslation();
-
+  
   const {
     chatStore,
     setChatStore,
@@ -27,7 +27,7 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
         messages: [],
         is_pinned: false,
         schedule: defaultSchedule,
-        savedSchedule: [...defaultSchedule],
+        scheduleList: [JSON.parse(JSON.stringify(defaultSchedule))],
         suggestedDish: [],
         isLoaded: true
       } as any;
@@ -51,6 +51,7 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
             title: t('chat.leftsidebar.new_chat_title'),
             messages: [],
             schedule: defaultSchedule,
+            scheduleList: [JSON.parse(JSON.stringify(defaultSchedule))],
             isLoaded: true
           }]);
           setCurrentIdChat(0);
@@ -132,9 +133,12 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
           const newStore = [...prev];
           const conv = newStore[currentIdChat];
           if (conv) {
+            const snapshot = JSON.parse(JSON.stringify(conv.schedule));
+            const nextList = Array.isArray(conv.scheduleList) ? [...conv.scheduleList] : [];
+            nextList.push(snapshot);
             newStore[currentIdChat] = {
               ...conv,
-              savedSchedule: JSON.parse(JSON.stringify(conv.schedule))
+              scheduleList: nextList
             } as any;
           }
           return newStore;
@@ -149,10 +153,14 @@ export function useHistory(defaultSchedule: ScheduleDay[]) {
     setChatStore(prev => {
       const newStore = [...prev];
       const conv = newStore[currentIdChat];
-      if (conv && conv.savedSchedule) {
+      if (conv && Array.isArray(conv.scheduleList) && conv.scheduleList.length > 1) {
+        const nextList = [...conv.scheduleList];
+        nextList.pop();
+        const last = nextList[nextList.length - 1];
         newStore[currentIdChat] = {
           ...conv,
-          schedule: JSON.parse(JSON.stringify(conv.savedSchedule))
+          schedule: JSON.parse(JSON.stringify(last)),
+          scheduleList: nextList
         } as any;
       }
       return newStore;
