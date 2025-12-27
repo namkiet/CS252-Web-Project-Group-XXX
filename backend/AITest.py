@@ -13,7 +13,7 @@ from app.agents.PrebuiltAgent.SupervisorMain import SupervisorAgentPrebuilt1
 from app.agents.tools.ScheduleCreater import ScheduleCreate
 from app.agents.sub_agents.ScheduleAgent import ScheduleAgent
 payload = {
-    "message": "Món có vị cay ở quận tân phú Thành phố Hồ chí Minh",
+    "message": "Gợi ý cho tôi một lịch trình ăn uống trong ngày tại quận 1, TP.HCM, bao gồm các món đặc sản địa phương và các nhà hàng nổi tiếng. Tôi muốn bắt đầu từ sáng đến tối, với các bữa ăn chính và các món ăn nhẹ giữa các bữa. Vui lòng cung cấp địa chỉ và mô tả ngắn gọn về từng địa điểm.",
 }
 
 # data = ScheduleCreate(payload)
@@ -27,11 +27,14 @@ root = SupervisorAgentPrebuilt1(router)
 HybridSearch = Hybrid_RAG_agent(router)
 notify_agent = NotifyAgent(router)
 myFoodAgent = FoodServiceAgent(router)
-myScheduleAgent = ScheduleAgent(router)
+# myScheduleAgent = ScheduleAgent(router)
 
 print("10")
 start_time = time.perf_counter()
-data = myScheduleAgent.run(payload)
+# data = myScheduleAgent.run(payload)
+
+data = HybridSearch.run(payload)
+
 end_time = time.perf_counter()
 elapsed_time = end_time - start_time
 print(f"Tra loi trong {elapsed_time:.2f} giây")

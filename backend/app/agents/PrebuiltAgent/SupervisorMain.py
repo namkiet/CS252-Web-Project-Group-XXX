@@ -17,9 +17,9 @@ def SupervisorAgentPrebuilt1(router):
     foodAgent = FoodServiceAgent(router)
     requestAgent = RequestClarifyAgent(router)
     chatAgent = ChatAgent(router)
-    scheduleAgent = ScheduleAgent(router)
+    # scheduleAgent = ScheduleAgent(router)
     root.register_agent(foodAgent)
     root.register_agent(requestAgent)
     root.register_agent(chatAgent)
-    root.register_agent(scheduleAgent)
+    # root.register_agent(scheduleAgent)
     return root
