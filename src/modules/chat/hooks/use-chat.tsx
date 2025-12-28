@@ -106,6 +106,10 @@ export function useChat() {
         sessionIdToSend
       );
 
+      if (aiResponse.schedule) {
+        scheduleData.setPendingSchedule(aiResponse.schedule);
+      }
+
       const aiMsg: Message = {
         role: 'ai',
         type: aiResponse.widget.type,

@@ -1,7 +1,52 @@
-import { useRef, useState, useEffect, useMemo } from 'react'
+import { useRef, useState, useEffect, useMemo, useCallback } from 'react'
 import type { FoodItem, ScheduleDay, ScheduleItem } from '../types'
 import { useChatContext } from '@/context/chat-context';
 import { useHistory } from './use-history';
+
+const parseBackendSchedule = (raw: any): any[] => {
+  if (!raw) return [];
+
+  const dayList = Array.isArray(raw) ? raw : (raw.dayList || raw.schedule || []);
+
+  return dayList.map((dayItem: any, dayIdx: number) => {
+    const dayNumber = Number(dayItem?.day) || dayIdx + 1;
+    
+    const rawDishList = dayItem?.['dish-list'] || dayItem?.scheduleInDay || [];
+    const dishList = Array.isArray(rawDishList) ? rawDishList : [];
+
+    const scheduleInDay = dishList.map((item: any, itemIdx: number) => {
+      const lat = item?.coordinates?.lat ?? item?.lat;
+      const lon = item?.coordinates?.lng ?? item?.lon ?? item?.lng;
+      
+      const safeId = item?.id || `sched_${dayNumber}_${itemIdx}_${Date.now()}`;
+
+      const foodSource = item.food ? item.food : item;
+
+      return {
+        id: safeId,
+        activity: item?.activity || '',
+        day: dayNumber,
+        food: {
+          id: foodSource?.id || safeId,
+          restaurant_name: foodSource?.restaurant_name || '',
+          image: foodSource?.image || foodSource?.img || '',
+          desc: foodSource?.desc || foodSource?.description || '',
+          address: foodSource?.address || '',
+          star: foodSource?.star ? Number(foodSource.star) : 0,
+          dish_name: foodSource?.dish_name || '',
+          priceRange: foodSource?.priceRange || foodSource?.price_range || foodSource?.price || '',
+          openTime: foodSource?.openTime || '',
+          coordinates: lat !== undefined && lon !== undefined ? { lat: Number(lat), lng: Number(lon) } : undefined,
+        }
+      };
+    });
+
+    return {
+      day: dayNumber,
+      scheduleInDay,
+    };
+  });
+};
 
 export function useSchedule() {
   const { 
@@ -20,6 +65,8 @@ export function useSchedule() {
   const [isScheduleSidebarOpen, setIsScheduleSidebarOpen] = useState<boolean>(true)
   const [swappedItemIds, setSwappedItemIds] = useState<string[]>([])
   
+  const [pendingSchedule, setPendingSchedule] = useState<any | null>(null);
+
   const history = useHistory(defaultSchedule);
   const isInitialMount = useRef(true);
 
@@ -32,7 +79,6 @@ export function useSchedule() {
 
     if (!chatStore[currentIdChat]?.id || !isLoaded) return;
 
-    // Guard: Skip auto-save if schedule equals last snapshot
     const scheduleList = chatStore[currentIdChat]?.scheduleList as ScheduleDay[][] | undefined;
     const lastSnapshot = Array.isArray(scheduleList) && scheduleList.length > 0
       ? scheduleList[scheduleList.length - 1]
@@ -63,6 +109,31 @@ export function useSchedule() {
       return newStore;
     });
   };
+
+  const confirmUpdateSchedule = useCallback(() => {
+    if (!pendingSchedule) return;
+
+    const parsed = parseBackendSchedule(pendingSchedule);
+
+    setChatStore(prev => {
+      const newStore = [...prev];
+      if (newStore[currentIdChat]) {
+        newStore[currentIdChat] = {
+          ...newStore[currentIdChat],
+          schedule: parsed,
+          scheduleList: [
+            ...(newStore[currentIdChat].scheduleList || []),
+            JSON.parse(JSON.stringify(parsed))
+          ]
+        } as any;
+      }
+      return newStore;
+    });
+
+    setPendingSchedule(null);
+  }, [pendingSchedule, currentIdChat, setChatStore]);
+
+  const cancelPendingSchedule = () => setPendingSchedule(null);
 
   // -------------------------------------- ADD DAY ----------------------------------------
   const onAddDay = (insertAtIndex: number = -1) => {
@@ -234,6 +305,10 @@ export function useSchedule() {
     isScheduleSidebarOpen,
     toggleScheduleSidebar,
     swappedItemIds,
+    pendingSchedule,
+    setPendingSchedule,
+    confirmUpdateSchedule,
+    cancelPendingSchedule,
     ...history
   };
 }

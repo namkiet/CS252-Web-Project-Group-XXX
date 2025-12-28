@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { SidebarLeft } from '../components/left-sidebar/user-sidebar'
 import { ScheduleSidebar } from '../components/right-sidebar/schedule-sidebar'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/shared/components/ui/sidebar"
+import { ScheduleConfirmDialog } from '../components/right-sidebar/schedule-confirm-dialog';
 
 import {
   Sheet,
@@ -57,7 +58,10 @@ export default function ChatPage() {
     handleTogglePin,
     handleSwapScheduleItems,
     swappedItemIds,
-    handleUndoSchedule
+    handleUndoSchedule,
+    pendingSchedule,
+    setPendingSchedule,
+    confirmUpdateSchedule,
   } = useChat();
 
   const mapModal = useMapModal();
@@ -192,6 +196,12 @@ export default function ChatPage() {
           </div>
         </SheetContent>
       </Sheet>
+
+      <ScheduleConfirmDialog 
+        pendingSchedule={pendingSchedule}
+        onConfirm={confirmUpdateSchedule}
+        onCancel={() => setPendingSchedule(null)}
+      />
 
       <GlobalMapModal 
         isOpen={mapModal.isOpen}

@@ -255,6 +255,14 @@
     }
   },
   "chat": {
+    "schedule_dialog": {
+      "title": "Update New Schedule?",
+      "description": "The AI has proposed a new dining schedule based on your request. Would you like to replace your current schedule?",
+      "preview_title": "Content Preview:",
+      "day_label": "Day {{day}}",
+      "cancel": "Dismiss",
+      "confirm": "Update Now"
+    },
     "leftsidebar": {
       "history_title": "Chat history",
       "new_chat": "New Schedule Chat",

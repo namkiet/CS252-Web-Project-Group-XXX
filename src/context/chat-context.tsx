@@ -21,44 +21,45 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 const parseBackendSchedule = (raw: any): any[] => {
   if (!raw) return [];
 
-  if (Array.isArray(raw)) return raw;
-
-  const dayList = Array.isArray(raw.dayList) ? raw.dayList : [];
+  const dayList = Array.isArray(raw) ? raw : (raw.dayList || raw.schedule || []);
 
   return dayList.map((dayItem: any, dayIdx: number) => {
     const dayNumber = Number(dayItem?.day) || dayIdx + 1;
-    const dishList = Array.isArray(dayItem?.['dish-list']) ? dayItem['dish-list'] : [];
+    
+    const rawDishList = dayItem?.['dish-list'] || dayItem?.scheduleInDay || [];
+    const dishList = Array.isArray(rawDishList) ? rawDishList : [];
 
-    const scheduleInDay = dishList.map((dish: any, itemIdx: number) => {
-      const lat = dish?.lat !== undefined ? Number(dish.lat) : undefined;
-      const lon = dish?.lon !== undefined ? Number(dish.lon) : undefined;
-      const safeId = typeof crypto !== 'undefined' && (crypto as any).randomUUID
-        ? (crypto as any).randomUUID()
-        : `sched_${dayNumber}_${itemIdx}_${Date.now()}`;
+    const scheduleInDay = dishList.map((item: any, itemIdx: number) => {
+      const lat = item?.coordinates?.lat ?? item?.lat;
+      const lon = item?.coordinates?.lng ?? item?.lon ?? item?.lng;
+      
+      const safeId = item?.id || `sched_${dayNumber}_${itemIdx}_${Date.now()}`;
+
+      const foodSource = item.food ? item.food : item;
 
       return {
         id: safeId,
-        activity: dish?.activity || '',
+        activity: item?.activity || '',
         day: dayNumber,
         food: {
-          id: safeId,
-          restaurant_name: dish?.restaurant_name || '',
-          image: dish?.img || '',
-          desc: dish?.desc || '',
-          address: dish?.address || '',
-          star: dish?.star ? Number(dish.star) : 0,
-          dish_name: dish?.dish_name || '',
-          priceRange: dish?.price ? String(dish.price) : '',
-          openTime: dish?.openTime || '',
-          coordinates: lat !== undefined && lon !== undefined ? { lat, lng: lon } : undefined,
+          id: foodSource?.id || safeId,
+          restaurant_name: foodSource?.restaurant_name || '',
+          image: foodSource?.image || foodSource?.img || '',
+          desc: foodSource?.desc || foodSource?.description || '',
+          address: foodSource?.address || '',
+          star: foodSource?.star ? Number(foodSource.star) : 0,
+          dish_name: foodSource?.dish_name || '',
+          priceRange: foodSource?.priceRange || foodSource?.price_range || foodSource?.price || '',
+          openTime: foodSource?.openTime || '',
+          coordinates: lat !== undefined && lon !== undefined ? { lat: Number(lat), lng: Number(lon) } : undefined,
         }
-      } as any;
+      };
     });
 
     return {
       day: dayNumber,
       scheduleInDay,
-    } as any;
+    };
   });
 };
 

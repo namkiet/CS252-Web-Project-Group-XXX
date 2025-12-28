@@ -28,6 +28,7 @@ interface ChatAPIResponse {
     type: "chat" | "recommendation";
     payload: FoodItem[] | undefined;
   };
+  schedule?: any;
 }
 
 const API_URL = "/api/chat";

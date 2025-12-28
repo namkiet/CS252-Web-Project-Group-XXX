@@ -273,6 +273,14 @@
     }
   },
   "chat": {
+    "schedule_dialog": {
+      "title": "Cập nhật lịch trình mới?",
+      "description": "AI vừa đề xuất một lịch trình ăn uống mới dựa trên yêu cầu của bạn. Bạn có muốn thay thế lịch trình hiện tại không?",
+      "preview_title": "Xem trước nội dung:",
+      "day_label": "Ngày {{day}}",
+      "cancel": "Bỏ qua",
+      "confirm": "Cập nhật ngay"
+    },
     "leftsidebar": {
       "history_title": "Lịch sử trò chuyện",
       "new_chat": "Lịch trình mới",
