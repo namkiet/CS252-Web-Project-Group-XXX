@@ -57,7 +57,7 @@ class HybridSearchService:
 
             meta = doc.get("meta") or doc.get("metadata") or doc
             
-            dish_name = dish.get("name", "Unknown")
+            dish_name = dish.get("raw_dish_name") or dish.get("dish_name") or dish.get("name", "Unknown")
             dish_price = dish.get("price", "N/A")
             dish_desc = dish.get("description", "")
             
@@ -65,6 +65,11 @@ class HybridSearchService:
             restaurant_price = res.get("price_range", "N/A")
             restaurant_desc = res.get("description", "")
 
+            print("--------------------------------")
+            print(f" [*] Verifying: {dish_name}, {dish_price}, {dish_desc} of {restaurant_name}")
+            print(f"Current doc: {doc}")
+            print("--------------------------------")
+            
             prompt = f"""
             ROLE: You are a smart Search Assistant.
             
@@ -285,7 +290,7 @@ class HybridSearchService:
             
             if has_constraint and unique_candidates:
                 enrich = self.verify_results(user_query, enrich)
-            print("RETURN")
+            # print("RETURN")
             return enrich
         except Exception as e:
             print(f"Error: {e}")

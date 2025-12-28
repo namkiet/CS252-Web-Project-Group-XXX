@@ -101,19 +101,29 @@ def solve_tsp_order(items):
 
     return [items[i] for i in best_order_indices]
 
-def ScheduleCreate_(food_list, max_day=3):
+def ScheduleCreate_(food_list):
     try:
         print(" > Generating schedule from food list...")
         valid_items = []
+        print(f"len food list: {len(food_list)}")
+        
+        # print(f"food list sample: {food_list}")
         for item in food_list:
             if not isinstance(item, dict):
                 continue
             coords = item.get("coordinates")
-            if coords and isinstance(coords.get("lat"), (float, int)) and isinstance(coords.get("lng"), (float, int)):
-                valid_items.append(item)
+            try:
+                if coords:
+                    lat = float(coords.get("lat"))
+                    lng = float(coords.get("lng"))
+                    coords["lat"] = lat
+                    coords["lng"] = lng
+                    valid_items.append(item)
+            except (TypeError, ValueError):
+                pass
         
         total_items = len(valid_items)
-        
+        print(f" > Total valid items with coordinates: {total_items}")
         if total_items <= 0:
             return {
                 "cntDay": 0,
@@ -175,9 +185,9 @@ def ScheduleCreate_(food_list, max_day=3):
                     "image": item.get("image", "")
                 }
                 daily_plan["dish-list"].append(meal_entry)
-
+                restaurants.append(item)
             schedule.append(daily_plan)
-            restaurants.extend(ordered_items)
+            
             day += 1
 
         print(" > Finished generating schedule.")
