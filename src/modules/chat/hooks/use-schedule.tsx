@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useMemo, useCallback } from 'react'
 import type { FoodItem, ScheduleDay, ScheduleItem } from '../types'
 import { useChatContext } from '@/context/chat-context';
 import { useHistory } from './use-history';
+import { calculateStarFromName } from '@/lib/star-calculator';
 
 const parseBackendSchedule = (raw: any): any[] => {
   if (!raw) return [];
@@ -32,7 +33,7 @@ const parseBackendSchedule = (raw: any): any[] => {
           image: foodSource?.image || foodSource?.img || '',
           desc: foodSource?.desc || foodSource?.description || '',
           address: foodSource?.address || '',
-          star: foodSource?.star ? Number(foodSource.star) : 0,
+          star: foodSource?.star ? Number(foodSource.star) : calculateStarFromName(foodSource?.restaurant_name || ''),
           dish_name: foodSource?.dish_name || '',
           priceRange: foodSource?.priceRange || foodSource?.price_range || foodSource?.price || '',
           openTime: foodSource?.openTime || '',

@@ -1,4 +1,5 @@
 import type { FoodItem } from '../modules/chat/types';
+import { calculateStarFromName } from '@/lib/star-calculator';
 
 const enrichFoodItem = (rawItem: any, index: number): FoodItem => {
   return {
@@ -7,7 +8,7 @@ const enrichFoodItem = (rawItem: any, index: number): FoodItem => {
     image: rawItem.image,
     desc: rawItem.desc || rawItem.description || "No description",
     address: rawItem.address || "address",
-    star: rawItem.star ? parseFloat(rawItem.star) : 0,
+    star: rawItem.star ? parseFloat(rawItem.star) : calculateStarFromName(rawItem.restaurant_name || "Delicious Restaurant"),
     dish_name: rawItem.dish_name || "Pho",
     priceRange: rawItem.priceRange,
     openTime: "",

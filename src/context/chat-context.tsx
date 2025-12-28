@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useRef, useCallback, type ReactNode } from 'react'
 import { hisService } from '@/services/history.service'
 import type { Conversation, Message } from '@/modules/chat/types'
+import { calculateStarFromName } from '@/lib/star-calculator'
 
 interface ChatContextType {
   chatStore: Conversation[];
@@ -47,7 +48,7 @@ const parseBackendSchedule = (raw: any): any[] => {
           image: foodSource?.image || foodSource?.img || '',
           desc: foodSource?.desc || foodSource?.description || '',
           address: foodSource?.address || '',
-          star: foodSource?.star ? Number(foodSource.star) : 0,
+          star: foodSource?.star ? Number(foodSource.star) : calculateStarFromName(foodSource?.restaurant_name || ''),
           dish_name: foodSource?.dish_name || '',
           priceRange: foodSource?.priceRange || foodSource?.price_range || foodSource?.price || '',
           openTime: foodSource?.openTime || '',
@@ -103,7 +104,7 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
                   image: item.image || item.img || "", 
                   desc: item.desc || item.description || "",
                   address: item.address || "",
-                  star: Number(item.star || 0),
+                  star: item.star ? Number(item.star) : calculateStarFromName(item.restaurant_name || "Restaurant"),
                   dish_name: item.dish_name || "",
                   priceRange: item.priceRange || "",
                   openTime: item.openTime || "",
