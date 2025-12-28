@@ -35,7 +35,7 @@ class HybridSearchService:
             out = []
 
             for i in items:
-                key = (i["type"], i["restaurant_name"])
+                key = (i["restaurant_name"])
                 if key not in seen:
                     seen.add(key)
                     out.append(i)
@@ -44,7 +44,7 @@ class HybridSearchService:
             print(f"Error: {e}")
             return []
         
-    def _verify_results(self, user_query: str, candidates: List[Dict]) -> List[Dict]:
+    def verify_results(self, user_query: str, candidates: List[Dict]) -> List[Dict]:
 
         print(f" > Verifying {len(candidates[:8])} candidates with Agent (Parallel)...")
         verified_results = []
@@ -57,7 +57,7 @@ class HybridSearchService:
 
             meta = doc.get("meta") or doc.get("metadata") or doc
             
-            dish_name = dish.get("name", "Unknown")
+            dish_name = dish.get("raw_dish_name") or dish.get("dish_name") or dish.get("name", "Unknown")
             dish_price = dish.get("price", "N/A")
             dish_desc = dish.get("description", "")
             
@@ -65,6 +65,11 @@ class HybridSearchService:
             restaurant_price = res.get("price_range", "N/A")
             restaurant_desc = res.get("description", "")
 
+            print("--------------------------------")
+            print(f" [*] Verifying: {dish_name}, {dish_price}, {dish_desc} of {restaurant_name}")
+            print(f"Current doc: {doc}")
+            print("--------------------------------")
+            
             prompt = f"""
             ROLE: You are a smart Search Assistant.
             
@@ -247,16 +252,21 @@ class HybridSearchService:
             print(f"Error: {e}")
             return []
     
-    def search_restaurants(self, user_query: str, filters: Dict = None):
+    def search_restaurants(self, user_query: str, need_classify: bool = True):
         try:
-            analysis = self._classify_intent(user_query)
-            
-            intent = analysis.get("intent", "GENERAL").upper()
-            has_constraint = analysis.get("has_constraint", False)
-            clean_term = analysis.get("search_term", user_query)
-            
-            print(f" > Analysis: {intent} | Constraint: {has_constraint} | Term: {clean_term}")
-            
+            if need_classify:
+                analysis = self._classify_intent(user_query)
+                
+                intent = analysis.get("intent", "GENERAL").upper()
+                has_constraint = analysis.get("has_constraint", False)
+                clean_term = analysis.get("search_term", user_query)
+                
+                print(f" > Analysis: {intent} | Constraint: {has_constraint} | Term: {clean_term}")
+            else:
+                intent = "SEARCH_RESTAURANT_BY_DISH"
+                has_constraint = False
+                clean_term = user_query
+                print(f" > Skip Analysis: Using default intent {intent} with term '{clean_term}'")
             
             search_tasks = self._execute_search(intent, clean_term)
             raw_candidates = []
@@ -279,8 +289,8 @@ class HybridSearchService:
             print(f" > Found {len(unique_candidates)} raw candidates")
             
             if has_constraint and unique_candidates:
-                enrich = self._verify_results(user_query, enrich)
-            
+                enrich = self.verify_results(user_query, enrich)
+            # print("RETURN")
             return enrich
         except Exception as e:
             print(f"Error: {e}")

@@ -142,6 +142,7 @@ class ChatService:
                 "role": "assistant",
                 "content": agent_output["message"] if not None else "I couldn't generate a text response.",
                 "payload": myPayload if not None else None,
+                "schedule": agent_output.get("schedule", {}),
                 "metadata": "normal chat"    
             }
         except Exception as e:

@@ -134,7 +134,7 @@ class Ingestor:
                 "name": name,
                 "address": address,
                 "img_src": res.get("img_src", ""),
-                "price_range": {price_range},
+                "price_range": price_range,
                 "url" : url,
                 "description": ai_description,
                 "source": "json_upload"

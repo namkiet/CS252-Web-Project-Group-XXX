@@ -10,13 +10,16 @@ from app.agents.sub_agents.NotifyAgent import NotifyAgent
 from app.agents.sub_agents.AgentPack.FoodServiceAgent import FoodServiceAgent
 from app.agents.sub_agents.RequestClarifyAgent import RequestClarifyAgent
 from app.agents.sub_agents.ChatAgent import ChatAgent
+from app.agents.sub_agents.ScheduleAgent import ScheduleAgent
 def SupervisorAgentPrebuilt1(router):
 
     root = RootControllerAgent(router)
     foodAgent = FoodServiceAgent(router)
     requestAgent = RequestClarifyAgent(router)
     chatAgent = ChatAgent(router)
+    # scheduleAgent = ScheduleAgent(router)
     root.register_agent(foodAgent)
     root.register_agent(requestAgent)
     root.register_agent(chatAgent)
+    # root.register_agent(scheduleAgent)
     return root
