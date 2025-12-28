@@ -155,24 +155,19 @@ class Hybrid_RAG_agent(BaseAgent):
             print(" > Found specific dishes:", specific_dish)
             
             restaurant_list = []
-            # print("0")
+
             for dish in specific_dish:
                 data = self.HybridSearch.search_restaurants(dish, False)
                 if len(data) <= 1:
                     continue
                 restaurant_list.extend(data[:2])
-            # print("1")
-            # print(f"-----Restaurant List")
-            # print(restaurant_list)
-            # print(" > Classify intent for schedule search...")
+
             intent_has_constraint = self._classify_intent(msg)
             
             if intent_has_constraint:
                 print(" > Intent has constraints, verifying results...")
                 restaurant_list = self.verify_schedule_search(msg, restaurant_list)
                 
-            # restaurant_list = self.HybridSearch.verify_results(msg, restaurant_list)
-            # print("HERE")
             format_data = self._format_output(restaurant_list)
             
             print(" > Creating schedule...")

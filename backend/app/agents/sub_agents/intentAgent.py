@@ -12,18 +12,29 @@ class IntentAgent(BaseAgent):
         
     def run(self, query: str) -> bool:
         prompt = f"""
-        Is the following query asking for a specific dish or a specific restaurant/location?
+        You are an intent classifier.
 
-        Query: "{query}"
+        Decide whether the user's query is about FOOD/RESTAURANTS or about SCHEDULING/PLANNING.
 
-        Answer "TRUE" if it mentions a concrete dish name or a specific restaurant/place.
-        Answer "FALSE" if it is a general food search or unrelated.
+        Answer TRUE if the query:
+        - asks for food recommendations
+        - mentions dishes (e.g., phở, bún thịt nướng, cơm tấm)
+        - asks for restaurants or places to eat
+        - uses phrases like "đề xuất quán", "ăn ở đâu", "quán nào ngon"
 
-        Output only TRUE or FALSE.
+        Answer FALSE if the query:
+        - asks to create or arrange a schedule
+        - plans activities over time
+        - mentions days, timelines, itineraries, or trips
+
+        Query:
+        "{query}"
+
+        Respond with ONLY one word: TRUE or FALSE.
         """
         try:
             res = self.llm(prompt).strip().upper()
-            
+            print(res)
             if "TRUE" in res:
                 return True
             return False

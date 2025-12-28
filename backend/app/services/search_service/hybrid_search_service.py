@@ -65,13 +65,13 @@ class HybridSearchService:
             restaurant_price = res.get("price_range", "N/A")
             restaurant_desc = res.get("description", "")
 
-            print("--------------------------------")
-            print(f" [*] Verifying: {dish_name}, {dish_price}, {dish_desc} of {restaurant_name}")
-            print(f"Current doc: {doc}")
-            print("--------------------------------")
+            # print("--------------------------------")
+            # print(f" [*] Verifying: {dish_name}, {dish_price}, {dish_desc} of {restaurant_name}")
+            # print(f"Current doc: {doc}")
+            # print("--------------------------------")
             
             prompt = f"""
-            ROLE: You are a smart Search Assistant.
+            ROLE: You are a smart and strict Search Assistant.
             
             USER CONSTRAINT: "{user_query}"
             
@@ -285,11 +285,14 @@ class HybridSearchService:
             unique_candidates = self._deduplicate(raw_candidates)
             
             enrich = self._enrich(unique_candidates)
-            # enrich = enrich[:3]
-            print(f" > Found {len(unique_candidates)} raw candidates")
             
-            if has_constraint and unique_candidates:
-                enrich = self.verify_results(user_query, enrich)
+            enrich = enrich[:4]
+            
+            print(f" > Found {len(unique_candidates)} raw candidates")
+            enrich = self.verify_results(user_query, enrich)
+            
+            # if has_constraint and unique_candidates:
+            #     enrich = self.verify_results(user_query, enrich)
             # print("RETURN")
             return enrich
         except Exception as e:
