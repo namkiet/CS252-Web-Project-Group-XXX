@@ -115,7 +115,7 @@ export const ScheduleFoodCard = ({
         {food.star && (
           <div className="flex items-center gap-1 text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded shrink-0">
             <Star className="w-3 h-3 fill-current" />
-            {food.star}
+            <span>{Number(food.star).toFixed(1)}</span>
           </div>
         )}
       </div>

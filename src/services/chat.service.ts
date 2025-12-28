@@ -15,6 +15,7 @@ const enrichFoodItem = (rawItem: any, index: number): FoodItem => {
     coordinates: rawItem.coordinates 
       ? { lat: rawItem.coordinates.lat, lng: rawItem.coordinates.lng } 
       : undefined,
+    url: rawItem.url
   };
 };
 

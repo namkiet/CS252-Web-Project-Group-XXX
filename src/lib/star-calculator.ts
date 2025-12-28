@@ -1,7 +1,3 @@
-/**
- * Hash table function to calculate star rating from restaurant name
- * when star information is missing
- */
 export const calculateStarFromName = (restaurantName: string): number => {
   if (!restaurantName) return 4.0;
   

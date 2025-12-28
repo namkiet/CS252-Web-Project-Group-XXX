@@ -95,7 +95,9 @@ export function FoodRecommendationCard({ item, isAdded, onToggle, onShowMap }: F
               <h3 className="mb-0.5 sm:mb-1 font-semibold text-sm sm:text-base text-gray-800 group-hover:text-orange-600 transition-colors line-clamp-1">{item.restaurant_name}</h3>
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <StarRating rating={item.star} />
-                <span className="text-[10px] sm:text-sm text-gray-500">({item.star}/5.0)</span>
+                <span className="text-[10px] sm:text-sm text-gray-500">
+                  ({Number(item.star).toFixed(1)}/5.0)
+                </span>
               </div>
             </div>
           </div>

@@ -106,8 +106,15 @@ export function useChat() {
         sessionIdToSend
       );
 
-      if (aiResponse.schedule) {
+      if (
+        aiResponse.schedule && 
+        aiResponse.schedule.schedule && 
+        Array.isArray(aiResponse.schedule.schedule) && 
+        aiResponse.schedule.schedule.length > 0
+      ) {
         scheduleData.setPendingSchedule(aiResponse.schedule);
+      } else {
+        scheduleData.setPendingSchedule(null);
       }
 
       const aiMsg: Message = {

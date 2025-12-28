@@ -53,6 +53,7 @@ const parseBackendSchedule = (raw: any): any[] => {
           priceRange: foodSource?.priceRange || foodSource?.price_range || foodSource?.price || '',
           openTime: foodSource?.openTime || '',
           coordinates: lat !== undefined && lon !== undefined ? { lat: Number(lat), lng: Number(lon) } : undefined,
+          url: foodSource?.url || '',
         }
       };
     });
@@ -111,6 +112,7 @@ export const ChatProvider = ( { children }: { children: ReactNode} ) => {
                   coordinates: lat !== undefined && lng !== undefined 
                     ? { lat: Number(lat), lng: Number(lng) } 
                     : undefined,
+                  url: item.url || "",
                 };
               })
           };

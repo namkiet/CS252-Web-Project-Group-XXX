@@ -16,6 +16,7 @@ export interface MapLocation {
   desc?: string;
   priceRange?: string;
   color?: string;
+  url?: string;
 }
 
 interface SimpleMapProps {
@@ -26,6 +27,16 @@ interface SimpleMapProps {
   routeGeometry?: Array<[number, number]> | null;
   routeSegments?: Array<Array<[number, number]>> | null;
 }
+
+const userLocationIcon = L.divIcon({
+  className: 'google-maps-marker',
+  html: `
+    <div class="dot-pulse"></div>
+    <div class="dot-core"></div>
+  `,
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
+});
 
 // Create Icon Marker for each color
 const createCustomIcon = (color: string = '#ef4444') => {
@@ -101,15 +112,13 @@ export function SimpleMap({ locations, zoom = 15, className = "h-full w-full", u
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        {/* User Location Marker */}
         {userLocation && (
           <Marker 
-            position={[userLocation.lat, userLocation.lng]}
-            icon={createCustomIcon('#3b82f6')}
+            position={[userLocation.lat, userLocation.lng]} 
+            icon={userLocationIcon}
+            zIndexOffset={1000}
           >
-            <Popup>
-              <div className="font-semibold">My Location</div>
-            </Popup>
+            <Popup>My Location</Popup>
           </Marker>
         )}
 

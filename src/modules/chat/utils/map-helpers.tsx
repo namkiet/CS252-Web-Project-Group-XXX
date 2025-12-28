@@ -24,7 +24,8 @@ export const convertFoodToLocation = (food: FoodItem, color?: string): MapLocati
     star: food.star,
     desc: food.desc,
     priceRange: food.priceRange,
-    color: color || MAP_COLORS[0]
+    color: color || MAP_COLORS[0],
+    url: food.url
   };
 };
 

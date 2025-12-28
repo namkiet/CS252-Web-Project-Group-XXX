@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
-import { X, MapPin, Star, DollarSign, Map, CheckCircle, Circle } from 'lucide-react';
+import { X, MapPin, Star, DollarSign, Map, CheckCircle, Circle, ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SimpleMap, type MapLocation } from './simple-map';
 import { useRoutePlanning } from '../../hooks/use-route-planning';
+import { StarRating } from '../chat-area/food-card/star-rating';
 
 interface GlobalMapModalProps {
   isOpen: boolean;
@@ -26,24 +27,19 @@ export function GlobalMapModal({ isOpen, onClose, locations, title }: GlobalMapM
   } = useRoutePlanning();
   const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
 
-  // Fetch user location when modal opens
   useEffect(() => {
     if (isOpen && !userLocation) {
       getUserLocation();
     }
   }, [isOpen, userLocation, getUserLocation]);
 
-  // Calculate route when selectedLocations change
   useEffect(() => {
-    // Always call calculateRoute; hook will auto-clear when none selected
     calculateRoute(locations);
-    // Explicitly clear local route info when none selected
     if (selectedLocations.length === 0) {
       setRouteInfo(null);
     }
   }, [selectedLocations, locations, calculateRoute, userLocation]);
 
-  // Update route info when routeData changes
   useEffect(() => {
     if (routeData) {
       const distanceKm = (routeData.distance / 1000).toFixed(2);
@@ -63,7 +59,6 @@ export function GlobalMapModal({ isOpen, onClose, locations, title }: GlobalMapM
   };
 
   return (
-    // Background fade
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4 animate-in fade-in duration-300">
       
       {/* Modal Container */}
@@ -127,7 +122,7 @@ export function GlobalMapModal({ isOpen, onClose, locations, title }: GlobalMapM
           </div>
 
           {/* List Section */}
-          <div className="w-full lg:w-80 bg-white overflow-y-auto custom-scrollbar shrink-0 h-[45%] lg:h-full order-2 lg:order-2 flex flex-col">
+          <div className="w-full lg:w-72 bg-white overflow-y-auto custom-scrollbar shrink-0 h-[45%] lg:h-full order-2 lg:order-2 flex flex-col">
             {/* Route Error */}
             {routeError && (
               <div className="p-3 bg-red-50 border-b border-red-200 text-red-700 text-xs">
@@ -226,12 +221,24 @@ export function GlobalMapModal({ isOpen, onClose, locations, title }: GlobalMapM
                         />
                         <span className="line-clamp-2 leading-tight">{loc.address}</span>
                       </div>
-                      
-                      <div className="hidden lg:flex items-center gap-1 text-[10px] font-bold text-gray-500 mt-auto">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" /> {loc.star}
-                          <span className="mx-1">•</span>
-                          <span>{loc.priceRange}</span>
+                      <div className="hidden lg:flex items-center gap-2 mt-auto">
+                        <StarRating rating={Number(loc.star)} />
+                        <span className="text-[10px] font-bold text-gray-500">
+                          {Number(loc.star).toFixed(1)}/5.0
+                        </span>
                       </div>
+                      {loc.url && (
+                        <a 
+                          href={loc.url || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center justify-center gap-1.5 mt-2 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-semibold transition-colors border border-blue-100"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          Google Maps
+                        </a>
+                      )}
                     </div>
                   </div>
                 );

@@ -12,6 +12,7 @@ export type FoodItem = {
     lat: number; 
     lng: number; 
   };
+  url?: string;
 };
 
 export type Message = {

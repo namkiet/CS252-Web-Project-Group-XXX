@@ -9,6 +9,19 @@ history_bp = Blueprint('history', __name__)
 
 history_service = ChatHistoryService()
 
+def ensure_schedule_urls(schedule):
+    if not schedule or not isinstance(schedule, dict):
+        return schedule
+    
+    for day in schedule.get('dayList', []):
+        for dish in day.get('dish-list', []):
+            if not dish.get('url'):
+                lat = dish.get('lat')
+                lon = dish.get('lon') or dish.get('lng')
+                if lat and lon:
+                    dish['url'] = f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"
+    return schedule
+
 @history_bp.route('/sessions', methods = ['GET'])
 @token_required
 def get_sessions_sidebar():
@@ -69,7 +82,7 @@ def get_history_messages(session_id):
                 audio_url = storage_service.get_signed_url(msg["audio_path"])
             # Read widget and schedule directly from DB columns
             widget = msg.get('widget', {"type": "chat", "payload": None})
-            schedule = msg.get('schedule', {})
+            schedule = ensure_schedule_urls(msg.get('schedule', {}))
             msg_obj = {
                 "id" : msg.get('id', ""),
                 "message" : {
@@ -92,7 +105,7 @@ def get_history_messages(session_id):
         response = {
             "status" : "success",
             "session_id" : session_id,
-            "schedule": session.get("schedule"),
+            "schedule": ensure_schedule_urls(session.get("schedule")),
             "messages" : messages
         }
 
@@ -176,7 +189,8 @@ def update_chat_session_schedule(session_id):
         return jsonify({"error": "Missing session ID or schedule"}), 400
 
     try:
-        updated_session = history_service.update_session_schedule(user.id, session_id, schedule)
+        processed_schedule = ensure_schedule_urls(schedule)
+        updated_session = history_service.update_session_schedule(user.id, session_id, processed_schedule)
         
         if updated_session:
             return jsonify({
@@ -205,7 +219,7 @@ def get_chat_session_schedule(session_id):
         return jsonify({
             "status": "success",
             "session_id": session_id,
-            "schedule": schedule if schedule is not None else []
+            "schedule": ensure_schedule_urls(schedule) if schedule is not None else []
         }), 200
     except Exception as e:
         return jsonify({"error": "Internal server error"}), 500
