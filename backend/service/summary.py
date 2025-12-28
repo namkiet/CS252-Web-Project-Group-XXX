@@ -6,7 +6,8 @@ from service.ollama_emb import OllamaEmb
 class Summary():
     def __init__(self):
         try:
-            URL = "https://collotypic-pablo-unridiculous.ngrok-free.dev"
+            import os
+            URL = os.environ.get("OLLAMA_URL", "https://collotypic-pablo-unridiculous.ngrok-free.dev")
             self.root = OllamaEmb(base_url=URL, model="qwen2.5:14b")
         except Exception as e:
             print(f"Summary: Failed to initialize AI Agent: {e}")
