@@ -20,7 +20,6 @@ The heart of this project is an intelligent **Multi-Agent Orchestration** framew
 -   📅 **Interactive Schedule Builder**: Manage your food tour day-by-day. Add meals, swap activities, and customize your itinerary with ease.
 -   🗺️ **Dynamic Food Map**: Visualize your entire journey with an integrated interactive map (Leaflet), showing exactly where your next delicious meal is located.
 -   📚 **Culinary Guide**: Explore a rich database of authentic Vietnamese dishes categorized by province and international cuisines.
--   🗣️ **Voice Interaction**: Use voice commands to search and plan your tour (Powered by AI).
 -   🌍 **Multilingual Support**: Fully localized in **English** and **Vietnamese**.
 -   👤 **User Personalization**: Save your history, manage your profile, and keep track of your favorite spots.
 ---
